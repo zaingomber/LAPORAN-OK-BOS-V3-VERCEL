@@ -31,11 +31,11 @@
 
     <div id="view-login" class="hidden flex-col justify-center min-h-screen p-6 fade-in bg-gray-50 z-50 absolute inset-0">
       <div class="bg-white p-8 rounded-3xl shadow-xl border border-gray-100 w-full max-w-sm mx-auto text-center">
-        <div class="bg-blue-100 text-blue-600 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+        <div class="bg-[#f0b21e]/20 text-[#f0b21e] w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
           <i class="ph ph-hand-waving text-3xl font-bold"></i>
         </div>
-        <h3 class="text-xs font-bold text-blue-600 uppercase tracking-widest mb-1">Selamat Datang di</h3>
-        <h2 class="text-2xl font-black mb-2 leading-tight text-gray-800">SISTEM LAPORAN<br>OK BOS <span class="text-blue-500">BETA</span></h2>
+        <h3 class="text-xs font-bold text-[#f0b21e] uppercase tracking-widest mb-1">Selamat Datang di</h3>
+        <h2 class="text-2xl font-black mb-2 leading-tight text-[#f0b21e]">SISTEM LAPORAN<br>OK BOS <span class="text-gray-800">BETA</span></h2>
         <p class="text-sm text-gray-500 mb-8 font-medium">Silakan masuk menggunakan Email & Password Anda</p>
         
         <div class="space-y-4 text-left">
@@ -43,22 +43,22 @@
             <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Email</label>
             <div class="relative">
               <i class="ph ph-envelope absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg"></i>
-              <input type="email" id="login-email" placeholder="email@anda.com" class="w-full bg-gray-50 border border-gray-200 rounded-xl py-3 pl-12 pr-4 text-sm font-semibold outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition">
+              <input type="email" id="login-email" placeholder="email@anda.com" class="w-full bg-gray-50 border border-gray-200 rounded-xl py-3 pl-12 pr-4 text-sm font-semibold outline-none focus:border-[#f0b21e] focus:ring-1 focus:ring-[#f0b21e] transition">
             </div>
           </div>
           <div>
             <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Password</label>
             <div class="relative">
               <i class="ph ph-key absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg"></i>
-              <input type="password" id="login-pass" placeholder="••••••" class="w-full bg-gray-50 border border-gray-200 rounded-xl py-3 pl-12 pr-12 text-sm font-semibold outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition">
-              <button type="button" onclick="togglePasswordVisibility('login-pass', 'icon-eye-login')" class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-blue-600 focus:outline-none">
+              <input type="password" id="login-pass" placeholder="••••••" class="w-full bg-gray-50 border border-gray-200 rounded-xl py-3 pl-12 pr-12 text-sm font-semibold outline-none focus:border-[#f0b21e] focus:ring-1 focus:ring-[#f0b21e] transition">
+              <button type="button" onclick="togglePasswordVisibility('login-pass', 'icon-eye-login')" class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-[#f0b21e] focus:outline-none">
                 <i id="icon-eye-login" class="ph ph-eye text-lg"></i>
               </button>
             </div>
           </div>
         </div>
 
-        <button id="btn-login" onclick="prosesLoginKustom()" class="w-full mt-8 bg-blue-600 text-white font-bold text-lg py-3.5 rounded-xl shadow-lg active:scale-95 transition flex justify-center items-center">
+        <button id="btn-login" onclick="prosesLoginKustom()" class="w-full mt-8 bg-[#f0b21e] text-white font-bold text-lg py-3.5 rounded-xl shadow-lg active:scale-95 transition flex justify-center items-center">
           <span>Masuk</span>
           <i id="loading-login" class="ph ph-spinner-gap animate-spin hidden ml-2 text-xl"></i>
         </button>
