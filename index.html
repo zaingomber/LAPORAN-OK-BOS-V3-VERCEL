@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Sistem Laporan Orderan</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <style>
+    .fade-in { animation: fadeIn 0.3s ease-in-out; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    .hide-scrollbar::-webkit-scrollbar { display: none; }
+    body { -webkit-tap-highlight-color: transparent; }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans antialiased selection:bg-blue-200">
+
+  <div class="max-w-md mx-auto bg-white min-h-screen shadow-2xl relative overflow-x-hidden">
+    
+    <!-- Toast Notifikasi -->
+    <div id="toast" class="fixed top-4 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white px-5 py-3 rounded-full text-sm font-medium transition-opacity duration-300 opacity-0 pointer-events-none z-50 shadow-xl flex items-center">
+      <i id="toast-icon" class="ph ph-info mr-2 text-lg"></i>
+      <span id="toast-msg">Notifikasi</span>
+    </div>
+
+    <!-- VIEW: LOADING -->
+    <div id="view-loading" class="flex flex-col items-center justify-center min-h-screen fade-in bg-gray-50 z-50 absolute inset-0">
+      <i class="ph ph-spinner-gap animate-spin text-5xl text-blue-600 mb-4"></i>
+      <h2 class="text-xl font-bold text-gray-700">Memuat Sistem...</h2>
+    </div>
+
+    <div id="view-login" class="hidden flex-col justify-center min-h-screen p-6 fade-in bg-gray-50 z-50 absolute inset-0">
+      <div class="bg-white p-8 rounded-3xl shadow-xl border border-gray-100 w-full max-w-sm mx-auto text-center">
+        <div class="bg-blue-100 text-blue-600 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+          <i class="ph ph-lock-key text-3xl font-bold"></i>
+        </div>
+        <h2 class="text-2xl font-black mb-1">Masuk Akun</h2>
+        <p class="text-sm text-gray-500 mb-8 font-medium">Gunakan Email & Password Anda</p>
+        
+        <div class="space-y-4 text-left">
+          <div>
+            <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Email</label>
+            <div class="relative">
+              <i class="ph ph-envelope absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg"></i>
+              <input type="email" id="login-email" placeholder="email@anda.com" class="w-full bg-gray-50 border border-gray-200 rounded-xl py-3 pl-12 pr-4 text-sm font-semibold outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition">
+            </div>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Password</label>
+            <div class="relative">
+              <i class="ph ph-key absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg"></i>
+              <input type="password" id="login-pass" placeholder="••••••" class="w-full bg-gray-50 border border-gray-200 rounded-xl py-3 pl-12 pr-4 text-sm font-semibold outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition">
+            </div>
+          </div>
+        </div>
+
+        <button id="btn-login" onclick="prosesLoginKustom()" class="w-full mt-8 bg-blue-600 text-white font-bold text-lg py-3.5 rounded-xl shadow-lg active:scale-95 transition flex justify-center items-center">
+          <span>Masuk</span>
+          <i id="loading-login" class="ph ph-spinner-gap animate-spin hidden ml-2 text-xl"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- FORCE CHANGE PASSWORD FORM -->
+    <div id="view-ganti-password" class="hidden flex-col justify-center min-h-screen p-6 fade-in bg-gray-900 z-50 absolute inset-0">
+      <div class="bg-white p-8 rounded-3xl shadow-2xl w-full max-w-sm mx-auto text-center">
+        <i class="ph ph-shield-check text-5xl text-orange-500 mb-3"></i>
+        <h2 class="text-xl font-bold mb-2 text-gray-800">Keamanan Akun</h2>
+        <p class="text-sm text-gray-500 mb-6 font-medium">Buat password baru demi keamanan.</p>
+        
+        <div class="space-y-4 text-left">
+          <input type="hidden" id="pass-email">
+          <div>
+            <label class="block text-xs font-bold text-gray-700 mb-1">Password Baru</label>
+            <input type="password" id="new-pass" placeholder="Minimal 6 karakter" class="w-full bg-gray-50 border border-gray-200 rounded-xl py-3 px-4 text-sm font-bold outline-none focus:border-orange-500 transition">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-gray-700 mb-1">Ulangi Password</label>
+            <input type="password" id="new-pass-confirm" placeholder="Ulangi password baru" class="w-full bg-gray-50 border border-gray-200 rounded-xl py-3 px-4 text-sm font-bold outline-none focus:border-orange-500 transition">
+          </div>
+        </div>
+
+        <div class="flex space-x-3 mt-6">
+           <button id="btn-batal-pass" onclick="logout()" class="hidden flex-1 bg-gray-200 text-gray-800 font-bold py-3 rounded-xl active:bg-gray-300">Batal</button>
+           <button id="btn-simpan-pass" onclick="simpanPasswordKustom()" class="flex-1 bg-orange-500 text-white font-bold py-3 rounded-xl active:bg-orange-600 shadow-md flex justify-center items-center">Simpan Password</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="tab-driver-input" class="driver-tab hidden flex-col h-screen fade-in pb-20">
+      <div class="bg-green-600 p-5 rounded-b-3xl shadow-sm z-10 sticky top-0 text-white flex justify-between items-start">
+        <div><h2 class="text-2xl font-bold">Input Orderan</h2><p id="driver-name-header" class="text-sm opacity-90 font-medium"></p></div>
+        <div class="flex space-x-2">
+          <button onclick="bukaGantiPassword()" class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center active:bg-white/30"><i class="ph ph-key text-xl"></i></button>
+          <button onclick="logout()" class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center active:bg-white/30"><i class="ph ph-sign-out text-xl"></i></button>
+        </div>
+      </div>
+
+      <div class="p-6 flex-1 overflow-y-auto space-y-5">
+        <div class="bg-blue-50 border border-blue-200 rounded-2xl p-4 flex items-start"><i class="ph ph-info text-blue-600 text-2xl mr-3 mt-0.5"></i><p class="text-sm text-blue-800 font-medium">Silakan cek kembali laporan manual Anda di WA sebelum menginput ke sistem.</p></div>
+
+        <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex justify-between items-center">
+          <div><h3 class="font-bold text-gray-800 text-lg">Operator</h3></div>
+          <div class="flex items-center space-x-4 bg-gray-50 p-1.5 rounded-xl border">
+            <button onclick="ubahQty('Operator', -1)" class="w-12 h-12 bg-white text-red-500 rounded-lg shadow-sm"><i class="ph ph-minus text-xl font-bold"></i></button>
+            <span id="qty-Operator" class="font-bold w-6 text-center text-xl">0</span>
+            <button onclick="ubahQty('Operator', 1)" class="w-12 h-12 bg-white text-green-600 rounded-lg shadow-sm"><i class="ph ph-plus text-xl font-bold"></i></button>
+          </div>
+        </div>
+        <div class="bg-white p-5 rounded-2xl shadow-sm border flex justify-between items-center">
+          <div><h3 class="font-bold text-gray-800 text-lg">Offline</h3></div>
+          <div class="flex items-center space-x-4 bg-gray-50 p-1.5 rounded-xl border">
+            <button onclick="ubahQty('Offline', -1)" class="w-12 h-12 bg-white text-red-500 rounded-lg shadow-sm"><i class="ph ph-minus text-xl font-bold"></i></button>
+            <span id="qty-Offline" class="font-bold w-6 text-center text-xl">0</span>
+            <button onclick="ubahQty('Offline', 1)" class="w-12 h-12 bg-white text-green-600 rounded-lg shadow-sm"><i class="ph ph-plus text-xl font-bold"></i></button>
+          </div>
+        </div>
+        <div class="bg-white p-5 rounded-2xl shadow-sm border flex justify-between items-center">
+          <div><h3 class="font-bold text-gray-800 text-lg">Khusus</h3></div>
+          <div class="flex items-center space-x-4 bg-gray-50 p-1.5 rounded-xl border">
+            <button onclick="ubahQty('Khusus', -1)" class="w-12 h-12 bg-white text-red-500 rounded-lg shadow-sm"><i class="ph ph-minus text-xl font-bold"></i></button>
+            <span id="qty-Khusus" class="font-bold w-6 text-center text-xl">0</span>
+            <button onclick="ubahQty('Khusus', 1)" class="w-12 h-12 bg-white text-green-600 rounded-lg shadow-sm"><i class="ph ph-plus text-xl font-bold"></i></button>
+          </div>
+        </div>
+
+        <button id="btn-submit" onclick="kirimOrderan()" class="w-full mt-4 bg-green-600 text-white font-bold text-lg py-4 rounded-2xl shadow-lg active:bg-green-700 flex justify-center items-center">
+          <span id="btn-text">Lapor Orderan</span>
+          <i id="btn-loading" class="ph ph-spinner-gap animate-spin hidden ml-2 text-2xl"></i>
+        </button>
+      </div>
+    </div>
+
+    <div id="tab-driver-orderan" class="driver-tab hidden flex-col h-screen fade-in pb-20">
+      <div class="bg-green-600 p-5 rounded-b-3xl shadow-sm z-10 sticky top-0 text-white">
+        <h2 class="text-2xl font-bold mb-4">Riwayat Orderan</h2>
+        <div class="bg-white/20 p-1.5 rounded-xl border border-white/20 flex items-center">
+           <select id="filter-tipe-driver" onchange="toggleCustomDateDriver()" class="flex-1 bg-transparent text-white border-none outline-none text-sm font-semibold appearance-none px-2">
+             <option value="7hari" class="text-gray-800">Minggu s/d Sabtu</option>
+             <option value="custom" class="text-gray-800">Tanggal Custom...</option>
+           </select>
+           <button onclick="loadRiwayatDriver()" class="bg-white text-green-800 px-4 py-2 rounded-lg text-sm font-bold shadow-sm">Cari</button>
+        </div>
+        <div id="filter-custom-driver" class="hidden mt-3 bg-green-800/30 p-3 rounded-xl border items-center gap-2 fade-in">
+           <input type="date" id="date-start-driver" class="w-full bg-white text-gray-800 text-sm font-medium rounded-lg p-2 outline-none">
+           <span class="text-green-100">-</span>
+           <input type="date" id="date-end-driver" class="w-full bg-white text-gray-800 text-sm font-medium rounded-lg p-2 outline-none">
+        </div>
+      </div>
+      
+      <div id="loading-riwayat-driver" class="flex flex-col items-center justify-center p-10 mt-10"><i class="ph ph-spinner-gap animate-spin text-5xl text-green-600 mb-3"></i></div>
+      <div class="p-5 flex-1 overflow-y-auto space-y-4" id="list-riwayat-driver"></div>
+    </div>
+
+    <div id="tab-driver-setoran" class="driver-tab hidden flex-col h-screen fade-in pb-20">
+      <div class="bg-green-600 p-5 rounded-b-3xl shadow-sm z-10 sticky top-0 text-white">
+        <h2 class="text-2xl font-bold">Setoran</h2><p class="text-sm opacity-90 font-medium">Minggu 00:00 s/d Sabtu 23:59</p>
+      </div>
+      
+      <div id="loading-setoran" class="flex justify-center p-10 mt-10"><i class="ph ph-spinner-gap animate-spin text-4xl text-green-600"></i></div>
+
+      <div id="konten-setoran" class="p-5 overflow-y-auto hidden space-y-4">
+        <div class="bg-blue-50 border border-blue-200 text-blue-800 p-3 rounded-xl flex items-center"><i class="ph ph-calendar-check text-2xl mr-3"></i><div><p class="text-xs font-bold uppercase text-blue-500">Periode Aktif</p><p id="setoran-periode" class="text-sm font-bold"></p></div></div>
+        <div class="bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
+          <div class="flex justify-between items-center mb-4 text-gray-600 text-sm font-medium border-b pb-3"><span>Omset Orderan</span><span id="lap-order">Rp 0</span></div>
+          <div class="space-y-3 mb-4">
+            <div class="flex justify-between items-center"><span class="text-gray-800 font-bold">Wajib Setor (15%)</span><span id="lap-wajib" class="font-bold text-green-600">Rp 0</span></div>
+            <div class="flex justify-between items-center text-red-600 text-sm"><span>+ Denda Admin</span><span id="lap-denda" class="font-bold">Rp 0</span></div>
+            <div class="flex justify-between items-center text-orange-600 text-sm"><span>+ Peny. Massal</span><span id="lap-massal" class="font-bold">Rp 0</span></div>
+            <div class="flex justify-between items-center text-blue-600 text-sm border-b pb-4"><span>- Potongan Admin</span><span id="lap-potongan" class="font-bold">Rp 0</span></div>
+          </div>
+          <div class="mt-2 bg-green-50 p-4 rounded-2xl text-center border border-green-100">
+            <p class="text-xs text-green-800 font-bold uppercase tracking-widest mb-1">Total Tagihan Akhir</p><h1 id="lap-akhir" class="text-3xl font-black text-green-700">Rp 0</h1>
+          </div>
+        </div>
+        <h3 class="font-bold text-gray-700 mt-4 px-1">Keterangan Tambahan</h3><div id="lap-rincian" class="space-y-2"></div>
+      </div>
+    </div>
+
+
+    <div id="tab-admin-riwayat" class="admin-tab hidden flex-col h-screen fade-in pb-20">
+      <div class="bg-gradient-to-r from-blue-700 to-indigo-800 p-5 rounded-b-[2rem] shadow-md z-20 sticky top-0 flex justify-between items-start">
+        <div class="w-full mr-2">
+           <h2 class="text-2xl font-extrabold text-white tracking-wide mb-3">Rekap Orderan</h2>
+           <div class="space-y-2">
+              <select id="admin-rekap-driver" class="w-full bg-white text-gray-800 p-2.5 rounded-xl text-sm font-bold outline-none border-none shadow-sm"><option value="">-- Pilih Nama Driver --</option></select>
+              <div class="bg-white/10 p-1.5 rounded-xl border border-white/20 flex items-center">
+                <select id="filter-tipe" onchange="toggleCustomDate()" class="flex-1 bg-transparent text-white border-none outline-none text-sm font-semibold appearance-none">
+                  <option value="7hari" class="text-gray-800">1 Minggu Terakhir (Total)</option>
+                  <option value="custom" class="text-gray-800">Tanggal Custom (Edit Qty)</option>
+                </select>
+                <button onclick="loadRiwayatAdmin()" class="bg-white text-blue-800 px-4 py-2 rounded-lg text-sm font-bold">Cari</button>
+              </div>
+           </div>
+           <div id="filter-custom" class="hidden mt-3 bg-blue-900/30 p-3 rounded-xl border items-center gap-2 fade-in">
+              <input type="date" id="date-start" class="w-full bg-white text-gray-800 text-sm font-medium rounded-lg p-2 outline-none">
+              <span class="text-blue-200">-</span>
+              <input type="date" id="date-end" class="w-full bg-white text-gray-800 text-sm font-medium rounded-lg p-2 outline-none">
+           </div>
+        </div>
+        <div class="flex flex-col space-y-2 mt-1">
+          <button onclick="bukaGantiPassword()" class="w-10 h-10 bg-white/20 text-white rounded-full flex items-center justify-center"><i class="ph ph-key text-xl"></i></button>
+          <button onclick="logout()" class="w-10 h-10 bg-white/20 text-white rounded-full flex items-center justify-center"><i class="ph ph-sign-out text-xl"></i></button>
+        </div>
+      </div>
+      
+      <div id="loading-riwayat" class="hidden flex-col items-center justify-center p-10 mt-10"><i class="ph ph-spinner-gap animate-spin text-5xl text-blue-600 mb-3"></i></div>
+      <div class="p-5 flex-1 overflow-y-auto space-y-4" id="list-riwayat">
+        <div class="text-center text-gray-400 mt-10"><i class="ph ph-hand-pointing text-4xl mb-2"></i><p class="text-sm">Pilih Driver dan klik Cari</p></div>
+      </div>
+    </div>
+
+    <div id="tab-admin-setoran" class="admin-tab hidden flex-col h-screen fade-in pb-20">
+      <div class="bg-gradient-to-r from-teal-600 to-emerald-700 p-5 shadow-md z-10 sticky top-0 rounded-b-[2rem] text-white">
+        <h2 class="text-2xl font-extrabold tracking-wide mb-3">Cek Setoran</h2>
+        <div class="space-y-2">
+           <select id="admin-setoran-driver" class="w-full bg-white text-gray-800 p-2.5 rounded-xl text-sm font-bold outline-none border-none shadow-sm"><option value="">-- Pilih Nama Driver --</option></select>
+           <div class="bg-white/10 p-1.5 rounded-xl border border-white/20 flex items-center">
+             <select id="filter-tipe-setoran" onchange="toggleCustomDateSetoranAdmin()" class="flex-1 bg-transparent text-white border-none outline-none text-sm font-semibold appearance-none px-2">
+               <option value="7hari" class="text-gray-800">Minggu s/d Sabtu</option>
+               <option value="custom" class="text-gray-800">Periode Custom...</option>
+             </select>
+             <button onclick="loadSetoranAdmin()" class="bg-white text-teal-800 px-4 py-2 rounded-lg text-sm font-bold shadow-sm">Cari</button>
+           </div>
+        </div>
+        <div id="filter-custom-setoran-admin" class="hidden mt-3 bg-teal-900/30 p-3 rounded-xl border items-center gap-2 fade-in">
+           <input type="date" id="date-start-setoran-admin" class="w-full bg-white text-gray-800 text-sm font-medium rounded-lg p-2 outline-none">
+           <span class="text-teal-100">-</span>
+           <input type="date" id="date-end-setoran-admin" class="w-full bg-white text-gray-800 text-sm font-medium rounded-lg p-2 outline-none">
+        </div>
+      </div>
+
+      <div id="loading-setoran-admin" class="hidden flex justify-center p-10 mt-10"><i class="ph ph-spinner-gap animate-spin text-4xl text-teal-600"></i></div>
+
+      <div id="konten-setoran-admin" class="p-5 overflow-y-auto hidden space-y-4">
+        <div class="bg-blue-50 border text-blue-800 p-3 rounded-xl flex items-center"><i class="ph ph-calendar-check text-2xl mr-3"></i><div><p class="text-xs font-bold uppercase text-blue-500">Periode Aktif</p><p id="admin-setoran-periode" class="text-sm font-bold"></p></div></div>
+        <div class="bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
+          <div class="flex justify-between items-center mb-4 text-gray-600 text-sm font-medium border-b pb-3"><span>Omset Orderan</span><span id="admin-lap-order">Rp 0</span></div>
+          <div class="space-y-3 mb-4">
+            <div class="flex justify-between items-center"><span class="text-gray-800 font-bold">Wajib Setor (15%)</span><span id="admin-lap-wajib" class="font-bold text-green-600">Rp 0</span></div>
+            <div class="flex justify-between items-center text-red-600 text-sm"><span>+ Denda</span><span id="admin-lap-denda" class="font-bold">Rp 0</span></div>
+            <div class="flex justify-between items-center text-orange-600 text-sm"><span>+ Penyesuaian Massal</span><span id="admin-lap-massal" class="font-bold">Rp 0</span></div>
+            <div class="flex justify-between items-center text-blue-600 text-sm border-b pb-4"><span>- Potongan</span><span id="admin-lap-potongan" class="font-bold">Rp 0</span></div>
+          </div>
+          <div class="mt-2 bg-teal-50 p-4 rounded-2xl text-center border border-teal-100">
+            <p class="text-xs text-teal-800 font-bold uppercase tracking-widest mb-1">Total Tagihan Akhir</p><h1 id="admin-lap-akhir" class="text-3xl font-black text-teal-700">Rp 0</h1>
+          </div>
+        </div>
+        <h3 class="font-bold text-gray-700 mt-4 px-1">Rincian Tambahan</h3><div id="admin-lap-rincian" class="space-y-2"></div>
+      </div>
+    </div>
+
+    <div id="tab-admin-penyesuaian" class="admin-tab hidden flex-col h-screen fade-in pb-20">
+      <div class="bg-gradient-to-r from-purple-700 to-fuchsia-800 p-5 shadow-md z-10 sticky top-0 rounded-b-[2rem] text-white">
+        <h2 class="text-2xl font-extrabold tracking-wide">Penyesuaian</h2><p class="text-sm opacity-90 font-medium">Input Denda, Potongan, Iuran</p>
+      </div>
+      <div class="p-6 flex-1 overflow-y-auto space-y-6">
+        <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
+            <label class="block text-sm font-extrabold text-gray-700 mb-2">Kategori Aksi</label>
+            <select id="peny-kategori" onchange="ubahKategoriPeny()" class="w-full mb-5 bg-gray-50 border-2 rounded-xl p-3 font-bold text-gray-700 outline-none">
+                <option value="Penyesuaian Massal">📢 Massal / Iuran (Semua Driver)</option>
+                <option value="Denda">⚠️ Denda (+)</option>
+                <option value="Potongan">✂️ Potongan (-)</option>
+            </select>
+            <label class="block text-sm font-extrabold text-gray-700 mb-2">Target Driver</label>
+            <select id="peny-target" class="w-full mb-5 bg-gray-50 border-2 rounded-xl p-3 font-bold text-gray-700 outline-none disabled:opacity-50">
+                <option value="ALL">📢 SEMUA DRIVER (Massal)</option>
+            </select>
+            <label class="block text-sm font-extrabold text-gray-700 mb-2">Nominal (Rp)</label>
+            <div class="relative mb-5"><span class="absolute left-4 top-1/2 transform -translate-y-1/2 font-bold text-gray-500">Rp</span><input type="number" id="peny-nominal" placeholder="15000" class="w-full bg-gray-50 border-2 rounded-xl py-3 pl-12 pr-4 font-black text-lg text-gray-800 outline-none"></div>
+            <label class="block text-sm font-extrabold text-gray-700 mb-2">Keterangan Wajib</label>
+            <textarea id="peny-ket" rows="2" placeholder="Cth: Iuran Jaket, Denda telat" class="w-full mb-5 bg-gray-50 border-2 rounded-xl p-3 font-medium text-gray-800 outline-none"></textarea>
+            <button id="btn-peny" onclick="kirimPenyesuaian()" class="w-full bg-gradient-to-r from-purple-600 to-fuchsia-600 text-white font-black text-lg py-4 rounded-xl shadow-lg active:scale-95 flex justify-center items-center"><i class="ph ph-paper-plane-right mr-2 text-xl"></i> Simpan Penyesuaian</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="modal-edit" class="fixed inset-0 bg-black/60 z-[60] hidden flex items-center justify-center p-4 fade-in backdrop-blur-sm">
+      <div class="bg-white rounded-3xl w-full max-w-sm p-6 shadow-2xl">
+        <h3 class="text-xl font-bold mb-1">Edit Jumlah Orderan</h3><p id="edit-info" class="text-sm font-semibold text-blue-600 bg-blue-50 p-2 rounded-lg mb-5"></p>
+        <input type="hidden" id="edit-row">
+        <label class="block text-sm font-semibold text-gray-700 mb-2">Jumlah Baru (Qty)</label>
+        <input type="number" id="edit-qty" class="w-full bg-gray-100 border border-gray-200 rounded-xl p-4 text-xl font-bold text-center focus:outline-none focus:ring-2 focus:ring-blue-500 mb-6">
+        <div class="flex space-x-3">
+          <button onclick="document.getElementById('modal-edit').classList.add('hidden')" class="flex-1 bg-gray-200 text-gray-800 font-bold py-3 rounded-xl">Batal</button>
+          <button onclick="simpanEdit()" class="flex-1 bg-blue-600 text-white font-bold py-3 rounded-xl shadow-lg">Simpan</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- NAVIGASI -->
+    <nav id="nav-driver" class="hidden fixed bottom-0 w-full max-w-md bg-white border-t justify-around pb-4 pt-2 shadow-md z-40">
+       <button onclick="switchTabDriver('input')" id="btn-tab-d-input" class="flex-1 flex flex-col items-center justify-center text-green-600"><i class="ph ph-plus-circle text-2xl mb-1"></i><span class="text-[10px] font-bold">Input</span></button>
+       <button onclick="switchTabDriver('orderan')" id="btn-tab-d-orderan" class="flex-1 flex flex-col items-center justify-center text-gray-400"><i class="ph ph-receipt text-2xl mb-1"></i><span class="text-[10px] font-bold">Orderan</span></button>
+       <button onclick="switchTabDriver('setoran')" id="btn-tab-d-setoran" class="flex-1 flex flex-col items-center justify-center text-gray-400"><i class="ph ph-wallet text-2xl mb-1"></i><span class="text-[10px] font-bold">Setoran</span></button>
+    </nav>
+    <nav id="nav-admin" class="hidden fixed bottom-0 w-full max-w-md bg-white border-t justify-around pb-4 pt-2 shadow-md z-40">
+       <button onclick="switchTabAdmin('riwayat')" id="btn-tab-a-riwayat" class="flex-1 flex flex-col items-center justify-center text-blue-600"><i class="ph ph-files text-2xl mb-1"></i><span class="text-[10px] font-bold">Rekap</span></button>
+       <button onclick="switchTabAdmin('setoran')" id="btn-tab-a-setoran" class="flex-1 flex flex-col items-center justify-center text-gray-400"><i class="ph ph-wallet text-2xl mb-1"></i><span class="text-[10px] font-bold">Setoran</span></button>
+       <button onclick="switchTabAdmin('penyesuaian')" id="btn-tab-a-penyesuaian" class="flex-1 flex flex-col items-center justify-center text-gray-400"><i class="ph ph-sliders-horizontal text-2xl mb-1"></i><span class="text-[10px] font-bold">Aksi</span></button>
+    </nav>
+
+  </div>
+
+  <script>
+    
+    // =========================================================
+    // PASTIKAN GANTI URL INI DENGAN URL WEB APP GOOGLE SCRIPT ANDA
+    // =========================================================
+    const API_URL = "https://script.google.com/macros/s/AKfycbzKAj2tUgRwkJ3bbC1QN1WoSrQeY-eexZIpYEc8LZax0fnpgq5VtexNXopSh-B5ksdI/exec";
+
+    // Fungsi Pembantu Fetch API (Pengganti google.script.run)
+    async function apiCall(actionName, dataObj = {}) {
+      try {
+        const response = await fetch(API_URL, {
+          method: 'POST',
+          // Header text/plain MENGHINDARI masalah CORS Blocking dari browser
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify({ action: actionName, data: dataObj })
+        });
+        const result = await response.json();
+        return result;
+      } catch (error) {
+        console.error("API Fetch Error:", error);
+        tampilkanToast("Gangguan koneksi ke server database.", 'error');
+        throw error;
+      }
+    }
+
+    let userData = {};
+    const harga = { 'Operator': 7000, 'Offline': 7000, 'Khusus': 30000 };
+    let stateOrder = { 'Operator': 0, 'Offline': 0, 'Khusus': 0 };
+
+    document.addEventListener("DOMContentLoaded", async function() {
+      let savedEmail = localStorage.getItem('appOrderanEmail');
+      if (savedEmail) {
+         try {
+            const res = await apiCall('cekSesiLokal', { email: savedEmail });
+            if(res.status === 'success') {
+                inisialisasiUser(res);
+            } else {
+                document.getElementById('view-loading').classList.add('hidden');
+                document.getElementById('view-login').classList.remove('hidden');
+                document.getElementById('view-login').classList.add('flex');
+            }
+         } catch(e) {}
+      } else {
+         document.getElementById('view-loading').classList.add('hidden');
+         document.getElementById('view-login').classList.remove('hidden');
+         document.getElementById('view-login').classList.add('flex');
+      }
+    });
+
+    async function prosesLoginKustom() {
+       let email = document.getElementById('login-email').value; let pass = document.getElementById('login-pass').value;
+       if(!email || !pass) return tampilkanToast("Email & Password wajib diisi!", 'error');
+       
+       document.getElementById('btn-login').disabled = true; document.getElementById('loading-login').classList.remove('hidden');
+       try {
+           const res = await apiCall('prosesLogin', { email: email, password: pass });
+           document.getElementById('btn-login').disabled = false; document.getElementById('loading-login').classList.add('hidden');
+
+           if(res.status === 'success') {
+              localStorage.setItem('appOrderanEmail', res.email);
+              document.getElementById('view-login').classList.add('hidden'); document.getElementById('view-login').classList.remove('flex');
+              inisialisasiUser(res);
+           } else if(res.status === 'force_change') {
+              document.getElementById('pass-email').value = res.email;
+              document.getElementById('view-login').classList.add('hidden'); document.getElementById('view-login').classList.remove('flex');
+              document.getElementById('view-ganti-password').classList.remove('hidden'); document.getElementById('view-ganti-password').classList.add('flex');
+              document.getElementById('btn-batal-pass').classList.add('hidden'); 
+           } else { tampilkanToast(res.pesan, 'error'); }
+       } catch(e) {
+           document.getElementById('btn-login').disabled = false; document.getElementById('loading-login').classList.add('hidden');
+       }
+    }
+
+    async function simpanPasswordKustom() {
+       let email = document.getElementById('pass-email').value; let passBaru = document.getElementById('new-pass').value; let passConf = document.getElementById('new-pass-confirm').value;
+       if(!passBaru || passBaru.length < 6) return tampilkanToast("Password minimal 6 karakter!", 'error');
+       if(passBaru !== passConf) return tampilkanToast("Password tidak sama!", 'error');
+
+       document.getElementById('btn-simpan-pass').innerHTML = '<i class="ph ph-spinner-gap animate-spin"></i>';
+       const res = await apiCall('simpanPasswordBaru', { email: email, newPassword: passBaru });
+       tampilkanToast(res); logout();
+    }
+
+    function bukaGantiPassword() {
+       document.getElementById('pass-email').value = userData.email;
+       document.getElementById('view-ganti-password').classList.remove('hidden'); document.getElementById('view-ganti-password').classList.add('flex');
+       document.getElementById('btn-batal-pass').classList.remove('hidden'); document.getElementById('btn-simpan-pass').innerHTML = 'Simpan Password';
+    }
+
+    function logout() { localStorage.removeItem('appOrderanEmail'); location.reload(); }
+
+    async function inisialisasiUser(res) {
+      document.getElementById('view-loading').classList.add('hidden'); userData = res;
+      if (res.role === 'Admin') {
+        document.getElementById('nav-admin').classList.remove('hidden'); document.getElementById('nav-admin').classList.add('flex');
+        const drivers = await apiCall('getDaftarDriver'); populateDriverDropdowns(drivers);
+        switchTabAdmin('riwayat');
+      } else if (res.role === 'Driver') {
+        document.getElementById('driver-name-header').innerText = res.nama;
+        document.getElementById('nav-driver').classList.remove('hidden'); document.getElementById('nav-driver').classList.add('flex');
+        switchTabDriver('input');
+      }
+    }
+    
+    function populateDriverDropdowns(drivers) {
+        let options = '<option value="">-- Pilih Nama Driver --</option>';
+        drivers.forEach(d => options += `<option value="${d.email}">${d.nama}</option>`);
+        document.getElementById('admin-rekap-driver').innerHTML = options; document.getElementById('admin-setoran-driver').innerHTML = options;
+        let penyOptions = '<option value="ALL">📢 SEMUA DRIVER (Massal)</option>';
+        drivers.forEach(d => penyOptions += `<option value="${d.email}">${d.nama}</option>`);
+        document.getElementById('peny-target').innerHTML = penyOptions;
+    }
+
+    const formatRp = (angka) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(angka);
+    function tampilkanToast(pesan, tipe = 'success') {
+      const toast = document.getElementById('toast'); const icon = document.getElementById('toast-icon');
+      document.getElementById('toast-msg').innerText = pesan;
+      if(tipe === 'error') { toast.classList.replace('bg-gray-900', 'bg-red-600'); icon.className = 'ph ph-warning-circle mr-2 text-xl'; } 
+      else { toast.classList.replace('bg-red-600', 'bg-gray-900'); icon.className = 'ph ph-check-circle mr-2 text-xl text-green-400'; }
+      toast.classList.remove('opacity-0'); setTimeout(() => toast.classList.add('opacity-0'), 3000);
+    }
+
+    function switchTabDriver(tab) {
+      document.querySelectorAll('.driver-tab').forEach(el => { el.classList.add('hidden'); el.classList.remove('flex'); });
+      document.getElementById('tab-driver-' + tab).classList.remove('hidden'); document.getElementById('tab-driver-' + tab).classList.add('flex');
+      ['input', 'orderan', 'setoran'].forEach(t => {
+         let btn = document.getElementById('btn-tab-d-' + t);
+         if(t === tab) { btn.classList.add('text-green-600'); btn.classList.remove('text-gray-400'); } else { btn.classList.remove('text-green-600'); btn.classList.add('text-gray-400'); }
+      });
+      if(tab === 'input') { ['Operator', 'Offline', 'Khusus'].forEach(j => { stateOrder[j] = 0; document.getElementById('qty-' + j).innerText = '0'; }); }
+      else if(tab === 'orderan') { loadRiwayatDriver(); } else if(tab === 'setoran') { loadSetoranDriver(); }
+    }
+
+    function switchTabAdmin(tab) {
+      document.querySelectorAll('.admin-tab').forEach(el => { el.classList.add('hidden'); el.classList.remove('flex'); });
+      document.getElementById('tab-admin-' + tab).classList.remove('hidden'); document.getElementById('tab-admin-' + tab).classList.add('flex');
+      ['riwayat', 'setoran', 'penyesuaian'].forEach(t => {
+         let btn = document.getElementById('btn-tab-a-' + t);
+         if(t === tab) { btn.classList.add(t === 'penyesuaian' ? 'text-purple-600' : (t === 'setoran' ? 'text-teal-600' : 'text-blue-600')); btn.classList.remove('text-gray-400'); } 
+         else { btn.className = "flex-1 flex flex-col items-center justify-center text-gray-400"; }
+      });
+      if(tab === 'penyesuaian') { ubahKategoriPeny(); }
+    }
+
+    function ubahQty(jenis, nilai) { let baru = stateOrder[jenis] + nilai; if (baru >= 0) { stateOrder[jenis] = baru; document.getElementById('qty-' + jenis).innerText = baru; } }
+
+    async function kirimOrderan() {
+      let list = []; ['Operator', 'Offline', 'Khusus'].forEach(j => { if(stateOrder[j] > 0) list.push({ jenis: j, qty: stateOrder[j], total: stateOrder[j] * harga[j] }); });
+      if (list.length === 0) return tampilkanToast("Isi minimal 1 orderan!", 'error');
+      let btn = document.getElementById('btn-submit'); let loading = document.getElementById('btn-loading');
+      btn.disabled = true; loading.classList.remove('hidden');
+      
+      const res = await apiCall('simpanOrderan', { email: userData.email, listOrderan: list });
+      tampilkanToast(res); btn.disabled = false; loading.classList.add('hidden'); switchTabDriver('input'); 
+    }
+
+    function toggleCustomDateDriver() {
+      let tipe = document.getElementById('filter-tipe-driver').value; let div = document.getElementById('filter-custom-driver');
+      if (tipe === 'custom') { div.classList.remove('hidden'); div.classList.add('flex'); } else { div.classList.add('hidden'); div.classList.remove('flex'); }
+    }
+
+    async function loadRiwayatDriver() {
+      let tipe = document.getElementById('filter-tipe-driver').value; let payload = { tipe: tipe };
+      if (tipe === 'custom') {
+        let start = document.getElementById('date-start-driver').value; let end = document.getElementById('date-end-driver').value;
+        if (!start || !end) return; payload.start = start; payload.end = end;
+      }
+      document.getElementById('loading-riwayat-driver').classList.remove('hidden'); document.getElementById('list-riwayat-driver').innerHTML = '';
+      
+      const data = await apiCall('getRiwayatDriver', { email: userData.email, filter: payload });
+      
+      document.getElementById('loading-riwayat-driver').classList.add('hidden'); let html = '';
+      let totalSemua = data['Operator'] + data['Offline'] + data['Khusus'];
+      if(totalSemua === 0) { html = '<div class="text-center text-gray-400 mt-10"><i class="ph ph-folder-open text-5xl mb-2"></i><p>Belum ada orderan.</p></div>'; } 
+      else {
+          const items = [{ nama: 'Operator', jumlah: data['Operator'], icon: 'ph-headset' }, { nama: 'Offline', jumlah: data['Offline'], icon: 'ph-wifi-slash' }, { nama: 'Khusus', jumlah: data['Khusus'], icon: 'ph-star' }];
+          items.forEach(item => {
+            html += `<div class="bg-white p-5 rounded-2xl border flex justify-between items-center mb-3">
+                <div class="flex items-center"><div class="bg-green-100 p-3 rounded-xl mr-4"><i class="ph ${item.icon} text-green-600 text-2xl font-bold"></i></div>
+                   <div><p class="text-xs font-bold text-gray-400 uppercase">Total Order</p><p class="text-lg font-bold text-gray-800">${item.nama}</p></div>
+                </div><div class="bg-gray-50 border text-gray-800 font-black px-6 py-3 rounded-xl text-2xl shadow-inner">${item.jumlah}</div></div>`;
+          });
+      }
+      document.getElementById('list-riwayat-driver').innerHTML = html;
+    }
+
+    async function loadSetoranDriver() {
+      document.getElementById('loading-setoran').classList.remove('hidden'); document.getElementById('konten-setoran').classList.add('hidden');
+      const lap = await apiCall('getLaporanDriver', { email: userData.email });
+      document.getElementById('loading-setoran').classList.add('hidden'); document.getElementById('konten-setoran').classList.remove('hidden');
+      document.getElementById('setoran-periode').innerText = lap.periodeMulai + " s/d " + lap.periodeAkhir;
+      document.getElementById('lap-order').innerText = formatRp(lap.totalOrderRp); document.getElementById('lap-wajib').innerText = formatRp(lap.setoranWajib);
+      document.getElementById('lap-denda').innerText = formatRp(lap.denda); document.getElementById('lap-massal').innerText = formatRp(lap.massal);
+      document.getElementById('lap-potongan').innerText = formatRp(lap.potongan); document.getElementById('lap-akhir').innerText = formatRp(lap.totalAkhir);
+      let htmlRincian = '';
+      if(lap.rincian.length === 0) { htmlRincian = '<p class="text-sm text-gray-500 italic">Tidak ada catatan penyesuaian khusus.</p>'; } 
+      else { lap.rincian.forEach(r => { let warna = r.kat === 'Potongan' ? 'text-blue-600' : (r.kat === 'Denda' ? 'text-red-600' : 'text-orange-600');
+            htmlRincian += `<div class="bg-white p-3 rounded-xl border shadow-sm flex justify-between items-center mb-2"><div><p class="font-bold text-sm">${r.kat}</p><p class="text-xs text-gray-500">${r.ket}</p></div><div class="font-bold ${warna}">${formatRp(r.nom)}</div></div>`; }); }
+      document.getElementById('lap-rincian').innerHTML = htmlRincian;
+    }
+
+    function toggleCustomDate() { let tipe = document.getElementById('filter-tipe').value; let divCustom = document.getElementById('filter-custom');
+      if (tipe === 'custom') { divCustom.classList.remove('hidden'); divCustom.classList.add('flex'); } else { divCustom.classList.add('hidden'); divCustom.classList.remove('flex'); } }
+    
+    function toggleCustomDateSetoranAdmin() { let tipe = document.getElementById('filter-tipe-setoran').value; let divCustom = document.getElementById('filter-custom-setoran-admin');
+      if (tipe === 'custom') { divCustom.classList.remove('hidden'); divCustom.classList.add('flex'); } else { divCustom.classList.add('hidden'); divCustom.classList.remove('flex'); } }
+
+    async function loadRiwayatAdmin() {
+      let driverEmail = document.getElementById('admin-rekap-driver').value; if (!driverEmail) return tampilkanToast("Pilih nama driver!", 'error');
+      let tipe = document.getElementById('filter-tipe').value; let payload = { tipe: tipe, email: driverEmail };
+      if (tipe === 'custom') {
+        let start = document.getElementById('date-start').value; let end = document.getElementById('date-end').value;
+        if (!start || !end) return tampilkanToast("Pilih tanggal!", 'error'); payload.start = start; payload.end = end;
+      }
+      document.getElementById('loading-riwayat').classList.remove('hidden'); document.getElementById('list-riwayat').innerHTML = '';
+      
+      const response = await apiCall('getRiwayatOrderan', { filter: payload });
+      
+      document.getElementById('loading-riwayat').classList.add('hidden'); let html = '';
+      if (response.mode === 'summary') {
+          let totalQty = response.data.Operator + response.data.Offline + response.data.Khusus;
+          if(totalQty === 0) { html = '<div class="text-center text-gray-400 mt-10"><p>Belum ada orderan.</p></div>'; } 
+          else {
+             const items = [{ nama: 'Operator', jumlah: response.data.Operator, icon: 'ph-headset' }, { nama: 'Offline', jumlah: response.data.Offline, icon: 'ph-wifi-slash' }, { nama: 'Khusus', jumlah: response.data.Khusus, icon: 'ph-star' }];
+             html += '<div class="bg-blue-50 border border-blue-200 text-blue-800 p-3 rounded-xl mb-4 text-center font-bold text-sm">Total Akumulasi</div>';
+             items.forEach(item => { html += `<div class="bg-white p-4 rounded-2xl border flex justify-between items-center mb-3"><div class="flex items-center"><div class="bg-blue-100 p-2 rounded-xl mr-3"><i class="ph ${item.icon} text-blue-600 text-xl font-bold"></i></div><p class="font-bold">${item.nama}</p></div><div class="bg-gray-50 border font-black px-4 py-2 rounded-xl text-xl">${item.jumlah}</div></div>`; });
+             html += `<div class="mt-4 bg-blue-600 p-4 rounded-2xl text-center text-white"><p class="text-xs uppercase opacity-80 mb-1">Total Omset Kotor</p><h1 class="text-2xl font-black">${formatRp(response.data.TotalRp)}</h1></div>`;
+          }
+      } else {
+          if(response.data.length === 0) { html = '<div class="text-center text-gray-400 mt-10"><p>Belum ada orderan.</p></div>'; } 
+          else {
+              response.data.forEach(d => {
+                html += `<div class="bg-white p-4 rounded-2xl border flex flex-col mb-3">
+                    <div class="flex justify-between items-start mb-2 border-b pb-2"><div><p class="text-[10px] font-bold text-gray-400"><i class="ph ph-clock mr-1"></i>${d.tgl}</p></div><div class="bg-blue-50 text-blue-700 text-[11px] font-extrabold px-2 py-1 rounded-lg">${d.jenis}</div></div>
+                    <div class="flex justify-between items-end mt-1"><div><p class="text-[11px] text-gray-500">Qty: <span class="font-black text-lg text-gray-800">${d.qty}</span></p></div>
+                    <div class="flex items-center space-x-3"><p class="font-black text-blue-700">${formatRp(d.total)}</p><button onclick="document.getElementById('edit-row').value=${d.row};document.getElementById('edit-qty').value=${d.qty};document.getElementById('edit-info').innerHTML='Tanggal: ${d.tgl}<br>Jenis: ${d.jenis}';document.getElementById('modal-edit').classList.remove('hidden');" class="bg-yellow-50 text-yellow-600 p-2 rounded-lg"><i class="ph ph-pencil-simple font-bold"></i></button></div></div></div>`;
+              });
+          }
+      }
+      document.getElementById('list-riwayat').innerHTML = html;
+    }
+
+    async function simpanEdit() {
+      let row = document.getElementById('edit-row').value; let newQty = document.getElementById('edit-qty').value;
+      if(newQty === '' || newQty < 0) return tampilkanToast("Qty tidak valid", 'error');
+      document.getElementById('modal-edit').classList.add('hidden'); document.getElementById('loading-riwayat').classList.remove('hidden');
+      
+      const res = await apiCall('editOrderan', { row: row, newQty: newQty });
+      tampilkanToast(res); loadRiwayatAdmin();
+    }
+
+    async function loadSetoranAdmin() {
+      let driverEmail = document.getElementById('admin-setoran-driver').value; if (!driverEmail) return tampilkanToast("Pilih nama driver!", 'error');
+      let tipe = document.getElementById('filter-tipe-setoran').value; let payload = { tipe: tipe };
+      if (tipe === 'custom') { let start = document.getElementById('date-start-setoran-admin').value; let end = document.getElementById('date-end-setoran-admin').value; if (!start || !end) return tampilkanToast("Pilih tanggal!", 'error'); payload.start = start; payload.end = end; }
+      
+      document.getElementById('loading-setoran-admin').classList.remove('hidden'); document.getElementById('konten-setoran-admin').classList.add('hidden');
+      
+      const lap = await apiCall('getLaporanAdmin', { email: driverEmail, filter: payload });
+      
+      document.getElementById('loading-setoran-admin').classList.add('hidden'); document.getElementById('konten-setoran-admin').classList.remove('hidden');
+      document.getElementById('admin-setoran-periode').innerText = lap.periodeMulai + " s/d " + lap.periodeAkhir;
+      document.getElementById('admin-lap-order').innerText = formatRp(lap.totalOrderRp); document.getElementById('admin-lap-wajib').innerText = formatRp(lap.setoranWajib);
+      document.getElementById('admin-lap-denda').innerText = formatRp(lap.denda); document.getElementById('admin-lap-massal').innerText = formatRp(lap.massal);
+      document.getElementById('admin-lap-potongan').innerText = formatRp(lap.potongan); document.getElementById('admin-lap-akhir').innerText = formatRp(lap.totalAkhir);
+      let htmlRincian = '';
+      if(lap.rincian.length === 0) { htmlRincian = '<p class="text-sm text-gray-500 italic">Tidak ada rincian denda/potongan.</p>'; } 
+      else { lap.rincian.forEach(r => { let warna = r.kat === 'Potongan' ? 'text-blue-600' : (r.kat === 'Denda' ? 'text-red-600' : 'text-orange-600');
+            htmlRincian += `<div class="bg-white p-3 rounded-xl border flex justify-between items-center mb-2"><div><p class="font-bold text-sm">${r.kat}</p><p class="text-xs text-gray-500">${r.ket}</p></div><div class="font-bold ${warna}">${formatRp(r.nom)}</div></div>`; }); }
+      document.getElementById('admin-lap-rincian').innerHTML = htmlRincian;
+    }
+
+    function ubahKategoriPeny() { let kat = document.getElementById('peny-kategori').value; let select = document.getElementById('peny-target'); if (kat === 'Penyesuaian Massal') { select.value = 'ALL'; select.disabled = true; } else { select.disabled = false; if (select.value === 'ALL' && select.options.length > 1) select.selectedIndex = 1; } }
+
+    async function kirimPenyesuaian() {
+      let target = document.getElementById('peny-target').value; let kategori = document.getElementById('peny-kategori').value; let nominal = document.getElementById('peny-nominal').value; let ket = document.getElementById('peny-ket').value;
+      if(!nominal || nominal <= 0) return tampilkanToast("Isi nominal!", 'error'); if(!ket || ket.trim() === '') return tampilkanToast("Isi keterangan!", 'error'); if(kategori !== 'Penyesuaian Massal' && target === 'ALL') return tampilkanToast("Pilih driver spesifik!", 'error');
+      let btn = document.getElementById('btn-peny'); btn.innerHTML = '<i class="ph ph-spinner-gap animate-spin mr-2"></i> Menyimpan...'; btn.disabled = true;
+      
+      const res = await apiCall('simpanPenyesuaian', { target: target, kategori: kategori, nominal: nominal, keterangan: ket });
+      tampilkanToast(res); btn.innerHTML = '<i class="ph ph-paper-plane-right mr-2"></i> Simpan Penyesuaian'; btn.disabled = false;
+      document.getElementById('peny-nominal').value = ''; document.getElementById('peny-ket').value = '';
+    }
+  </script>
+</body>
+</html>
