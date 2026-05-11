@@ -4,6 +4,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Sistem Laporan Orderan</title>
+  
+  <!-- PWA Meta Tags (WAJIB DITAMBAHKAN) -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#f0b21e">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
   <style>
@@ -322,6 +330,15 @@
     // PASTIKAN GANTI URL INI DENGAN URL WEB APP GOOGLE SCRIPT ANDA
     // =========================================================
     const API_URL = "https://script.google.com/macros/s/AKfycbzKAj2tUgRwkJ3bbC1QN1WoSrQeY-eexZIpYEc8LZax0fnpgq5VtexNXopSh-B5ksdI/exec";
+
+    // Registrasi Service Worker untuk PWA (WAJIB DITAMBAHKAN)
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js')
+          .then(reg => console.log('Service Worker terdaftar!', reg))
+          .catch(err => console.log('Service Worker gagal terdaftar', err));
+      });
+    }
 
     // Fitur Toggle Lihat/Sembunyikan Password
     function togglePasswordVisibility(inputId, iconId) {
