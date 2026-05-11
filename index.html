@@ -14,6 +14,10 @@
   
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  
+  <!-- Library SheetJS untuk Export Excel -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
   <style>
     .fade-in { animation: fadeIn 0.3s ease-in-out; }
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
@@ -109,6 +113,7 @@
       </div>
     </div>
 
+    <!-- =============== TAB DRIVER =============== -->
     <div id="tab-driver-input" class="driver-tab hidden flex-col h-screen fade-in pb-20">
       <div class="bg-green-600 p-5 rounded-b-3xl shadow-sm z-10 sticky top-0 text-white flex justify-between items-start">
         <div><h2 class="text-2xl font-bold">Input Orderan</h2><p id="driver-name-header" class="text-sm opacity-90 font-medium"></p></div>
@@ -204,6 +209,7 @@
     </div>
 
 
+    <!-- =============== TAB ADMIN =============== -->
     <div id="tab-admin-riwayat" class="admin-tab hidden flex-col h-screen fade-in pb-20">
       <div class="bg-gradient-to-r from-blue-700 to-indigo-800 p-5 rounded-b-[2rem] shadow-md z-20 sticky top-0 flex justify-between items-start">
         <div class="w-full mr-2">
@@ -312,6 +318,44 @@
       </div>
     </div>
 
+    <!-- FITUR BARU: TAB EXPORT EXCEL -->
+    <div id="tab-admin-backup" class="admin-tab hidden flex-col h-screen fade-in pb-20">
+      <div class="bg-gradient-to-r from-orange-600 to-red-700 p-5 shadow-md z-10 sticky top-0 rounded-b-[2rem] text-white">
+        <h2 class="text-2xl font-extrabold tracking-wide mb-1">Export Excel</h2>
+        <p class="text-sm opacity-90 font-medium">Download rekap orderan semua driver</p>
+      </div>
+
+      <div class="p-6 flex-1 overflow-y-auto space-y-6">
+        <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 text-center">
+            <i class="ph ph-file-xls text-6xl text-green-600 mb-4 inline-block"></i>
+            <h3 class="font-bold text-gray-800 mb-4 text-lg">Pilih Periode Backup</h3>
+            
+            <select id="filter-tipe-backup" onchange="toggleCustomDateBackup()" class="w-full mb-4 bg-gray-50 border-2 rounded-xl p-3 font-bold text-gray-700 outline-none">
+                <option value="7hari">Minggu s/d Sabtu Terakhir</option>
+                <option value="custom">Periode Custom...</option>
+            </select>
+            
+            <div id="filter-custom-backup" class="hidden flex-col gap-3 mb-5 fade-in bg-gray-50 p-4 rounded-xl border">
+               <div>
+                  <label class="block text-xs font-bold text-gray-500 mb-1 text-left">Dari Tanggal</label>
+                  <input type="date" id="date-start-backup" class="w-full bg-white text-gray-800 text-sm font-medium rounded-lg p-2 border outline-none">
+               </div>
+               <div>
+                  <label class="block text-xs font-bold text-gray-500 mb-1 text-left">Sampai Tanggal</label>
+                  <input type="date" id="date-end-backup" class="w-full bg-white text-gray-800 text-sm font-medium rounded-lg p-2 border outline-none">
+               </div>
+            </div>
+
+            <button id="btn-download-excel" onclick="downloadExcelAdmin()" class="w-full mt-2 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-black text-lg py-4 rounded-xl shadow-lg active:scale-95 flex justify-center items-center">
+              <i class="ph ph-download-simple mr-2 text-xl"></i> Unduh File Excel
+            </button>
+            <p class="text-[10px] text-gray-400 mt-4">*Data diurutkan berdasarkan nama secara abjad</p>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- MODAL EDIT QTY ADMIN -->
     <div id="modal-edit" class="fixed inset-0 bg-black/60 z-[60] hidden flex items-center justify-center p-4 fade-in backdrop-blur-sm">
       <div class="bg-white rounded-3xl w-full max-w-sm p-6 shadow-2xl">
         <h3 class="text-xl font-bold mb-1">Edit Jumlah Orderan</h3><p id="edit-info" class="text-sm font-semibold text-blue-600 bg-blue-50 p-2 rounded-lg mb-5"></p>
@@ -325,7 +369,7 @@
       </div>
     </div>
 
-    <!-- NAVIGASI -->
+    <!-- NAVIGASI BAWAH -->
     <nav id="nav-driver" class="hidden fixed bottom-0 w-full max-w-md bg-white border-t justify-around pb-4 pt-2 shadow-md z-40">
        <button onclick="switchTabDriver('input')" id="btn-tab-d-input" class="flex-1 flex flex-col items-center justify-center text-green-600"><i class="ph ph-plus-circle text-2xl mb-1"></i><span class="text-[10px] font-bold">Input</span></button>
        <button onclick="switchTabDriver('orderan')" id="btn-tab-d-orderan" class="flex-1 flex flex-col items-center justify-center text-gray-400"><i class="ph ph-receipt text-2xl mb-1"></i><span class="text-[10px] font-bold">Orderan</span></button>
@@ -335,6 +379,8 @@
        <button onclick="switchTabAdmin('riwayat')" id="btn-tab-a-riwayat" class="flex-1 flex flex-col items-center justify-center text-blue-600"><i class="ph ph-files text-2xl mb-1"></i><span class="text-[10px] font-bold">Rekap</span></button>
        <button onclick="switchTabAdmin('setoran')" id="btn-tab-a-setoran" class="flex-1 flex flex-col items-center justify-center text-gray-400"><i class="ph ph-wallet text-2xl mb-1"></i><span class="text-[10px] font-bold">Setoran</span></button>
        <button onclick="switchTabAdmin('penyesuaian')" id="btn-tab-a-penyesuaian" class="flex-1 flex flex-col items-center justify-center text-gray-400"><i class="ph ph-sliders-horizontal text-2xl mb-1"></i><span class="text-[10px] font-bold">Aksi</span></button>
+       <!-- TOMBOL TAB BARU: EXPORT EXCEL -->
+       <button onclick="switchTabAdmin('backup')" id="btn-tab-a-backup" class="flex-1 flex flex-col items-center justify-center text-gray-400"><i class="ph ph-download-simple text-2xl mb-1"></i><span class="text-[10px] font-bold">Excel</span></button>
     </nav>
 
   </div>
@@ -346,7 +392,7 @@
     // =========================================================
     const API_URL = "https://script.google.com/macros/s/AKfycbxt-7-08Kgo4pAbx9jlTi_lk0E1t920qOVAcdn0U9fjQtLe9Rbuv7d6qsQOajhepVI/exec";
 
-    // Registrasi Service Worker untuk PWA (WAJIB DITAMBAHKAN)
+    // Registrasi Service Worker untuk PWA
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('sw.js')
@@ -355,28 +401,17 @@
       });
     }
 
-    // Fitur Toggle Lihat/Sembunyikan Password
     function togglePasswordVisibility(inputId, iconId) {
       const input = document.getElementById(inputId);
       const icon = document.getElementById(iconId);
-      
-      if (input.type === "password") {
-        input.type = "text";
-        icon.classList.remove("ph-eye");
-        icon.classList.add("ph-eye-slash");
-      } else {
-        input.type = "password";
-        icon.classList.remove("ph-eye-slash");
-        icon.classList.add("ph-eye");
-      }
+      if (input.type === "password") { input.type = "text"; icon.classList.remove("ph-eye"); icon.classList.add("ph-eye-slash"); } 
+      else { input.type = "password"; icon.classList.remove("ph-eye-slash"); icon.classList.add("ph-eye"); }
     }
 
-    // Fungsi Pembantu Fetch API (Pengganti google.script.run)
     async function apiCall(actionName, dataObj = {}) {
       try {
         const response = await fetch(API_URL, {
           method: 'POST',
-          // Header text/plain MENGHINDARI masalah CORS Blocking dari browser
           headers: { 'Content-Type': 'text/plain;charset=utf-8' },
           body: JSON.stringify({ action: actionName, data: dataObj })
         });
@@ -398,18 +433,11 @@
       if (savedEmail) {
          try {
             const res = await apiCall('cekSesiLokal', { email: savedEmail });
-            if(res.status === 'success') {
-                inisialisasiUser(res);
-            } else {
-                document.getElementById('view-loading').classList.add('hidden');
-                document.getElementById('view-login').classList.remove('hidden');
-                document.getElementById('view-login').classList.add('flex');
-            }
+            if(res.status === 'success') { inisialisasiUser(res); } 
+            else { document.getElementById('view-loading').classList.add('hidden'); document.getElementById('view-login').classList.remove('hidden'); document.getElementById('view-login').classList.add('flex'); }
          } catch(e) {}
       } else {
-         document.getElementById('view-loading').classList.add('hidden');
-         document.getElementById('view-login').classList.remove('hidden');
-         document.getElementById('view-login').classList.add('flex');
+         document.getElementById('view-loading').classList.add('hidden'); document.getElementById('view-login').classList.remove('hidden'); document.getElementById('view-login').classList.add('flex');
       }
     });
 
@@ -432,9 +460,7 @@
               document.getElementById('view-ganti-password').classList.remove('hidden'); document.getElementById('view-ganti-password').classList.add('flex');
               document.getElementById('btn-batal-pass').classList.add('hidden'); 
            } else { tampilkanToast(res.pesan, 'error'); }
-       } catch(e) {
-           document.getElementById('btn-login').disabled = false; document.getElementById('loading-login').classList.add('hidden');
-       }
+       } catch(e) { document.getElementById('btn-login').disabled = false; document.getElementById('loading-login').classList.add('hidden'); }
     }
 
     async function simpanPasswordKustom() {
@@ -500,9 +526,15 @@
     function switchTabAdmin(tab) {
       document.querySelectorAll('.admin-tab').forEach(el => { el.classList.add('hidden'); el.classList.remove('flex'); });
       document.getElementById('tab-admin-' + tab).classList.remove('hidden'); document.getElementById('tab-admin-' + tab).classList.add('flex');
-      ['riwayat', 'setoran', 'penyesuaian'].forEach(t => {
+      ['riwayat', 'setoran', 'penyesuaian', 'backup'].forEach(t => {
          let btn = document.getElementById('btn-tab-a-' + t);
-         if(t === tab) { btn.classList.add(t === 'penyesuaian' ? 'text-purple-600' : (t === 'setoran' ? 'text-teal-600' : 'text-blue-600')); btn.classList.remove('text-gray-400'); } 
+         if(t === tab) { 
+           if(t === 'penyesuaian') btn.classList.add('text-purple-600'); 
+           else if(t === 'setoran') btn.classList.add('text-teal-600'); 
+           else if(t === 'backup') btn.classList.add('text-orange-600'); 
+           else btn.classList.add('text-blue-600');
+           btn.classList.remove('text-gray-400'); 
+         } 
          else { btn.className = "flex-1 flex flex-col items-center justify-center text-gray-400"; }
       });
       if(tab === 'penyesuaian') { ubahKategoriPeny(); }
@@ -635,13 +667,9 @@
       
       const lap = await apiCall('getLaporanAdmin', { email: driverEmail, filter: payload });
       
-      // Simpan konteks aktif untuk digunakan oleh tombol Lunas/Batal
-      window.currentAdminLapEmail = driverEmail;
-      window.currentAdminLapPeriode = lap.periodeRaw;
-
+      window.currentAdminLapEmail = driverEmail; window.currentAdminLapPeriode = lap.periodeRaw;
       document.getElementById('loading-setoran-admin').classList.add('hidden'); document.getElementById('konten-setoran-admin').classList.remove('hidden');
       
-      // Atur Badge Status Admin
       let badge = document.getElementById('admin-status-badge');
       if (lap.isLunas) {
         badge.className = "inline-block px-4 py-2 rounded-lg font-bold text-sm mb-3 bg-green-100 text-green-800 border border-green-200";
@@ -663,23 +691,16 @@
     }
 
     async function ubahStatusSetoran(statusLunas) {
-      if (!window.currentAdminLapEmail || !window.currentAdminLapPeriode) return;
-      
-      document.getElementById('loading-setoran-admin').classList.remove('hidden');
-      document.getElementById('konten-setoran-admin').classList.add('hidden');
-
+      if (!window.currentAdminLapEmail || !window.currentAdminLapPeriode) {
+        tampilkanToast("Data periode belum siap. Pastikan Code.gs sudah di-Update & Deploy!", "error");
+        return;
+      }
+      document.getElementById('loading-setoran-admin').classList.remove('hidden'); document.getElementById('konten-setoran-admin').classList.add('hidden');
       try {
-        const res = await apiCall('updateStatusSetoran', {
-          email: window.currentAdminLapEmail,
-          periode: window.currentAdminLapPeriode,
-          status: statusLunas
-        });
-        tampilkanToast(res);
-        loadSetoranAdmin(); // Refresh data otomatis
+        const res = await apiCall('updateStatusSetoran', { email: window.currentAdminLapEmail, periode: window.currentAdminLapPeriode, status: statusLunas });
+        tampilkanToast(res); loadSetoranAdmin(); 
       } catch (e) {
-        tampilkanToast("Gagal memperbarui status", 'error');
-        document.getElementById('loading-setoran-admin').classList.add('hidden');
-        document.getElementById('konten-setoran-admin').classList.remove('hidden');
+        tampilkanToast("Gagal memperbarui status", 'error'); document.getElementById('loading-setoran-admin').classList.add('hidden'); document.getElementById('konten-setoran-admin').classList.remove('hidden');
       }
     }
 
@@ -693,6 +714,85 @@
       const res = await apiCall('simpanPenyesuaian', { target: target, kategori: kategori, nominal: nominal, keterangan: ket });
       tampilkanToast(res); btn.innerHTML = '<i class="ph ph-paper-plane-right mr-2"></i> Simpan Penyesuaian'; btn.disabled = false;
       document.getElementById('peny-nominal').value = ''; document.getElementById('peny-ket').value = '';
+    }
+
+    // =======================================================
+    // FITUR BARU: BACKUP EXCEL ADMIN
+    // =======================================================
+    function toggleCustomDateBackup() { 
+      let tipe = document.getElementById('filter-tipe-backup').value; 
+      let divCustom = document.getElementById('filter-custom-backup');
+      if (tipe === 'custom') { divCustom.classList.remove('hidden'); divCustom.classList.add('flex'); } 
+      else { divCustom.classList.add('hidden'); divCustom.classList.remove('flex'); } 
+    }
+
+    async function downloadExcelAdmin() {
+      let tipe = document.getElementById('filter-tipe-backup').value;
+      let payload = { tipe: tipe };
+      if (tipe === 'custom') {
+        let start = document.getElementById('date-start-backup').value;
+        let end = document.getElementById('date-end-backup').value;
+        if (!start || !end) return tampilkanToast("Pilih tanggal periode!", 'error');
+        payload.start = start; payload.end = end;
+      }
+      
+      let btn = document.getElementById('btn-download-excel');
+      let originText = btn.innerHTML;
+      btn.innerHTML = '<i class="ph ph-spinner-gap animate-spin mr-2 text-xl"></i> Memproses Data...';
+      btn.disabled = true;
+
+      try {
+        const response = await apiCall('exportExcelAdmin', payload);
+        
+        // Menyiapkan Data untuk Excel
+        let ws_data = [];
+        ws_data.push(["REKAPITULASI ORDERAN & SETORAN DRIVER - OK BOS"]);
+        ws_data.push(["PERIODE:", response.periode]);
+        ws_data.push([]); // Baris Kosong
+        // Header Tabel
+        ws_data.push(["No", "Nama Driver", "Operator (Qty)", "Offline (Qty)", "Khusus (Qty)", "Omset Kotor", "Setoran Wajib (15%)", "Denda (+)", "Penyesuaian Massal (+)", "Potongan (-)", "TOTAL TAGIHAN LUNAS"]);
+        
+        // Isi Tabel Data Driver
+        if (response.data.length === 0) {
+           ws_data.push(["Tidak ada data pada periode ini"]);
+        } else {
+           response.data.forEach((d, index) => {
+             ws_data.push([
+               index + 1,
+               d.nama,
+               d.operator,
+               d.offline,
+               d.khusus,
+               d.omset,
+               d.wajib,
+               d.denda,
+               d.massal,
+               d.potongan,
+               d.totalAkhir
+             ]);
+           });
+        }
+
+        // Proses Pembuatan File Excel menggunakan SheetJS
+        let wb = XLSX.utils.book_new();
+        let ws = XLSX.utils.aoa_to_sheet(ws_data);
+        
+        // Sesuaikan lebar kolom agar rapi
+        ws['!cols'] = [{wch:5}, {wch:25}, {wch:15}, {wch:15}, {wch:15}, {wch:15}, {wch:20}, {wch:15}, {wch:25}, {wch:15}, {wch:25}];
+
+        XLSX.utils.book_append_sheet(wb, ws, "Rekap_Setoran");
+
+        // Unduh File
+        let filename = "Rekap_Orderan_" + response.periode.replace(/\//g, "-") + ".xlsx";
+        XLSX.writeFile(wb, filename);
+
+        tampilkanToast("Excel berhasil diunduh!");
+      } catch (e) {
+        tampilkanToast("Gagal mengunduh Excel.", 'error');
+      } finally {
+        btn.innerHTML = originText;
+        btn.disabled = false;
+      }
     }
   </script>
 </body>
