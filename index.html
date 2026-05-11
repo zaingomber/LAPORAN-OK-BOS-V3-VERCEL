@@ -429,6 +429,21 @@
       </div>
     </div>
 
+    <!-- ADMIN MENU MODAL (HAMBURGER) -->
+    <div id="admin-menu-sheet" class="fixed inset-0 bg-black/60 z-[45] hidden flex-col justify-end fade-in backdrop-blur-sm">
+      <div class="bg-white rounded-t-3xl w-full max-w-md mx-auto p-6 pb-24 shadow-2xl">
+          <div class="flex justify-between items-center mb-6">
+              <h3 class="font-bold text-gray-800 text-lg">Menu Lainnya</h3>
+              <button onclick="toggleAdminMenu()" class="p-2 bg-gray-100 rounded-full text-gray-600 active:bg-gray-200"><i class="ph ph-x"></i></button>
+          </div>
+          <div class="grid grid-cols-3 gap-4">
+              <button onclick="switchTabAdmin('penyesuaian'); toggleAdminMenu()" class="flex flex-col items-center justify-center p-4 bg-purple-50 text-purple-700 rounded-2xl active:scale-95 transition"><i class="ph ph-sliders-horizontal text-3xl mb-2"></i><span class="text-[11px] font-bold">Aksi</span></button>
+              <button onclick="switchTabAdmin('backup'); toggleAdminMenu()" class="flex flex-col items-center justify-center p-4 bg-orange-50 text-orange-700 rounded-2xl active:scale-95 transition"><i class="ph ph-file-xls text-3xl mb-2"></i><span class="text-[11px] font-bold">Excel</span></button>
+              <button onclick="switchTabAdmin('user'); toggleAdminMenu()" class="flex flex-col items-center justify-center p-4 bg-gray-100 text-gray-800 rounded-2xl active:scale-95 transition"><i class="ph ph-users text-3xl mb-2"></i><span class="text-[11px] font-bold">Users</span></button>
+          </div>
+      </div>
+    </div>
+
     <!-- MODAL EDIT QTY ADMIN -->
     <div id="modal-edit" class="fixed inset-0 bg-black/60 z-[60] hidden flex items-center justify-center p-4 fade-in backdrop-blur-sm">
       <div class="bg-white rounded-3xl w-full max-w-sm p-6 shadow-2xl">
@@ -450,14 +465,13 @@
        <button onclick="switchTabDriver('setoran')" id="btn-tab-d-setoran" class="flex-1 flex flex-col items-center justify-center text-gray-400"><i class="ph ph-wallet text-2xl mb-1"></i><span class="text-[10px] font-bold">Setoran</span></button>
     </nav>
     
-    <!-- NAVIGASI BAWAH ADMIN (HSCROLL) -->
-    <nav id="nav-admin" class="hidden fixed bottom-0 w-full max-w-md bg-white border-t overflow-x-auto no-scrollbar pb-4 pt-2 px-2 gap-2 shadow-md z-40 flex">
-       <button onclick="switchTabAdmin('riwayat')" id="btn-tab-a-riwayat" class="flex-none w-[70px] flex flex-col items-center justify-center text-blue-600"><i class="ph ph-files text-2xl mb-1"></i><span class="text-[10px] font-bold">Rekap</span></button>
-       <button onclick="switchTabAdmin('setoran')" id="btn-tab-a-setoran" class="flex-none w-[70px] flex flex-col items-center justify-center text-gray-400"><i class="ph ph-wallet text-2xl mb-1"></i><span class="text-[10px] font-bold">Setoran</span></button>
-       <button onclick="switchTabAdmin('kontrol')" id="btn-tab-a-kontrol" class="flex-none w-[70px] flex flex-col items-center justify-center text-gray-400"><i class="ph ph-traffic-cone text-2xl mb-1"></i><span class="text-[10px] font-bold">Kontrol</span></button>
-       <button onclick="switchTabAdmin('penyesuaian')" id="btn-tab-a-penyesuaian" class="flex-none w-[70px] flex flex-col items-center justify-center text-gray-400"><i class="ph ph-sliders-horizontal text-2xl mb-1"></i><span class="text-[10px] font-bold">Aksi</span></button>
-       <button onclick="switchTabAdmin('backup')" id="btn-tab-a-backup" class="flex-none w-[70px] flex flex-col items-center justify-center text-gray-400"><i class="ph ph-file-xls text-2xl mb-1"></i><span class="text-[10px] font-bold">Excel</span></button>
-       <button onclick="switchTabAdmin('user')" id="btn-tab-a-user" class="flex-none w-[70px] flex flex-col items-center justify-center text-gray-400"><i class="ph ph-users text-2xl mb-1"></i><span class="text-[10px] font-bold">Users</span></button>
+    <!-- NAVIGASI BAWAH ADMIN -->
+    <nav id="nav-admin" class="hidden fixed bottom-0 w-full max-w-md bg-white border-t justify-around pb-4 pt-2 shadow-md z-40 flex">
+       <button onclick="switchTabAdmin('riwayat')" id="btn-tab-a-riwayat" class="flex-1 flex flex-col items-center justify-center text-blue-600"><i class="ph ph-files text-2xl mb-1"></i><span class="text-[10px] font-bold">Rekap</span></button>
+       <button onclick="switchTabAdmin('setoran')" id="btn-tab-a-setoran" class="flex-1 flex flex-col items-center justify-center text-gray-400"><i class="ph ph-wallet text-2xl mb-1"></i><span class="text-[10px] font-bold">Setoran</span></button>
+       <button onclick="switchTabAdmin('kontrol')" id="btn-tab-a-kontrol" class="flex-1 flex flex-col items-center justify-center text-gray-400"><i class="ph ph-traffic-cone text-2xl mb-1"></i><span class="text-[10px] font-bold">Kontrol</span></button>
+       <!-- TOMBOL HAMBURGER MENU -->
+       <button onclick="toggleAdminMenu()" id="btn-tab-a-menu" class="flex-1 flex flex-col items-center justify-center text-gray-400"><i class="ph ph-list text-2xl mb-1"></i><span class="text-[10px] font-bold">Menu</span></button>
     </nav>
 
   </div>
@@ -474,6 +488,16 @@
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('sw.js').catch(err => console.log('SW failed', err));
       });
+    }
+
+    // Toggle Admin Hamburger Menu
+    function toggleAdminMenu() {
+      const sheet = document.getElementById('admin-menu-sheet');
+      if (sheet.classList.contains('hidden')) {
+        sheet.classList.remove('hidden'); sheet.classList.add('flex');
+      } else {
+        sheet.classList.add('hidden'); sheet.classList.remove('flex');
+      }
     }
 
     function togglePasswordVisibility(inputId, iconId) {
@@ -598,20 +622,28 @@
     function switchTabAdmin(tab) {
       document.querySelectorAll('.admin-tab').forEach(el => { el.classList.add('hidden'); el.classList.remove('flex'); });
       document.getElementById('tab-admin-' + tab).classList.remove('hidden'); document.getElementById('tab-admin-' + tab).classList.add('flex');
-      ['riwayat', 'setoran', 'kontrol', 'penyesuaian', 'backup', 'user'].forEach(t => {
+      
+      let isMainMenu = ['riwayat', 'setoran', 'kontrol'].includes(tab);
+      
+      ['riwayat', 'setoran', 'kontrol'].forEach(t => {
          let btn = document.getElementById('btn-tab-a-' + t);
          if(t === tab) { 
-           if(t === 'penyesuaian') btn.classList.add('text-purple-600'); 
-           else if(t === 'setoran') btn.classList.add('text-teal-600'); 
-           else if(t === 'backup') btn.classList.add('text-orange-600');
+           if(t === 'setoran') btn.classList.add('text-teal-600'); 
            else if(t === 'kontrol') btn.classList.add('text-cyan-600');
-           else if(t === 'user') btn.classList.add('text-gray-900');
            else btn.classList.add('text-blue-600');
            btn.classList.remove('text-gray-400'); 
          } else { 
-           btn.className = "flex-none w-[70px] flex flex-col items-center justify-center text-gray-400"; 
+           btn.className = "flex-1 flex flex-col items-center justify-center text-gray-400"; 
          }
       });
+
+      let btnMenu = document.getElementById('btn-tab-a-menu');
+      if(!isMainMenu) {
+          btnMenu.className = "flex-1 flex flex-col items-center justify-center text-indigo-600";
+      } else {
+          btnMenu.className = "flex-1 flex flex-col items-center justify-center text-gray-400";
+      }
+
       if(tab === 'penyesuaian') { ubahKategoriPeny(); }
       else if(tab === 'user') { loadDaftarUser(); }
     }
