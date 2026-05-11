@@ -182,6 +182,10 @@
       <div id="loading-setoran" class="flex justify-center p-10 mt-10"><i class="ph ph-spinner-gap animate-spin text-4xl text-green-600"></i></div>
 
       <div id="konten-setoran" class="p-5 overflow-y-auto hidden space-y-4">
+        
+        <!-- BANNER STATUS DRIVER -->
+        <div id="driver-status-banner" class="mb-4 text-center p-3 rounded-xl font-bold text-sm hidden"></div>
+        
         <div class="bg-blue-50 border border-blue-200 text-blue-800 p-3 rounded-xl flex items-center"><i class="ph ph-calendar-check text-2xl mr-3"></i><div><p class="text-xs font-bold uppercase text-blue-500">Periode Aktif</p><p id="setoran-periode" class="text-sm font-bold"></p></div></div>
         <div class="bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
           <div class="flex justify-between items-center mb-4 text-gray-600 text-sm font-medium border-b pb-3"><span>Omset Orderan</span><span id="lap-order">Rp 0</span></div>
@@ -255,6 +259,17 @@
       <div id="loading-setoran-admin" class="hidden flex justify-center p-10 mt-10"><i class="ph ph-spinner-gap animate-spin text-4xl text-teal-600"></i></div>
 
       <div id="konten-setoran-admin" class="p-5 overflow-y-auto hidden space-y-4">
+        
+        <!-- KONTROL STATUS ADMIN -->
+        <div id="admin-status-control" class="bg-white rounded-3xl p-5 shadow-sm border border-gray-100 mb-4 text-center">
+          <p class="text-xs font-bold text-gray-500 mb-2 uppercase tracking-wide">Status Pembayaran</p>
+          <div id="admin-status-badge" class="inline-block px-4 py-2 rounded-lg font-bold text-sm mb-3"></div>
+          <div class="flex space-x-2">
+              <button onclick="ubahStatusSetoran(true)" class="flex-1 bg-green-600 text-white py-2 rounded-xl text-sm font-bold active:bg-green-700">Tandai Lunas</button>
+              <button onclick="ubahStatusSetoran(false)" class="flex-1 bg-red-500 text-white py-2 rounded-xl text-sm font-bold active:bg-red-600">Batalkan</button>
+          </div>
+        </div>
+
         <div class="bg-blue-50 border text-blue-800 p-3 rounded-xl flex items-center"><i class="ph ph-calendar-check text-2xl mr-3"></i><div><p class="text-xs font-bold uppercase text-blue-500">Periode Aktif</p><p id="admin-setoran-periode" class="text-sm font-bold"></p></div></div>
         <div class="bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
           <div class="flex justify-between items-center mb-4 text-gray-600 text-sm font-medium border-b pb-3"><span>Omset Orderan</span><span id="admin-lap-order">Rp 0</span></div>
@@ -539,6 +554,17 @@
       document.getElementById('loading-setoran').classList.remove('hidden'); document.getElementById('konten-setoran').classList.add('hidden');
       const lap = await apiCall('getLaporanDriver', { email: userData.email });
       document.getElementById('loading-setoran').classList.add('hidden'); document.getElementById('konten-setoran').classList.remove('hidden');
+      
+      let banner = document.getElementById('driver-status-banner');
+      banner.classList.remove('hidden');
+      if (lap.isLunas) {
+        banner.className = "mb-4 text-center p-3 rounded-xl font-bold text-sm bg-green-100 text-green-800 border border-green-200";
+        banner.innerHTML = "<i class='ph ph-check-circle mr-1 text-lg'></i> SETORAN LUNAS: Anda bisa ON kembali";
+      } else {
+        banner.className = "mb-4 text-center p-3 rounded-xl font-bold text-sm bg-pink-100 text-pink-800 border border-pink-200";
+        banner.innerHTML = "<i class='ph ph-warning-circle mr-1 text-lg'></i> BELUM SETOR: Anda tidak bisa ON";
+      }
+
       document.getElementById('setoran-periode').innerText = lap.periodeMulai + " s/d " + lap.periodeAkhir;
       document.getElementById('lap-order').innerText = formatRp(lap.totalOrderRp); document.getElementById('lap-wajib').innerText = formatRp(lap.setoranWajib);
       document.getElementById('lap-denda').innerText = formatRp(lap.denda); document.getElementById('lap-massal').innerText = formatRp(lap.massal);
@@ -609,7 +635,22 @@
       
       const lap = await apiCall('getLaporanAdmin', { email: driverEmail, filter: payload });
       
+      // Simpan konteks aktif untuk digunakan oleh tombol Lunas/Batal
+      window.currentAdminLapEmail = driverEmail;
+      window.currentAdminLapPeriode = lap.periodeRaw;
+
       document.getElementById('loading-setoran-admin').classList.add('hidden'); document.getElementById('konten-setoran-admin').classList.remove('hidden');
+      
+      // Atur Badge Status Admin
+      let badge = document.getElementById('admin-status-badge');
+      if (lap.isLunas) {
+        badge.className = "inline-block px-4 py-2 rounded-lg font-bold text-sm mb-3 bg-green-100 text-green-800 border border-green-200";
+        badge.innerHTML = "<i class='ph ph-check-circle'></i> LUNAS (Bisa ON)";
+      } else {
+        badge.className = "inline-block px-4 py-2 rounded-lg font-bold text-sm mb-3 bg-red-100 text-red-800 border border-red-200";
+        badge.innerHTML = "<i class='ph ph-x-circle'></i> BELUM SETOR (Tidak Bisa ON)";
+      }
+
       document.getElementById('admin-setoran-periode').innerText = lap.periodeMulai + " s/d " + lap.periodeAkhir;
       document.getElementById('admin-lap-order').innerText = formatRp(lap.totalOrderRp); document.getElementById('admin-lap-wajib').innerText = formatRp(lap.setoranWajib);
       document.getElementById('admin-lap-denda').innerText = formatRp(lap.denda); document.getElementById('admin-lap-massal').innerText = formatRp(lap.massal);
@@ -619,6 +660,27 @@
       else { lap.rincian.forEach(r => { let warna = r.kat === 'Potongan' ? 'text-blue-600' : (r.kat === 'Denda' ? 'text-red-600' : 'text-orange-600');
             htmlRincian += `<div class="bg-white p-3 rounded-xl border flex justify-between items-center mb-2"><div><p class="font-bold text-sm">${r.kat}</p><p class="text-xs text-gray-500">${r.ket}</p></div><div class="font-bold ${warna}">${formatRp(r.nom)}</div></div>`; }); }
       document.getElementById('admin-lap-rincian').innerHTML = htmlRincian;
+    }
+
+    async function ubahStatusSetoran(statusLunas) {
+      if (!window.currentAdminLapEmail || !window.currentAdminLapPeriode) return;
+      
+      document.getElementById('loading-setoran-admin').classList.remove('hidden');
+      document.getElementById('konten-setoran-admin').classList.add('hidden');
+
+      try {
+        const res = await apiCall('updateStatusSetoran', {
+          email: window.currentAdminLapEmail,
+          periode: window.currentAdminLapPeriode,
+          status: statusLunas
+        });
+        tampilkanToast(res);
+        loadSetoranAdmin(); // Refresh data otomatis
+      } catch (e) {
+        tampilkanToast("Gagal memperbarui status", 'error');
+        document.getElementById('loading-setoran-admin').classList.add('hidden');
+        document.getElementById('konten-setoran-admin').classList.remove('hidden');
+      }
     }
 
     function ubahKategoriPeny() { let kat = document.getElementById('peny-kategori').value; let select = document.getElementById('peny-target'); if (kat === 'Penyesuaian Massal') { select.value = 'ALL'; select.disabled = true; } else { select.disabled = false; if (select.value === 'ALL' && select.options.length > 1) select.selectedIndex = 1; } }
