@@ -36,9 +36,10 @@
       <span id="toast-msg">Notifikasi</span>
     </div>
 
+    <!-- NEW LOADING ANIMATION DENGAN MOTOR -->
     <div id="view-loading" class="flex flex-col items-center justify-center min-h-screen fade-in bg-gray-50 z-50 absolute inset-0">
-      <i class="ph ph-spinner-gap animate-spin text-5xl text-blue-600 mb-4"></i>
-      <h2 class="text-xl font-bold text-gray-700">Memuat Sistem...</h2>
+      <i class="ph-fill ph-motorcycle animate-bounce text-6xl text-[#f0b21e] mb-4"></i>
+      <h2 class="text-2xl font-black text-gray-800 tracking-wider">SABAR BOS...</h2>
     </div>
 
     <div id="view-login" class="hidden flex-col justify-center min-h-screen p-6 fade-in bg-gray-50 z-50 absolute inset-0">
@@ -109,6 +110,19 @@
         <div class="flex space-x-3 mt-6">
            <button id="btn-batal-pass" onclick="logout()" class="hidden flex-1 bg-gray-200 text-gray-800 font-bold py-3 rounded-xl active:bg-gray-300">Batal</button>
            <button id="btn-simpan-pass" onclick="simpanPasswordKustom()" class="flex-1 bg-orange-500 text-white font-bold py-3 rounded-xl active:bg-orange-600 shadow-md flex justify-center items-center">Simpan Password</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL KONFIRMASI UMUM (PENGGANTI CONFIRM) -->
+    <div id="modal-confirm" class="fixed inset-0 bg-black/60 z-[70] hidden flex items-center justify-center p-4 fade-in backdrop-blur-sm">
+      <div class="bg-white rounded-3xl w-full max-w-sm p-6 shadow-2xl text-center">
+        <i class="ph ph-warning-circle text-5xl text-yellow-500 mb-2"></i>
+        <h3 class="text-xl font-bold mb-2 text-gray-800">Konfirmasi</h3>
+        <p id="confirm-msg" class="text-sm text-gray-500 mb-6 font-medium"></p>
+        <div class="flex space-x-3">
+          <button onclick="tutupModalConfirm()" class="flex-1 bg-gray-200 text-gray-800 font-bold py-3 rounded-xl">Batal</button>
+          <button id="btn-confirm-ok" class="flex-1 bg-blue-600 text-white font-bold py-3 rounded-xl shadow-lg">Lanjutkan</button>
         </div>
       </div>
     </div>
@@ -348,8 +362,8 @@
 
     <!-- FITUR BARU: TAB STATISTIK GRAFIK ADMIN -->
     <div id="tab-admin-statistik" class="admin-tab hidden flex-col h-screen fade-in pb-24">
-      <div class="bg-gradient-to-r from-rose-600 to-pink-700 p-5 shadow-md z-10 sticky top-0 rounded-b-[2rem] text-white">
-        <h2 class="text-2xl font-extrabold tracking-wide mb-3">Statistik Order</h2>
+      <div class="bg-gradient-to-r from-gray-800 to-gray-900 p-5 shadow-md z-10 sticky top-0 rounded-b-[2rem] text-white">
+        <h2 class="text-2xl font-extrabold tracking-wide mb-3 text-[#f0b21e]">SINKRONISASI DATA</h2>
         <div class="space-y-2">
            <select id="filter-range-statistik" onchange="autoFillStatistikDate()" class="w-full bg-white text-gray-800 p-2.5 rounded-xl text-sm font-bold outline-none border-none shadow-sm">
              <option value="mingguan">Mingguan (7 Hari Terakhir)</option>
@@ -358,36 +372,41 @@
              <option value="custom">Tanggal Custom...</option>
            </select>
         </div>
-        <div id="filter-custom-statistik" class="hidden mt-3 bg-pink-900/30 p-3 rounded-xl border items-center gap-2 fade-in">
+        <div id="filter-custom-statistik" class="hidden mt-3 bg-gray-800/50 p-3 rounded-xl border border-gray-600 items-center gap-2 fade-in">
            <input type="date" id="date-start-statistik" class="w-full bg-white text-gray-800 text-sm font-medium rounded-lg p-2 outline-none">
-           <span class="text-pink-100">-</span>
+           <span class="text-gray-300">-</span>
            <input type="date" id="date-end-statistik" class="w-full bg-white text-gray-800 text-sm font-medium rounded-lg p-2 outline-none">
         </div>
-        <button onclick="loadStatistikAdmin()" class="w-full mt-3 bg-white text-rose-800 px-4 py-2 rounded-lg text-sm font-bold shadow-sm active:bg-gray-100">Buat Grafik</button>
+        <button onclick="loadStatistikAdmin()" class="w-full mt-3 bg-[#f0b21e] text-gray-900 px-4 py-3 rounded-lg text-sm font-black shadow-sm active:bg-yellow-500">Lihat Grafik</button>
       </div>
 
-      <div class="p-4 flex-1 overflow-y-auto">
-        <div id="loading-statistik" class="hidden flex justify-center p-10"><i class="ph ph-spinner-gap animate-spin text-4xl text-rose-600"></i></div>
+      <div class="p-4 flex-1 overflow-y-auto bg-[#0d1117]">
+        <div id="loading-statistik" class="hidden flex justify-center p-10"><i class="ph ph-spinner-gap animate-spin text-4xl text-[#f0b21e]"></i></div>
         
         <div id="konten-statistik" class="hidden flex-col gap-4">
-            <!-- CANVAS UNTUK CHART.JS -->
-            <div class="bg-white p-4 rounded-3xl shadow-sm border border-gray-100 relative w-full h-64">
-               <canvas id="chart-orderan"></canvas>
+            <!-- CANVAS UNTUK CHART.JS (DARK MODE) -->
+            <div class="bg-[#1f2937] p-4 rounded-3xl shadow-lg relative w-full h-64 border border-[#374151]">
+               <div class="absolute top-4 left-4 flex items-center"><div class="w-2 h-2 rounded-full bg-green-500 mr-2 shadow-[0_0_8px_#22c55e]"></div><span class="text-white text-xs font-bold tracking-wide">Performance</span></div>
+               <canvas id="chart-orderan" class="mt-4"></canvas>
             </div>
 
-            <!-- KARTU RINGKASAN TOTAL -->
+            <!-- KARTU RINGKASAN TOTAL (DARK MODE) -->
             <div class="grid grid-cols-3 gap-3">
-               <div class="bg-blue-50 border border-blue-200 p-3 rounded-2xl text-center">
-                  <h4 class="text-[10px] font-bold text-blue-600 uppercase tracking-wide">Operator</h4>
-                  <p id="stat-tot-op" class="text-2xl font-black text-blue-800">0</p>
+               <div class="col-span-3 bg-[#1f2937] p-4 rounded-2xl text-center border border-[#374151]">
+                  <h4 class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Total Keseluruhan</h4>
+                  <p id="stat-tot-all" class="text-4xl font-black text-white">0</p>
                </div>
-               <div class="bg-indigo-50 border border-indigo-200 p-3 rounded-2xl text-center">
-                  <h4 class="text-[10px] font-bold text-indigo-600 uppercase tracking-wide">Offline</h4>
-                  <p id="stat-tot-of" class="text-2xl font-black text-indigo-800">0</p>
+               <div class="bg-[#1f2937] p-3 rounded-2xl text-center border border-[#374151]">
+                  <h4 class="text-[10px] font-bold text-[#f0b21e] uppercase tracking-wide">OP</h4>
+                  <p id="stat-tot-op" class="text-2xl font-black text-white">0</p>
                </div>
-               <div class="bg-purple-50 border border-purple-200 p-3 rounded-2xl text-center">
-                  <h4 class="text-[10px] font-bold text-purple-600 uppercase tracking-wide">Khusus</h4>
-                  <p id="stat-tot-kh" class="text-2xl font-black text-purple-800">0</p>
+               <div class="bg-[#1f2937] p-3 rounded-2xl text-center border border-[#374151]">
+                  <h4 class="text-[10px] font-bold text-[#f97316] uppercase tracking-wide">OF</h4>
+                  <p id="stat-tot-of" class="text-2xl font-black text-white">0</p>
+               </div>
+               <div class="bg-[#1f2937] p-3 rounded-2xl text-center border border-[#374151]">
+                  <h4 class="text-[10px] font-bold text-[#a855f7] uppercase tracking-wide">KH</h4>
+                  <p id="stat-tot-kh" class="text-2xl font-black text-white">0</p>
                </div>
             </div>
         </div>
@@ -476,7 +495,7 @@
               <button onclick="toggleAdminMenu()" class="p-2 bg-gray-100 rounded-full text-gray-600 active:bg-gray-200"><i class="ph ph-x"></i></button>
           </div>
           <div class="grid grid-cols-4 gap-4">
-              <button onclick="switchTabAdmin('statistik'); toggleAdminMenu()" class="flex flex-col items-center justify-center p-4 bg-rose-50 text-rose-700 rounded-2xl active:scale-95 transition"><i class="ph ph-chart-line-up text-3xl mb-2"></i><span class="text-[10px] font-bold">Statistik</span></button>
+              <button onclick="switchTabAdmin('statistik'); toggleAdminMenu()" class="flex flex-col items-center justify-center p-4 bg-gray-800 text-[#f0b21e] rounded-2xl active:scale-95 transition"><i class="ph ph-chart-line-up text-3xl mb-2"></i><span class="text-[10px] font-bold">Statistik</span></button>
               <button onclick="switchTabAdmin('penyesuaian'); toggleAdminMenu()" class="flex flex-col items-center justify-center p-4 bg-purple-50 text-purple-700 rounded-2xl active:scale-95 transition"><i class="ph ph-sliders-horizontal text-3xl mb-2"></i><span class="text-[10px] font-bold">Aksi</span></button>
               <button onclick="switchTabAdmin('backup'); toggleAdminMenu()" class="flex flex-col items-center justify-center p-4 bg-orange-50 text-orange-700 rounded-2xl active:scale-95 transition"><i class="ph ph-file-xls text-3xl mb-2"></i><span class="text-[10px] font-bold">Excel</span></button>
               <button onclick="switchTabAdmin('user'); toggleAdminMenu()" class="flex flex-col items-center justify-center p-4 bg-gray-100 text-gray-800 rounded-2xl active:scale-95 transition"><i class="ph ph-users text-3xl mb-2"></i><span class="text-[10px] font-bold">Users</span></button>
@@ -484,6 +503,33 @@
       </div>
     </div>
 
+    <!-- MODAL EDIT QTY ADMIN (Fix Button Update) -->
+    <div id="modal-edit" class="fixed inset-0 bg-black/60 z-[60] hidden flex items-center justify-center p-4 fade-in backdrop-blur-sm">
+      <div class="bg-white rounded-3xl w-full max-w-sm p-6 shadow-2xl">
+        <h3 class="text-xl font-bold mb-1">Edit Jumlah Orderan</h3><p id="edit-info" class="text-sm font-semibold text-blue-600 bg-blue-50 p-2 rounded-lg mb-5"></p>
+        <input type="hidden" id="edit-row">
+        <label class="block text-sm font-semibold text-gray-700 mb-2">Jumlah Baru (Qty)</label>
+        <input type="number" id="edit-qty" class="w-full bg-gray-100 border border-gray-200 rounded-xl p-4 text-xl font-bold text-center focus:outline-none focus:ring-2 focus:ring-blue-500 mb-6">
+        <div class="flex space-x-3">
+          <button onclick="document.getElementById('modal-edit').classList.add('hidden')" class="flex-1 bg-gray-200 text-gray-800 font-bold py-3 rounded-xl">Batal</button>
+          <button onclick="simpanEdit()" class="flex-1 bg-blue-600 text-white font-bold py-3 rounded-xl shadow-lg flex justify-center items-center"><i class="ph ph-check-circle mr-2 text-lg"></i> Update</button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- MODAL FORCE KONTROL ADMIN (ON/OFF) -->
+    <div id="modal-kontrol-driver" class="fixed inset-0 bg-black/60 z-[60] hidden flex items-center justify-center p-4 fade-in backdrop-blur-sm">
+      <div class="bg-white rounded-3xl w-full max-w-sm p-6 shadow-2xl text-center">
+        <h3 class="text-xl font-black mb-1 text-gray-800" id="kontrol-nama-driver">Nama Driver</h3>
+        <p class="text-sm text-gray-500 mb-6 font-medium">Ubah akses input driver untuk hari ini.</p>
+        <input type="hidden" id="kontrol-email-driver">
+        <div class="flex space-x-3">
+          <button onclick="aksiKontrolDriver('OFF')" class="flex-1 bg-red-500 text-white font-bold py-3.5 rounded-xl shadow-lg active:bg-red-600 flex flex-col items-center justify-center"><i class="ph ph-lock-key text-2xl mb-1"></i>Kunci (OFF)</button>
+          <button onclick="aksiKontrolDriver('ON')" class="flex-1 bg-green-500 text-white font-bold py-3.5 rounded-xl shadow-lg active:bg-green-600 flex flex-col items-center justify-center"><i class="ph ph-lock-open text-2xl mb-1"></i>Buka (ON)</button>
+        </div>
+        <button onclick="document.getElementById('modal-kontrol-driver').classList.add('hidden')" class="w-full mt-4 bg-gray-100 text-gray-700 font-bold py-3 rounded-xl active:bg-gray-200">Batal</button>
+      </div>
+    </div>
 
     <!-- NAVIGASI BAWAH DRIVER -->
     <nav id="nav-driver" class="hidden fixed bottom-0 w-full max-w-md bg-white border-t justify-around pb-4 pt-2 shadow-md z-40">
@@ -504,7 +550,7 @@
   </div>
 
   <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbwWY5KeZxObBrzy2Ile3rtPUtU4QzM9wpHyp4i9Hy1_eDckqryT8qnwfEcmJf_fuqs7/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycbzDRlI9_pXdfgK8SWw9FYJxViXm3I4G2X09SjfT5BSUfOoLkx6vCcPdBB8tyhN72-Hm/exec";
 
     // PWA Setup
     if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(err => console.log('SW failed', err)); }); }
@@ -549,13 +595,18 @@
       Chart.defaults.font.family = "'Inter', sans-serif";
     });
 
+    // SISTEM NYAWA LOGIN
+    let sisaKesempatan = 3; 
+    
     async function prosesLoginKustom() {
        let email = document.getElementById('login-email').value; let pass = document.getElementById('login-pass').value;
        if(!email || !pass) return tampilkanToast("Email & Password wajib diisi!", 'error');
+       
        document.getElementById('btn-login').disabled = true; document.getElementById('loading-login').classList.remove('hidden');
        try {
            const res = await apiCall('prosesLogin', { email: email, password: pass });
            document.getElementById('btn-login').disabled = false; document.getElementById('loading-login').classList.add('hidden');
+
            if(res.status === 'success') {
               localStorage.setItem('appOrderanEmail', res.email);
               document.getElementById('view-login').classList.add('hidden'); document.getElementById('view-login').classList.remove('flex');
@@ -565,9 +616,34 @@
               document.getElementById('view-login').classList.add('hidden'); document.getElementById('view-login').classList.remove('flex');
               document.getElementById('view-ganti-password').classList.remove('hidden'); document.getElementById('view-ganti-password').classList.add('flex');
               document.getElementById('btn-batal-pass').classList.add('hidden'); 
-           } else { tampilkanToast(res.pesan, 'error'); }
+           } else { 
+              // LOGIKA PASSWORD SALAH (3x Kesempatan)
+              if(res.pesan === 'Password salah!') {
+                  sisaKesempatan--;
+                  if(sisaKesempatan > 0) { tampilkanToast(`PASSWORD SALAH! Coba diingat-ingat lagi, aku kasih ${sisaKesempatan} kesempatan lagi.`, 'error'); } 
+                  else { tampilkanToast(`AKUN TERKUNCI. Silakan refresh aplikasi.`, 'error'); document.getElementById('btn-login').disabled = true; }
+              } else { tampilkanToast(res.pesan, 'error'); }
+           }
        } catch(e) { document.getElementById('btn-login').disabled = false; document.getElementById('loading-login').classList.add('hidden'); }
     }
+
+    // MODAL CONFIRM GENERIC
+    let pendingAction = null;
+    function tampilkanModalConfirm(pesan, callback) {
+      document.getElementById('confirm-msg').innerText = pesan;
+      pendingAction = callback;
+      document.getElementById('modal-confirm').classList.remove('hidden');
+      document.getElementById('modal-confirm').classList.add('flex');
+    }
+    function tutupModalConfirm() {
+      document.getElementById('modal-confirm').classList.add('hidden');
+      document.getElementById('modal-confirm').classList.remove('flex');
+      pendingAction = null;
+    }
+    document.getElementById('btn-confirm-ok').addEventListener('click', () => {
+      if(pendingAction) pendingAction();
+      tutupModalConfirm();
+    });
 
     async function simpanPasswordKustom() {
        let email = document.getElementById('pass-email').value; let passBaru = document.getElementById('new-pass').value; let passConf = document.getElementById('new-pass-confirm').value;
@@ -608,16 +684,16 @@
     }
     
     // --- DRIVER OFF LOGIC ---
-    async function toggleDriverOff() {
-        if(!confirm("Anda yakin ingin menandai diri OFF hari ini? Sistem input akan dikunci sampai besok.")) return;
-        
-        document.getElementById('btn-set-off').innerHTML = '<i class="ph ph-spinner-gap animate-spin mr-2"></i> Memproses...';
-        document.getElementById('btn-set-off').disabled = true;
-        
-        const res = await apiCall('setDriverOff', { email: userData.email });
-        tampilkanToast(res);
-        document.getElementById('overlay-off').classList.remove('hidden');
-        document.getElementById('overlay-off').classList.add('flex');
+    function toggleDriverOff() {
+        tampilkanModalConfirm("Anda yakin ingin menandai diri OFF hari ini? Sistem input akan dikunci sampai besok.", async () => {
+          document.getElementById('btn-set-off').innerHTML = '<i class="ph ph-spinner-gap animate-spin mr-2"></i> Memproses...';
+          document.getElementById('btn-set-off').disabled = true;
+          
+          const res = await apiCall('setDriverOff', { email: userData.email });
+          tampilkanToast(res);
+          document.getElementById('overlay-off').classList.remove('hidden');
+          document.getElementById('overlay-off').classList.add('flex');
+        });
     }
     
     function populateDriverDropdowns(drivers) {
@@ -673,6 +749,7 @@
 
       if(tab === 'penyesuaian') { ubahKategoriPeny(); }
       else if(tab === 'user') { loadDaftarUser(); }
+      else if(tab === 'statistik') { autoFillStatistikDate(); loadStatistikAdmin(); } // Auto load
     }
 
     function ubahQty(jenis, nilai) { let baru = stateOrder[jenis] + nilai; if (baru >= 0) { stateOrder[jenis] = baru; document.getElementById('qty-' + jenis).innerText = baru; } }
@@ -827,9 +904,39 @@
          else if(d.status === 'abu') { bgClass = 'bg-gray-400 text-white border-gray-500'; iconClass = 'ph-moon-stars'; }
          else if(d.status === 'kuning') { bgClass = 'bg-yellow-400 text-gray-900 border-yellow-500'; iconClass = 'ph-warning'; }
          else { bgClass = 'bg-green-500 text-white border-green-600'; iconClass = 'ph-check-circle'; }
-         html += `<div class="${bgClass} p-2 rounded-2xl flex flex-col items-center justify-center text-center shadow-sm h-20 border"><i class="ph ${iconClass} text-xl mb-1 opacity-90"></i><span class="text-[9px] font-black uppercase tracking-tight leading-tight line-clamp-2">${d.nama}</span></div>`;
+         // Menambahkan Event Onclick untuk Buka Modal
+         html += `<div onclick="bukaModalKontrol('${d.email}', '${d.nama}')" class="${bgClass} p-2 rounded-2xl flex flex-col items-center justify-center text-center shadow-sm h-20 border active:scale-95 transition cursor-pointer">
+                    <i class="ph ${iconClass} text-xl mb-1 opacity-90"></i>
+                    <span class="text-[9px] font-black uppercase tracking-tight leading-tight line-clamp-2">${d.nama}</span>
+                  </div>`;
       });
       document.getElementById('grid-kontrol').innerHTML = html;
+    }
+    
+    // Fitur Kontrol OFF/ON Admin
+    function bukaModalKontrol(email, nama) {
+       document.getElementById('kontrol-nama-driver').innerText = nama;
+       document.getElementById('kontrol-email-driver').value = email;
+       document.getElementById('modal-kontrol-driver').classList.remove('hidden');
+       document.getElementById('modal-kontrol-driver').classList.add('flex');
+    }
+    
+    async function aksiKontrolDriver(aksi) {
+       document.getElementById('modal-kontrol-driver').classList.add('hidden');
+       document.getElementById('modal-kontrol-driver').classList.remove('flex');
+       document.getElementById('loading-kontrol').classList.remove('hidden');
+       
+       let emailTarget = document.getElementById('kontrol-email-driver').value;
+       let actionCmd = (aksi === 'OFF') ? 'forceSetOff' : 'forceSetOn';
+       
+       try {
+           const res = await apiCall(actionCmd, { email: emailTarget });
+           tampilkanToast(res);
+           loadKontrolInput(); // Refresh grid
+       } catch(e) {
+           tampilkanToast("Gagal melakukan aksi.", 'error');
+           document.getElementById('loading-kontrol').classList.add('hidden');
+       }
     }
 
     async function loadDaftarUser() {
@@ -849,10 +956,11 @@
         btn.innerHTML = 'Simpan Driver'; btn.disabled = false;
     }
 
-    async function hapusUserLama(email) {
-        if(!confirm("Yakin ingin menghapus driver " + email + "? Data orderannya tidak akan terhapus.")) return;
-        const res = await apiCall('hapusUser', {email: email});
-        if(res.status === 'success') { tampilkanToast(res.msg); loadDaftarUser(); } else { tampilkanToast(res.msg, 'error'); }
+    function hapusUserLama(email) {
+        tampilkanModalConfirm("Yakin ingin menghapus driver " + email + "? Data orderannya tetap aman di Excel.", async () => {
+            const res = await apiCall('hapusUser', {email: email});
+            if(res.status === 'success') { tampilkanToast(res.msg); loadDaftarUser(); } else { tampilkanToast(res.msg, 'error'); }
+        });
     }
 
     function ubahKategoriPeny() { let kat = document.getElementById('peny-kategori').value; let select = document.getElementById('peny-target'); if (kat === 'Penyesuaian Massal') { select.value = 'ALL'; select.disabled = true; } else { select.disabled = false; if (select.value === 'ALL' && select.options.length > 1) select.selectedIndex = 1; } }
@@ -905,10 +1013,11 @@
           divCustom.classList.add('hidden'); divCustom.classList.remove('flex');
        }
 
-       let start, end = new Date();
+       let start = new Date();
+       let end = new Date();
        
        if (tipe === 'mingguan') {
-          start = new Date(); start.setDate(now.getDate() - 6);
+          start.setDate(now.getDate() - 6);
        } else if (tipe === 'bulanan') {
           start = new Date(now.getFullYear(), now.getMonth(), 1);
        } else if (tipe === 'tahunan') {
@@ -916,8 +1025,13 @@
        }
 
        // Format yyyy-mm-dd
-       inputStart.value = start.toISOString().split('T')[0];
-       inputEnd.value = end.toISOString().split('T')[0];
+       // Harus mengatur timezone ke lokal agar format ISO tidak mundur 1 hari
+       let tzOffset = (new Date()).getTimezoneOffset() * 60000; // offset in milliseconds
+       let localISOTimeStart = (new Date(start - tzOffset)).toISOString().slice(0, -1);
+       let localISOTimeEnd = (new Date(end - tzOffset)).toISOString().slice(0, -1);
+
+       inputStart.value = localISOTimeStart.split('T')[0];
+       inputEnd.value = localISOTimeEnd.split('T')[0];
     }
 
     async function loadStatistikAdmin() {
@@ -938,11 +1052,12 @@
        document.getElementById('konten-statistik').classList.add('flex');
 
        // Update Kartu Total
+       document.getElementById('stat-tot-all').innerText = response.totals.ALL;
        document.getElementById('stat-tot-op').innerText = response.totals.OP;
        document.getElementById('stat-tot-of').innerText = response.totals.OF;
        document.getElementById('stat-tot-kh').innerText = response.totals.KH;
 
-       // Render Chart
+       // Render Chart Premium Dark Mode
        renderChart(response.labels, response.datasets);
     }
 
@@ -957,31 +1072,28 @@
                labels: labels,
                datasets: [
                    {
-                       label: 'OP (Operator)',
+                       label: 'OP',
                        data: datasets.OP,
-                       borderColor: '#2563eb', // Blue
-                       backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                       borderColor: '#f0b21e', // Kuning/Gold
+                       backgroundColor: 'rgba(240, 178, 30, 0)',
                        borderWidth: 2,
-                       tension: 0.4,
-                       fill: true
+                       tension: 0.4 // Smooth Curve
                    },
                    {
-                       label: 'OF (Offline)',
+                       label: 'OF',
                        data: datasets.OF,
-                       borderColor: '#4f46e5', // Indigo
-                       backgroundColor: 'rgba(79, 70, 229, 0.1)',
+                       borderColor: '#f97316', // Orange
+                       backgroundColor: 'rgba(249, 115, 22, 0)',
                        borderWidth: 2,
-                       tension: 0.4,
-                       fill: true
+                       tension: 0.4
                    },
                    {
-                       label: 'KH (Khusus)',
+                       label: 'KH',
                        data: datasets.KH,
-                       borderColor: '#9333ea', // Purple
-                       backgroundColor: 'rgba(147, 51, 234, 0.1)',
+                       borderColor: '#a855f7', // Purple
+                       backgroundColor: 'rgba(168, 85, 247, 0)',
                        borderWidth: 2,
-                       tension: 0.4,
-                       fill: true
+                       tension: 0.4
                    }
                ]
            },
@@ -989,11 +1101,22 @@
                responsive: true,
                maintainAspectRatio: false,
                plugins: {
-                   legend: { position: 'top', labels: { boxWidth: 12, usePointStyle: true, font: {size: 10} } }
+                   legend: { 
+                     position: 'top', 
+                     align: 'end',
+                     labels: { boxWidth: 10, usePointStyle: true, color: '#9ca3af', font: {size: 10, weight: 'bold'} } 
+                   }
                },
                scales: {
-                   y: { beginAtZero: true, ticks: { precision: 0 } },
-                   x: { grid: { display: false } }
+                   y: { 
+                     beginAtZero: true, 
+                     grid: { color: '#374151' }, // Grid gelap
+                     ticks: { precision: 0, color: '#9ca3af' } 
+                   },
+                   x: { 
+                     grid: { display: false },
+                     ticks: { color: '#9ca3af' }
+                   }
                }
            }
        });
