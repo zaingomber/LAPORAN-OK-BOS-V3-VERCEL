@@ -1000,12 +1000,16 @@
     
     async function adminKirimStatusOff(status) {
        let email = document.getElementById('off-driver-email').value;
-       let tgl = document.getElementById('filter-tipe-kontrol').value === 'custom' ? document.getElementById('date-single-kontrol').value : null;
+       // Karena filter Kontrol sekarang hanya 1 tanggal, kita ambil valuenya jika mode custom
+       let tgl = document.getElementById('date-single-kontrol') ? document.getElementById('date-single-kontrol').value : null;
+       
        document.getElementById('modal-kontrol-off').classList.add('hidden');
-       document.getElementById('loading-kontrol').classList.remove('hidden'); document.getElementById('grid-kontrol').innerHTML = '';
+       document.getElementById('loading-kontrol').classList.remove('hidden'); 
+       document.getElementById('grid-kontrol').innerHTML = '';
        
        const res = await apiCall('setDriverOffStatus', { email: email, status: status, tanggalStr: tgl });
-       tampilkanToast(res); loadKontrolInput();
+       tampilkanToast(res); 
+       loadKontrolInput(); // Refresh data grid
     }
 
     // =======================================================
