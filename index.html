@@ -4,10 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Sistem Laporan Orderan</title>
-
-  <!-- Baris untuk Favicon -->
-  <link rel="icon" href="favicon.png" type="image/png">
   
+  <!-- Baris untuk Favicon -->
+  <link rel="icon" href="favicon.png?v=2" type="image/png">
+  
+  <!-- PWA Meta Tags (WAJIB DITAMBAHKAN) -->
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#f0b21e">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -276,15 +277,15 @@
       <div id="konten-statistik" class="p-5 flex-1 overflow-y-auto space-y-4">
          <!-- CHART CONTAINER (DIPERBAIKI AGAR TIDAK MELAR) -->
          <div class="bg-white p-4 rounded-3xl shadow-sm border border-gray-200">
-            <h3 class="font-bold text-gray-800 text-sm mb-2 flex items-center"><span class="w-2 h-2 rounded-full bg-green-500 mr-2"></span> Performance</h3>
-            <canvas id="myChart" class="w-full h-48"></canvas>
+            <h3 class="font-bold text-gray-800 text-sm mb-4 flex items-center"><span class="w-2 h-2 rounded-full bg-green-500 mr-2"></span> Performance</h3>
+            <!-- PERBAIKAN DI SINI: Wadah canvas harus diberi relative dan fixed height -->
+            <div class="relative w-full h-[250px]">
+               <canvas id="myChart"></canvas>
+            </div>
          </div>
          
          <!-- KOTAK TOTAL -->
-         <div class="grid grid-cols-2 gap-3 mt-2">
-            <div class="bg-white border p-4 rounded-2xl flex flex-col items-center justify-center shadow-sm">
-               <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">TOTAL</p>
-               <h1 id="stat-tot-all" class="text-3xl font-black text-gray-800">0</h1>
+         <div class="grid grid-cols-2 gap-3 mt-4">
             </div>
             <div class="bg-white border p-4 rounded-2xl flex flex-col items-center justify-center shadow-sm">
                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">OP</p>
