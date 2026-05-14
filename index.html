@@ -271,7 +271,7 @@
       <div id="loading-statistik" class="hidden flex-col items-center justify-center p-10 mt-10"><i class="ph-fill ph-motorcycle animate-bounce text-5xl text-gray-800 mb-3"></i></div>
       
       <div id="konten-statistik" class="p-5 flex-1 overflow-y-auto space-y-4">
-         <!-- CHART CONTAINER -->
+         <!-- CHART CONTAINER (DIPERBAIKI AGAR TIDAK MELAR) -->
          <div class="bg-white p-4 rounded-3xl shadow-sm border border-gray-200">
             <h3 class="font-bold text-gray-800 text-sm mb-2 flex items-center"><span class="w-2 h-2 rounded-full bg-green-500 mr-2"></span> Performance</h3>
             <canvas id="myChart" class="w-full h-48"></canvas>
@@ -333,7 +333,7 @@
            <select id="admin-setoran-driver" class="w-full bg-white text-gray-800 p-2.5 rounded-xl text-sm font-bold outline-none border-none shadow-sm"><option value="">-- Pilih Nama Driver --</option></select>
            <div class="bg-white/10 p-1.5 rounded-xl border border-white/20 flex items-center">
              <select id="filter-tipe-setoran" onchange="toggleCustomDateSetoranAdmin()" class="flex-1 bg-transparent text-white border-none outline-none text-sm font-semibold appearance-none px-2">
-               <option value="7hari" class="text-gray-800">Minggu s/d Sabtu</option>
+               <option value="official_driver" class="text-gray-800">Minggu s/d Sabtu</option>
                <option value="custom" class="text-gray-800">Periode Custom...</option>
              </select>
              <button onclick="loadSetoranAdmin()" class="bg-white text-teal-800 px-4 py-2 rounded-lg text-sm font-bold shadow-sm">Cari</button>
@@ -384,7 +384,7 @@
       </div>
     </div>
 
-    <!-- FITUR KONTROL (GRID 5 KOLOM) -->
+    <!-- FITUR BARU: TAB KONTROL INPUT -->
     <div id="tab-admin-kontrol" class="admin-tab hidden flex-col h-screen fade-in pb-24">
       <div class="bg-gradient-to-r from-cyan-600 to-blue-700 p-5 shadow-md z-10 sticky top-0 rounded-b-[2rem] text-white">
         <h2 class="text-2xl font-extrabold tracking-wide mb-3">Kontrol Input</h2>
@@ -568,7 +568,7 @@
   </div>
 
   <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbxSAN_FsZJk101fynBvW665PhGrPRde6MFXNnFe6IG4TX_MKBpgJYMjnnAJxvQ0qE7_/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycbydDP3-gUnlhjx-e-NLeuqWjANpCpS0coL3xEqkNQl3VYtnPJLUZWcSGexoAfYU99PT/exec";
 
     if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(err => console.log('SW failed', err)); }); }
 
@@ -610,6 +610,8 @@
       } else {
          document.getElementById('view-loading').classList.add('hidden'); document.getElementById('view-login').classList.remove('hidden'); document.getElementById('view-login').classList.add('flex');
       }
+      
+      // MENGISI TANGGAL HARI INI SECARA OTOMATIS
       var today = new Date().toISOString().split('T')[0];
       if(document.getElementById('peny-tanggal')) document.getElementById('peny-tanggal').value = today;
       if(document.getElementById('date-single-kontrol')) document.getElementById('date-single-kontrol').value = today;
@@ -961,11 +963,10 @@
     }
 
     async function loadKontrolInput() {
-      let tipe = document.getElementById('filter-tipe-kontrol').value; let payload = { tipe: tipe };
-      if (tipe === 'custom') {
-        let start = document.getElementById('date-single-kontrol').value;
-        if (!start) return tampilkanToast("Pilih tanggal kontrol!", 'error'); payload.start = start; payload.end = start;
-      }
+      let dateVal = document.getElementById('date-single-kontrol').value;
+      if (!dateVal) return tampilkanToast("Pilih tanggal kontrol!", 'error');
+      let payload = { tipe: 'custom', start: dateVal, end: dateVal };
+      
       document.getElementById('grid-kontrol').innerHTML = ''; document.getElementById('loading-kontrol').classList.remove('hidden');
       
       const res = await apiCall('getKontrolInput', payload);
