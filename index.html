@@ -15,6 +15,8 @@
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <style>
     .fade-in { animation: fadeIn 0.3s ease-in-out; }
@@ -34,7 +36,7 @@
       <span id="toast-msg">Notifikasi</span>
     </div>
 
-    <!-- NEW LOADING ANIMATION DENGAN MOTOR -->
+    <!-- LOADING MOTOR -->
     <div id="view-loading" class="flex flex-col items-center justify-center min-h-screen fade-in bg-gray-50 z-50 absolute inset-0">
       <i class="ph-fill ph-motorcycle animate-bounce text-6xl text-[#f0b21e] mb-4"></i>
       <h2 class="text-2xl font-black text-gray-800 tracking-wider">SABAR BOS...</h2>
@@ -47,7 +49,7 @@
         </div>
         <h3 class="text-xs font-bold text-[#f0b21e] uppercase tracking-widest mb-1">Selamat Datang di</h3>
         <h2 class="text-2xl font-black mb-2 leading-tight text-[#f0b21e]">SISTEM LAPORAN<br>OK BOS <span class="text-gray-800">BETA</span></h2>
-        <p class="text-sm text-gray-500 mb-8 font-medium">Silakan masuk menggunakan Email & Password Anda</p>
+        <p class="text-sm text-gray-500 mb-8 font-medium">Silakan masuk menggunakan Email & Password</p>
         
         <div class="space-y-4 text-left">
           <div>
@@ -113,7 +115,7 @@
     </div>
 
     <!-- =============== TAB DRIVER =============== -->
-    <div id="tab-driver-input" class="driver-tab hidden flex-col h-screen fade-in pb-24">
+    <div id="tab-driver-input" class="driver-tab hidden flex-col h-screen fade-in pb-24 relative">
       <div class="bg-green-600 p-5 rounded-b-3xl shadow-sm z-10 sticky top-0 text-white flex justify-between items-start">
         <div><h2 class="text-2xl font-bold">Input Orderan</h2><p id="driver-name-header" class="text-sm opacity-90 font-medium"></p></div>
         <div class="flex space-x-2">
@@ -122,38 +124,53 @@
         </div>
       </div>
 
-      <div class="p-6 flex-1 overflow-y-auto space-y-5">
-        <div class="bg-blue-50 border border-blue-200 rounded-2xl p-4 flex items-start"><i class="ph ph-info text-blue-600 text-2xl mr-3 mt-0.5"></i><p class="text-sm text-blue-800 font-medium">Silakan cek kembali laporan manual Anda di WA sebelum menginput ke sistem.</p></div>
-
-        <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex justify-between items-center">
-          <div><h3 class="font-bold text-gray-800 text-lg">Operator</h3></div>
-          <div class="flex items-center space-x-4 bg-gray-50 p-1.5 rounded-xl border">
-            <button onclick="ubahQty('Operator', -1)" class="w-12 h-12 bg-white text-red-500 rounded-lg shadow-sm"><i class="ph ph-minus text-xl font-bold"></i></button>
-            <span id="qty-Operator" class="font-bold w-6 text-center text-xl">0</span>
-            <button onclick="ubahQty('Operator', 1)" class="w-12 h-12 bg-white text-green-600 rounded-lg shadow-sm"><i class="ph ph-plus text-xl font-bold"></i></button>
-          </div>
-        </div>
-        <div class="bg-white p-5 rounded-2xl shadow-sm border flex justify-between items-center">
-          <div><h3 class="font-bold text-gray-800 text-lg">Offline</h3></div>
-          <div class="flex items-center space-x-4 bg-gray-50 p-1.5 rounded-xl border">
-            <button onclick="ubahQty('Offline', -1)" class="w-12 h-12 bg-white text-red-500 rounded-lg shadow-sm"><i class="ph ph-minus text-xl font-bold"></i></button>
-            <span id="qty-Offline" class="font-bold w-6 text-center text-xl">0</span>
-            <button onclick="ubahQty('Offline', 1)" class="w-12 h-12 bg-white text-green-600 rounded-lg shadow-sm"><i class="ph ph-plus text-xl font-bold"></i></button>
-          </div>
-        </div>
-        <div class="bg-white p-5 rounded-2xl shadow-sm border flex justify-between items-center">
-          <div><h3 class="font-bold text-gray-800 text-lg">Khusus</h3></div>
-          <div class="flex items-center space-x-4 bg-gray-50 p-1.5 rounded-xl border">
-            <button onclick="ubahQty('Khusus', -1)" class="w-12 h-12 bg-white text-red-500 rounded-lg shadow-sm"><i class="ph ph-minus text-xl font-bold"></i></button>
-            <span id="qty-Khusus" class="font-bold w-6 text-center text-xl">0</span>
-            <button onclick="ubahQty('Khusus', 1)" class="w-12 h-12 bg-white text-green-600 rounded-lg shadow-sm"><i class="ph ph-plus text-xl font-bold"></i></button>
-          </div>
-        </div>
-
-        <button id="btn-submit" onclick="kirimOrderan()" class="w-full mt-4 bg-green-600 text-white font-bold text-lg py-4 rounded-2xl shadow-lg active:bg-green-700 flex justify-center items-center">
-          <span id="btn-text">Lapor Orderan</span>
-          <i id="btn-loading" class="ph ph-spinner-gap animate-spin hidden ml-2 text-2xl"></i>
+      <div class="p-6 flex-1 overflow-y-auto space-y-4">
+        
+        <!-- TOMBOL OFF DRIVER -->
+        <button id="btn-driver-off" onclick="setDriverOffStatusUI(true)" class="w-full bg-gray-100 text-gray-600 font-bold p-3 rounded-xl mb-2 border flex items-center justify-center active:bg-gray-200 shadow-sm">
+           <i class="ph ph-power mr-2 text-lg"></i> Tandai Saya OFF Hari Ini
         </button>
+
+        <!-- KONTEN FORM INPUT -->
+        <div id="form-input-container" class="space-y-4 relative">
+            <div id="overlay-off" class="hidden absolute inset-0 bg-white/80 backdrop-blur-[2px] z-20 flex-col items-center justify-center rounded-2xl border border-gray-200">
+                <i class="ph-fill ph-moon-stars text-5xl text-gray-400 mb-2"></i>
+                <p class="font-bold text-gray-600 text-lg">Anda sedang OFF</p>
+                <p class="text-xs text-gray-500">Reset otomatis jam 00:00</p>
+            </div>
+
+            <div class="bg-blue-50 border border-blue-200 rounded-2xl p-4 flex items-start"><i class="ph ph-info text-blue-600 text-2xl mr-3 mt-0.5"></i><p class="text-sm text-blue-800 font-medium">Silakan cek kembali laporan manual Anda di WA sebelum menginput.</p></div>
+
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex justify-between items-center">
+              <div><h3 class="font-bold text-gray-800 text-lg">Operator</h3></div>
+              <div class="flex items-center space-x-4 bg-gray-50 p-1.5 rounded-xl border">
+                <button onclick="ubahQty('Operator', -1)" class="w-12 h-12 bg-white text-red-500 rounded-lg shadow-sm"><i class="ph ph-minus text-xl font-bold"></i></button>
+                <span id="qty-Operator" class="font-bold w-6 text-center text-xl">0</span>
+                <button onclick="ubahQty('Operator', 1)" class="w-12 h-12 bg-white text-green-600 rounded-lg shadow-sm"><i class="ph ph-plus text-xl font-bold"></i></button>
+              </div>
+            </div>
+            <div class="bg-white p-5 rounded-2xl shadow-sm border flex justify-between items-center">
+              <div><h3 class="font-bold text-gray-800 text-lg">Offline</h3></div>
+              <div class="flex items-center space-x-4 bg-gray-50 p-1.5 rounded-xl border">
+                <button onclick="ubahQty('Offline', -1)" class="w-12 h-12 bg-white text-red-500 rounded-lg shadow-sm"><i class="ph ph-minus text-xl font-bold"></i></button>
+                <span id="qty-Offline" class="font-bold w-6 text-center text-xl">0</span>
+                <button onclick="ubahQty('Offline', 1)" class="w-12 h-12 bg-white text-green-600 rounded-lg shadow-sm"><i class="ph ph-plus text-xl font-bold"></i></button>
+              </div>
+            </div>
+            <div class="bg-white p-5 rounded-2xl shadow-sm border flex justify-between items-center">
+              <div><h3 class="font-bold text-gray-800 text-lg">Khusus</h3></div>
+              <div class="flex items-center space-x-4 bg-gray-50 p-1.5 rounded-xl border">
+                <button onclick="ubahQty('Khusus', -1)" class="w-12 h-12 bg-white text-red-500 rounded-lg shadow-sm"><i class="ph ph-minus text-xl font-bold"></i></button>
+                <span id="qty-Khusus" class="font-bold w-6 text-center text-xl">0</span>
+                <button onclick="ubahQty('Khusus', 1)" class="w-12 h-12 bg-white text-green-600 rounded-lg shadow-sm"><i class="ph ph-plus text-xl font-bold"></i></button>
+              </div>
+            </div>
+
+            <button id="btn-submit" onclick="kirimOrderan()" class="w-full mt-4 bg-green-600 text-white font-bold text-lg py-4 rounded-2xl shadow-lg active:bg-green-700 flex justify-center items-center">
+              <span id="btn-text">Lapor Orderan</span>
+              <i id="btn-loading" class="ph ph-spinner-gap animate-spin hidden ml-2 text-2xl"></i>
+            </button>
+        </div>
       </div>
     </div>
 
@@ -180,14 +197,13 @@
 
     <div id="tab-driver-setoran" class="driver-tab hidden flex-col h-screen fade-in pb-24">
       <div class="bg-green-600 p-5 rounded-b-3xl shadow-sm z-10 sticky top-0 text-white">
-        <h2 class="text-2xl font-bold">Setoran</h2><p class="text-sm opacity-90 font-medium">Minggu 00:00 s/d Sabtu 23:59</p>
+        <h2 class="text-2xl font-bold">Setoran</h2><p class="text-sm opacity-90 font-medium">Minggu s/d Sabtu</p>
       </div>
       
       <div id="loading-setoran" class="flex flex-col justify-center items-center p-10 mt-10"><i class="ph-fill ph-motorcycle animate-bounce text-5xl text-green-600"></i></div>
 
       <div id="konten-setoran" class="p-5 overflow-y-auto hidden space-y-4">
         
-        <!-- CEK SEMENTARA BUTTON -->
         <button onclick="toggleCekSementara()" class="w-full bg-gray-100 text-gray-600 p-3 rounded-xl font-bold text-sm border flex justify-center items-center active:bg-gray-200">
            <i class="ph ph-magnifying-glass mr-2"></i> Cek Setoran Sementara
         </button>
@@ -208,7 +224,6 @@
         <!-- BANNER STATUS DRIVER -->
         <div id="driver-status-banner" class="mb-4 text-center p-4 rounded-xl font-bold text-sm hidden"></div>
         
-        <!-- BUNGKUSAN DETAIL TAGIHAN (DISembunyikan jika LUNAS) -->
         <div id="wrapper-tagihan-driver">
           <div class="bg-blue-50 border border-blue-200 text-blue-800 p-3 rounded-xl flex items-center"><i class="ph ph-calendar-check text-2xl mr-3"></i><div><p class="text-xs font-bold uppercase text-blue-500">Periode</p><p id="setoran-periode" class="text-sm font-bold"></p></div></div>
           <div class="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 mt-4">
@@ -230,6 +245,61 @@
     </div>
 
     <!-- =============== TAB ADMIN =============== -->
+    
+    <!-- FITUR BARU: STATISTIK ADMIN -->
+    <div id="tab-admin-statistik" class="admin-tab hidden flex-col h-screen fade-in pb-24">
+      <div class="bg-gradient-to-r from-gray-800 to-gray-900 p-5 rounded-b-[2rem] shadow-md z-20 sticky top-0 flex justify-between items-start text-white">
+        <div class="w-full">
+           <h2 class="text-2xl font-extrabold text-[#f0b21e] tracking-wide mb-3">SINKRONISASI DATA</h2>
+           <div class="space-y-2">
+              <select id="stat-filter-tipe" onchange="toggleCustomStat()" class="w-full bg-white text-gray-800 p-2.5 rounded-xl text-sm font-bold outline-none border-none shadow-sm">
+                <option value="mingguan">7 Hari Terakhir</option>
+                <option value="bulanan">Bulan Ini</option>
+                <option value="tahunan">Tahun Ini</option>
+                <option value="custom">Tanggal Custom...</option>
+              </select>
+           </div>
+           <div id="stat-filter-custom" class="hidden mt-3 bg-gray-700/50 p-3 rounded-xl border border-gray-600 items-center gap-2 fade-in">
+              <input type="date" id="stat-start" class="w-full bg-white text-gray-800 text-sm font-medium rounded-lg p-2 outline-none">
+              <span class="text-gray-300">-</span>
+              <input type="date" id="stat-end" class="w-full bg-white text-gray-800 text-sm font-medium rounded-lg p-2 outline-none">
+           </div>
+           <button onclick="loadStatistik()" class="w-full mt-3 bg-[#f0b21e] text-gray-900 py-3 rounded-xl text-sm font-bold shadow-sm">Lihat Grafik</button>
+        </div>
+      </div>
+      
+      <div id="loading-statistik" class="hidden flex-col items-center justify-center p-10 mt-10"><i class="ph-fill ph-motorcycle animate-bounce text-5xl text-gray-800 mb-3"></i></div>
+      
+      <div id="konten-statistik" class="p-5 flex-1 overflow-y-auto space-y-4">
+         <!-- CHART CONTAINER -->
+         <div class="bg-white p-4 rounded-3xl shadow-sm border border-gray-200">
+            <h3 class="font-bold text-gray-800 text-sm mb-2 flex items-center"><span class="w-2 h-2 rounded-full bg-green-500 mr-2"></span> Performance</h3>
+            <canvas id="myChart" class="w-full h-48"></canvas>
+         </div>
+         
+         <!-- KOTAK TOTAL -->
+         <div class="grid grid-cols-2 gap-3 mt-2">
+            <div class="bg-white border p-4 rounded-2xl flex flex-col items-center justify-center shadow-sm">
+               <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">TOTAL</p>
+               <h1 id="stat-tot-all" class="text-3xl font-black text-gray-800">0</h1>
+            </div>
+            <div class="bg-white border p-4 rounded-2xl flex flex-col items-center justify-center shadow-sm">
+               <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">OP</p>
+               <h1 id="stat-tot-op" class="text-3xl font-black text-[#f0b21e]">0</h1>
+            </div>
+            <div class="bg-white border p-4 rounded-2xl flex flex-col items-center justify-center shadow-sm">
+               <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">OF</p>
+               <h1 id="stat-tot-of" class="text-3xl font-black text-orange-500">0</h1>
+            </div>
+            <div class="bg-white border p-4 rounded-2xl flex flex-col items-center justify-center shadow-sm">
+               <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">KH</p>
+               <h1 id="stat-tot-kh" class="text-3xl font-black text-purple-600">0</h1>
+            </div>
+         </div>
+      </div>
+    </div>
+
+
     <div id="tab-admin-riwayat" class="admin-tab hidden flex-col h-screen fade-in pb-24">
       <div class="bg-gradient-to-r from-blue-700 to-indigo-800 p-5 rounded-b-[2rem] shadow-md z-20 sticky top-0 flex justify-between items-start">
         <div class="w-full mr-2">
@@ -239,7 +309,7 @@
               <div class="bg-white/10 p-1.5 rounded-xl border border-white/20 flex items-center">
                 <select id="filter-tipe" onchange="toggleCustomDate()" class="flex-1 bg-transparent text-white border-none outline-none text-sm font-semibold appearance-none">
                   <option value="7hari" class="text-gray-800">1 Minggu Terakhir (Total)</option>
-                  <option value="custom" class="text-gray-800">Tanggal Custom (1 Hari)</option>
+                  <option value="custom" class="text-gray-800">Tanggal Custom (Edit)</option>
                 </select>
                 <button onclick="loadRiwayatAdmin()" class="bg-white text-blue-800 px-4 py-2 rounded-lg text-sm font-bold">Cari</button>
               </div>
@@ -247,10 +317,6 @@
            <div id="filter-custom" class="hidden mt-3 bg-blue-900/30 p-3 rounded-xl border items-center gap-2 fade-in">
               <input type="date" id="date-single" class="w-full bg-white text-gray-800 text-sm font-medium rounded-lg p-2 outline-none">
            </div>
-        </div>
-        <div class="flex flex-col space-y-2 mt-1">
-          <button onclick="bukaGantiPassword()" class="w-10 h-10 bg-white/20 text-white rounded-full flex items-center justify-center"><i class="ph ph-key text-xl"></i></button>
-          <button onclick="logout()" class="w-10 h-10 bg-white/20 text-white rounded-full flex items-center justify-center"><i class="ph ph-sign-out text-xl"></i></button>
         </div>
       </div>
       
@@ -284,7 +350,6 @@
 
       <div id="konten-setoran-admin" class="p-5 overflow-y-auto hidden space-y-4">
         
-        <!-- KONTROL STATUS ADMIN -->
         <div id="admin-status-control" class="bg-white rounded-3xl p-5 shadow-sm border border-gray-100 mb-4 text-center">
           <p class="text-xs font-bold text-gray-500 mb-2 uppercase tracking-wide">Status Pembayaran & Tagihan</p>
           <div id="admin-status-badge" class="inline-block px-4 py-2 rounded-lg font-bold text-sm mb-2"></div>
@@ -319,6 +384,32 @@
       </div>
     </div>
 
+    <!-- FITUR KONTROL (GRID 5 KOLOM) -->
+    <div id="tab-admin-kontrol" class="admin-tab hidden flex-col h-screen fade-in pb-24">
+      <div class="bg-gradient-to-r from-cyan-600 to-blue-700 p-5 shadow-md z-10 sticky top-0 rounded-b-[2rem] text-white">
+        <h2 class="text-2xl font-extrabold tracking-wide mb-3">Kontrol Input</h2>
+        <div class="bg-white/10 p-1.5 rounded-xl border border-white/20 flex items-center mb-2">
+            <input type="date" id="date-single-kontrol" class="w-full bg-white text-gray-800 text-sm font-bold rounded-lg p-2 outline-none mr-2">
+            <button onclick="loadKontrolInput()" class="bg-white text-cyan-800 px-4 py-2 rounded-lg text-sm font-bold shadow-sm">Cek</button>
+        </div>
+        <div class="flex justify-center space-x-3 text-[9px] font-bold mt-2 bg-white/20 p-2 rounded-xl">
+           <span class="flex items-center"><span class="w-3 h-3 bg-red-500 rounded-full mr-1 inline-block border border-white"></span>Belum (<span id="c-merah">0</span>)</span>
+           <span class="flex items-center"><span class="w-3 h-3 bg-green-500 rounded-full mr-1 inline-block border border-white"></span>Aman (<span id="c-hijau">0</span>)</span>
+           <span class="flex items-center"><span class="w-3 h-3 bg-yellow-400 rounded-full mr-1 inline-block border border-white"></span>Dobel (<span id="c-kuning">0</span>)</span>
+           <span class="flex items-center"><span class="w-3 h-3 bg-gray-400 rounded-full mr-1 inline-block border border-white"></span>OFF (<span id="c-abu">0</span>)</span>
+        </div>
+      </div>
+
+      <div id="loading-kontrol" class="hidden flex-col items-center justify-center p-10 mt-10"><i class="ph-fill ph-motorcycle animate-bounce text-5xl text-cyan-600"></i></div>
+
+      <div class="p-4 flex-1 overflow-y-auto">
+        <div id="grid-kontrol" class="grid grid-cols-5 gap-2">
+           <div class="col-span-5 text-center text-gray-400 mt-10"><i class="ph ph-users-three text-5xl mb-2"></i><p class="text-sm">Klik Cek untuk memuat data</p></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB PENYESUAIAN -->
     <div id="tab-admin-penyesuaian" class="admin-tab hidden flex-col h-screen fade-in pb-24">
       <div class="bg-gradient-to-r from-purple-700 to-fuchsia-800 p-5 shadow-md z-10 sticky top-0 rounded-b-[2rem] text-white">
         <h2 class="text-2xl font-extrabold tracking-wide">Penyesuaian</h2><p class="text-sm opacity-90 font-medium">Input Tambahan, Potongan, Iuran</p>
@@ -347,7 +438,7 @@
       </div>
     </div>
 
-    <!-- FITUR BARU: TAB EXPORT EXCEL -->
+    <!-- TAB EXCEL -->
     <div id="tab-admin-backup" class="admin-tab hidden flex-col h-screen fade-in pb-24">
       <div class="bg-gradient-to-r from-orange-600 to-red-700 p-5 shadow-md z-10 sticky top-0 rounded-b-[2rem] text-white">
         <h2 class="text-2xl font-extrabold tracking-wide mb-1">Export Excel</h2>
@@ -383,37 +474,7 @@
       </div>
     </div>
 
-    <!-- FITUR BARU: TAB KONTROL INPUT -->
-    <div id="tab-admin-kontrol" class="admin-tab hidden flex-col h-screen fade-in pb-24">
-      <div class="bg-gradient-to-r from-cyan-600 to-blue-700 p-5 shadow-md z-10 sticky top-0 rounded-b-[2rem] text-white">
-        <h2 class="text-2xl font-extrabold tracking-wide mb-3">Kontrol Input</h2>
-        <div class="bg-white/10 p-1.5 rounded-xl border border-white/20 flex items-center mb-2">
-            <select id="filter-tipe-kontrol" onchange="toggleCustomDateKontrol()" class="flex-1 bg-transparent text-white border-none outline-none text-sm font-semibold appearance-none px-2">
-              <option value="7hari">Hanya Hari Ini Saja</option>
-              <option value="custom" class="text-gray-800">Cek Tanggal Custom (1 Hari)...</option>
-            </select>
-            <button onclick="loadKontrolInput()" class="bg-white text-cyan-800 px-4 py-2 rounded-lg text-sm font-bold shadow-sm">Cek</button>
-        </div>
-        <div id="filter-custom-kontrol" class="hidden flex-col gap-2 mb-2 fade-in">
-            <input type="date" id="date-single-kontrol" class="w-full bg-white text-gray-800 text-sm font-medium rounded-lg p-2 outline-none">
-        </div>
-        <div class="flex justify-center space-x-3 text-[10px] font-bold mt-2 bg-white/20 p-2 rounded-xl">
-           <span class="flex items-center"><span class="w-3 h-3 bg-red-500 rounded-full mr-1 inline-block border border-white"></span>Belum</span>
-           <span class="flex items-center"><span class="w-3 h-3 bg-green-500 rounded-full mr-1 inline-block border border-white"></span>Aman</span>
-           <span class="flex items-center"><span class="w-3 h-3 bg-yellow-400 rounded-full mr-1 inline-block border border-white"></span>Dobel</span>
-        </div>
-      </div>
-
-      <div id="loading-kontrol" class="hidden flex-col items-center justify-center p-10 mt-10"><i class="ph-fill ph-motorcycle animate-bounce text-5xl text-cyan-600"></i></div>
-
-      <div class="p-4 flex-1 overflow-y-auto">
-        <div id="grid-kontrol" class="grid grid-cols-3 gap-3">
-           <div class="col-span-3 text-center text-gray-400 mt-10"><i class="ph ph-users-three text-5xl mb-2"></i><p class="text-sm">Klik Cek untuk memuat data</p></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- FITUR BARU: TAB KELOLA USER -->
+    <!-- TAB KELOLA USER -->
     <div id="tab-admin-user" class="admin-tab hidden flex-col h-screen fade-in pb-24">
       <div class="bg-gradient-to-r from-gray-700 to-gray-900 p-5 shadow-md z-10 sticky top-0 rounded-b-[2rem] text-white">
         <h2 class="text-2xl font-extrabold tracking-wide mb-1">Kelola Driver</h2>
@@ -444,7 +505,7 @@
       </div>
     </div>
 
-    <!-- ADMIN MENU MODAL (HAMBURGER POPUP) -->
+    <!-- MODAL MENU ADMIN -->
     <div id="admin-menu-sheet" class="fixed inset-0 bg-black/60 z-[45] hidden flex-col justify-end fade-in backdrop-blur-sm">
       <div class="bg-white rounded-t-3xl w-full max-w-md mx-auto p-6 pb-24 shadow-2xl">
           <div class="flex justify-between items-center mb-6">
@@ -452,6 +513,7 @@
               <button onclick="toggleAdminMenu()" class="p-2 bg-gray-100 rounded-full text-gray-600 active:bg-gray-200"><i class="ph ph-x"></i></button>
           </div>
           <div class="grid grid-cols-3 gap-4">
+              <button onclick="switchTabAdmin('statistik'); toggleAdminMenu()" class="flex flex-col items-center justify-center p-4 bg-blue-50 text-blue-700 rounded-2xl active:scale-95 transition"><i class="ph ph-chart-line-up text-3xl mb-2"></i><span class="text-[11px] font-bold">Statistik</span></button>
               <button onclick="switchTabAdmin('penyesuaian'); toggleAdminMenu()" class="flex flex-col items-center justify-center p-4 bg-purple-50 text-purple-700 rounded-2xl active:scale-95 transition"><i class="ph ph-sliders-horizontal text-3xl mb-2"></i><span class="text-[11px] font-bold">Aksi</span></button>
               <button onclick="switchTabAdmin('backup'); toggleAdminMenu()" class="flex flex-col items-center justify-center p-4 bg-orange-50 text-orange-700 rounded-2xl active:scale-95 transition"><i class="ph ph-file-xls text-3xl mb-2"></i><span class="text-[11px] font-bold">Excel</span></button>
               <button onclick="switchTabAdmin('user'); toggleAdminMenu()" class="flex flex-col items-center justify-center p-4 bg-gray-100 text-gray-800 rounded-2xl active:scale-95 transition"><i class="ph ph-users text-3xl mb-2"></i><span class="text-[11px] font-bold">Users</span></button>
@@ -468,7 +530,22 @@
         <input type="number" id="edit-qty" class="w-full bg-gray-100 border border-gray-200 rounded-xl p-4 text-xl font-bold text-center focus:outline-none focus:ring-2 focus:ring-blue-500 mb-6">
         <div class="flex space-x-3">
           <button onclick="document.getElementById('modal-edit').classList.add('hidden')" class="flex-1 bg-gray-200 text-gray-800 font-bold py-3 rounded-xl">Batal</button>
-          <button onclick="simpanEdit()" class="flex-1 bg-blue-600 text-white font-bold py-3 rounded-xl shadow-lg">Simpan</button>
+          <button id="btn-save-edit" onclick="simpanEdit()" class="flex-1 bg-blue-600 text-white font-bold py-3 rounded-xl shadow-lg flex justify-center items-center"><i class="ph ph-check-circle mr-1"></i> Update</button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- MODAL KONTROL OFF/ON ADMIN -->
+    <div id="modal-kontrol-off" class="fixed inset-0 bg-black/60 z-[60] hidden flex items-center justify-center p-4 fade-in backdrop-blur-sm">
+      <div class="bg-white rounded-3xl w-full max-w-sm p-6 shadow-2xl text-center">
+        <div class="bg-gray-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4"><i class="ph ph-power text-3xl text-gray-600"></i></div>
+        <h3 class="text-lg font-bold text-gray-800">Ubah Status Driver</h3>
+        <p id="off-driver-name" class="text-sm font-semibold text-blue-600 mb-5"></p>
+        <input type="hidden" id="off-driver-email">
+        <div class="space-y-3">
+          <button onclick="adminKirimStatusOff('OFF')" class="w-full bg-gray-200 text-gray-700 font-bold py-3.5 rounded-xl border flex justify-center items-center active:bg-gray-300"><i class="ph ph-moon-stars mr-2 text-xl"></i> Paksa OFF-kan</button>
+          <button onclick="adminKirimStatusOff('ON_FORCE')" class="w-full bg-green-100 text-green-700 font-bold py-3.5 rounded-xl border border-green-200 flex justify-center items-center active:bg-green-200"><i class="ph ph-sun mr-2 text-xl"></i> Paksa ON-kan</button>
+          <button onclick="document.getElementById('modal-kontrol-off').classList.add('hidden')" class="w-full text-gray-500 font-bold py-2 mt-2">Batal</button>
         </div>
       </div>
     </div>
@@ -480,24 +557,21 @@
        <button onclick="switchTabDriver('setoran')" id="btn-tab-d-setoran" class="flex-1 flex flex-col items-center justify-center text-gray-400"><i class="ph ph-wallet text-2xl mb-1"></i><span class="text-[10px] font-bold">Setoran</span></button>
     </nav>
     
-    <!-- NAVIGASI BAWAH ADMIN (YANG BARU - HANYA 3 + MENU) -->
+    <!-- NAVIGASI BAWAH ADMIN -->
     <nav id="nav-admin" class="hidden fixed bottom-0 w-full max-w-md bg-white border-t justify-around pb-4 pt-2 shadow-md z-40 flex">
        <button onclick="switchTabAdmin('riwayat')" id="btn-tab-a-riwayat" class="flex-1 flex flex-col items-center justify-center text-blue-600"><i class="ph ph-files text-2xl mb-1"></i><span class="text-[10px] font-bold">Rekap</span></button>
        <button onclick="switchTabAdmin('setoran')" id="btn-tab-a-setoran" class="flex-1 flex flex-col items-center justify-center text-gray-400"><i class="ph ph-wallet text-2xl mb-1"></i><span class="text-[10px] font-bold">Setoran</span></button>
        <button onclick="switchTabAdmin('kontrol')" id="btn-tab-a-kontrol" class="flex-1 flex flex-col items-center justify-center text-gray-400"><i class="ph ph-traffic-cone text-2xl mb-1"></i><span class="text-[10px] font-bold">Kontrol</span></button>
-       <!-- TOMBOL HAMBURGER MENU -->
        <button onclick="toggleAdminMenu()" id="btn-tab-a-menu" class="flex-1 flex flex-col items-center justify-center text-gray-400"><i class="ph ph-list text-2xl mb-1"></i><span class="text-[10px] font-bold">Menu</span></button>
     </nav>
 
   </div>
 
   <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbzxqMu1mo3qpgxLNFQVqP9h9_-n3LJXU1JAw0pt65Kot4vGYQm8tj6HWtnkMpKWyzYf/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycbxSAN_FsZJk101fynBvW665PhGrPRde6MFXNnFe6IG4TX_MKBpgJYMjnnAJxvQ0qE7_/exec";
 
-    // PWA Setup
     if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(err => console.log('SW failed', err)); }); }
 
-    // Toggle Admin Hamburger Menu
     function toggleAdminMenu() {
       const sheet = document.getElementById('admin-menu-sheet');
       if (sheet.classList.contains('hidden')) { sheet.classList.remove('hidden'); sheet.classList.add('flex'); } 
@@ -510,7 +584,7 @@
       else { input.type = "password"; icon.classList.remove("ph-eye-slash"); icon.classList.add("ph-eye"); }
     }
 
-    // Filter Regex 6 Angka untuk Form Password
+    // Limit Input Password hanya angka & 6 digit
     document.getElementById('new-pass').addEventListener('input', function() { this.value = this.value.replace(/[^0-9]/g, '').slice(0, 6); });
     document.getElementById('new-pass-confirm').addEventListener('input', function() { this.value = this.value.replace(/[^0-9]/g, '').slice(0, 6); });
 
@@ -521,7 +595,7 @@
       } catch (error) { tampilkanToast("Gangguan koneksi ke server database.", 'error'); throw error; }
     }
 
-    let userData = {};
+    let userData = {}; let loginAttempts = 3;
     const harga = { 'Operator': 7000, 'Offline': 7000, 'Khusus': 30000 };
     let stateOrder = { 'Operator': 0, 'Offline': 0, 'Khusus': 0 };
 
@@ -536,13 +610,14 @@
       } else {
          document.getElementById('view-loading').classList.add('hidden'); document.getElementById('view-login').classList.remove('hidden'); document.getElementById('view-login').classList.add('flex');
       }
-      
-      // Set Default tanggal Input Penyesuaian ke Hari Ini
       var today = new Date().toISOString().split('T')[0];
       if(document.getElementById('peny-tanggal')) document.getElementById('peny-tanggal').value = today;
+      if(document.getElementById('date-single-kontrol')) document.getElementById('date-single-kontrol').value = today;
+      if(document.getElementById('date-single')) document.getElementById('date-single').value = today;
     });
 
     async function prosesLoginKustom() {
+       if(loginAttempts <= 0) return tampilkanToast("Akun terkunci sementara.", 'error');
        let email = document.getElementById('login-email').value; let pass = document.getElementById('login-pass').value;
        if(!email || !pass) return tampilkanToast("Email & Password wajib diisi!", 'error');
        
@@ -552,17 +627,19 @@
            document.getElementById('btn-login').disabled = false; document.getElementById('loading-login').classList.add('hidden');
 
            if(res.status === 'success') {
-              localStorage.setItem('appOrderanEmail', res.email);
+              loginAttempts = 3; localStorage.setItem('appOrderanEmail', res.email);
               document.getElementById('view-login').classList.add('hidden'); document.getElementById('view-login').classList.remove('flex');
               inisialisasiUser(res);
            } else if(res.status === 'force_change') {
-              // Simpan data di memori untuk bypass login
-              userData = res;
-              document.getElementById('pass-email').value = res.email;
+              userData = res; document.getElementById('pass-email').value = res.email;
               document.getElementById('view-login').classList.add('hidden'); document.getElementById('view-login').classList.remove('flex');
               document.getElementById('view-ganti-password').classList.remove('hidden'); document.getElementById('view-ganti-password').classList.add('flex');
               document.getElementById('btn-batal-pass').classList.add('hidden'); 
-           } else { tampilkanToast(res.pesan, 'error'); }
+           } else { 
+              loginAttempts--; 
+              if(loginAttempts > 0) tampilkanToast("Password salah! Sisa " + loginAttempts + " kesempatan.", 'error');
+              else { tampilkanToast("Kesempatan habis.", 'error'); document.getElementById('btn-login').disabled = true; }
+           }
        } catch(e) { document.getElementById('btn-login').disabled = false; document.getElementById('loading-login').classList.add('hidden'); }
     }
 
@@ -575,10 +652,8 @@
        const res = await apiCall('simpanPasswordBaru', { email: email, newPassword: passBaru });
        tampilkanToast(res); 
        
-       // UPDATE: OTOMATIS LOGIN BYPASS
        localStorage.setItem('appOrderanEmail', userData.email);
-       document.getElementById('view-ganti-password').classList.add('hidden');
-       document.getElementById('view-ganti-password').classList.remove('flex');
+       document.getElementById('view-ganti-password').classList.add('hidden'); document.getElementById('view-ganti-password').classList.remove('flex');
        document.getElementById('btn-simpan-pass').innerHTML = 'Simpan Password';
        inisialisasiUser(userData);
     }
@@ -601,6 +676,9 @@
         document.getElementById('driver-name-header').innerText = res.nama;
         document.getElementById('nav-driver').classList.remove('hidden'); document.getElementById('nav-driver').classList.add('flex');
         switchTabDriver('input');
+        
+        const isOff = await apiCall('cekStatusOffHariIni', { email: userData.email });
+        if(isOff) { document.getElementById('overlay-off').classList.remove('hidden'); document.getElementById('overlay-off').classList.add('flex'); }
       }
     }
     
@@ -657,6 +735,7 @@
 
       if(tab === 'penyesuaian') { ubahKategoriPeny(); }
       else if(tab === 'user') { loadDaftarUser(); }
+      else if(tab === 'statistik') { loadStatistik(); }
     }
 
     function ubahQty(jenis, nilai) { let baru = stateOrder[jenis] + nilai; if (baru >= 0) { stateOrder[jenis] = baru; document.getElementById('qty-' + jenis).innerText = baru; } }
@@ -669,6 +748,15 @@
       
       const res = await apiCall('simpanOrderan', { email: userData.email, listOrderan: list });
       tampilkanToast(res); btn.disabled = false; loading.classList.add('hidden'); switchTabDriver('input'); 
+    }
+    
+    async function setDriverOffStatusUI(isOff) {
+      if(!confirm("Yakin ingin menandai status Anda OFF hari ini? Input orderan akan dikunci.")) return;
+      document.getElementById('btn-driver-off').innerHTML = '<i class="ph ph-spinner-gap animate-spin mr-2"></i> Memproses...';
+      const res = await apiCall('setDriverOffStatus', { email: userData.email, status: isOff ? 'OFF' : 'ON_FORCE' });
+      tampilkanToast(res);
+      document.getElementById('btn-driver-off').innerHTML = '<i class="ph ph-power mr-2 text-lg"></i> Tandai Saya OFF Hari Ini';
+      if(isOff) { document.getElementById('overlay-off').classList.remove('hidden'); document.getElementById('overlay-off').classList.add('flex'); }
     }
 
     function toggleCustomDateDriver() {
@@ -701,7 +789,6 @@
       document.getElementById('list-riwayat-driver').innerHTML = html;
     }
 
-    // UPDATE: DRIVER SETORAN
     function toggleCekSementara() {
        const box = document.getElementById('box-cek-sementara');
        if(box.classList.contains('hidden')) { box.classList.remove('hidden'); } else { box.classList.add('hidden'); }
@@ -727,12 +814,12 @@
       
       if (!isCustom && lap.isLunas) {
         banner.classList.remove('hidden');
-        wrapper.classList.add('hidden'); // Sembunyikan Rincian
+        wrapper.classList.add('hidden'); 
         banner.className = "mb-4 text-center p-4 rounded-xl font-bold text-sm bg-green-100 text-green-800 border border-green-200 mt-4";
         banner.innerHTML = "<i class='ph ph-check-circle mr-1 text-2xl mb-2 inline-block'></i><br>TERIMA KASIH SUDAH SETOR<br>SILAHKAN ON KEMBALI";
       } else {
         banner.classList.add('hidden');
-        wrapper.classList.remove('hidden'); // Tampilkan rincian
+        wrapper.classList.remove('hidden'); 
         document.getElementById('setoran-periode').innerText = lap.periodeMulai + " s/d " + lap.periodeAkhir;
         document.getElementById('lap-order').innerText = formatRp(lap.totalOrderRp); document.getElementById('lap-wajib').innerText = formatRp(lap.setoranWajib);
         document.getElementById('lap-denda').innerText = formatRp(lap.tambahan); document.getElementById('lap-massal').innerText = formatRp(lap.massal);
@@ -744,7 +831,7 @@
         else { saldoEl.innerText = "Rp 0"; saldoEl.className = "font-bold text-gray-500"; }
 
         let htmlRincian = '';
-        if(lap.rincian.length === 0) { htmlRincian = '<p class="text-sm text-gray-500 italic">Tidak ada catatan penyesuaian khusus.</p>'; } 
+        if(lap.rincian.length === 0) { htmlRincian = '<p class="text-sm text-gray-500 italic">Tidak ada catatan khusus.</p>'; } 
         else { lap.rincian.forEach(r => { let warna = r.kat === 'Potongan' ? 'text-blue-600' : (r.kat === 'Tambahan' ? 'text-red-600' : 'text-orange-600');
               htmlRincian += `<div class="bg-white p-3 rounded-xl border shadow-sm flex justify-between items-center mb-2"><div><p class="font-bold text-sm">${r.kat}</p><p class="text-xs text-gray-500">${r.ket}</p></div><div class="font-bold ${warna}">${formatRp(r.nom)}</div></div>`; }); }
         document.getElementById('lap-rincian').innerHTML = htmlRincian;
@@ -762,7 +849,7 @@
       let tipe = document.getElementById('filter-tipe').value; let payload = { tipe: tipe, email: driverEmail };
       if (tipe === 'custom') {
         let start = document.getElementById('date-single').value;
-        if (!start) return tampilkanToast("Pilih tanggal!", 'error'); payload.start = start; payload.end = start; // Kirim tanggal yg sama
+        if (!start) return tampilkanToast("Pilih tanggal!", 'error'); payload.start = start; payload.end = start; 
       }
       document.getElementById('loading-riwayat').classList.remove('hidden'); document.getElementById('list-riwayat').innerHTML = '';
       
@@ -795,10 +882,13 @@
     async function simpanEdit() {
       let row = document.getElementById('edit-row').value; let newQty = document.getElementById('edit-qty').value;
       if(newQty === '' || newQty < 0) return tampilkanToast("Qty tidak valid", 'error');
-      document.getElementById('modal-edit').classList.add('hidden'); document.getElementById('loading-riwayat').classList.remove('hidden');
       
+      let btnSave = document.getElementById('btn-save-edit'); btnSave.innerHTML = '<i class="ph ph-spinner-gap animate-spin"></i>'; btnSave.disabled = true;
       const res = await apiCall('editOrderan', { row: row, newQty: newQty });
-      tampilkanToast(res); loadRiwayatAdmin();
+      tampilkanToast(res); 
+      
+      btnSave.innerHTML = '<i class="ph ph-check-circle mr-1"></i> Update'; btnSave.disabled = false;
+      document.getElementById('modal-edit').classList.add('hidden'); loadRiwayatAdmin();
     }
 
     async function loadSetoranAdmin() {
@@ -807,7 +897,6 @@
       if (tipe === 'custom') { let start = document.getElementById('date-start-setoran-admin').value; let end = document.getElementById('date-end-setoran-admin').value; if (!start || !end) return tampilkanToast("Pilih tanggal!", 'error'); payload.start = start; payload.end = end; }
       
       document.getElementById('loading-setoran-admin').classList.remove('hidden'); document.getElementById('konten-setoran-admin').classList.add('hidden');
-      
       const lap = await apiCall('getLaporanAdmin', { email: driverEmail, filter: payload });
       
       window.currentAdminLapEmail = driverEmail; window.currentAdminLapPeriode = lap.periodeRaw; window.currentAdminTagihan = lap.tagihanBerjalan;
@@ -835,7 +924,7 @@
       else { saldoEl.innerText = "Rp 0"; saldoEl.className = "font-bold text-gray-500"; }
 
       let htmlRincian = '';
-      if(lap.rincian.length === 0) { htmlRincian = '<p class="text-sm text-gray-500 italic">Tidak ada rincian tambahan/potongan.</p>'; } 
+      if(lap.rincian.length === 0) { htmlRincian = '<p class="text-sm text-gray-500 italic">Tidak ada rincian khusus.</p>'; } 
       else { lap.rincian.forEach(r => { let warna = r.kat === 'Potongan' ? 'text-blue-600' : (r.kat === 'Tambahan' ? 'text-red-600' : 'text-orange-600');
             htmlRincian += `<div class="bg-white p-3 rounded-xl border flex justify-between items-center mb-2"><div><p class="font-bold text-sm">${r.kat}</p><p class="text-xs text-gray-500">${r.ket}</p></div><div class="font-bold ${warna}">${formatRp(r.nom)}</div></div>`; }); }
       document.getElementById('admin-lap-rincian').innerHTML = htmlRincian;
@@ -875,24 +964,47 @@
       let tipe = document.getElementById('filter-tipe-kontrol').value; let payload = { tipe: tipe };
       if (tipe === 'custom') {
         let start = document.getElementById('date-single-kontrol').value;
-        if (!start) return tampilkanToast("Pilih tanggal kontrol!", 'error'); payload.start = start; payload.end = start; // Kirim satu tanggal
+        if (!start) return tampilkanToast("Pilih tanggal kontrol!", 'error'); payload.start = start; payload.end = start;
       }
       document.getElementById('grid-kontrol').innerHTML = ''; document.getElementById('loading-kontrol').classList.remove('hidden');
       
-      const data = await apiCall('getKontrolInput', payload);
+      const res = await apiCall('getKontrolInput', payload);
       document.getElementById('loading-kontrol').classList.add('hidden');
+      
+      document.getElementById('c-merah').innerText = res.totals.merah; document.getElementById('c-hijau').innerText = res.totals.hijau;
+      document.getElementById('c-kuning').innerText = res.totals.kuning; document.getElementById('c-abu').innerText = res.totals.abu;
+      
       let html = '';
-      data.forEach(d => {
+      res.data.forEach(d => {
          let bgClass = ''; let iconClass = '';
          if(d.status === 'merah') { bgClass = 'bg-red-500 text-white border-red-600'; iconClass = 'ph-x-circle'; }
          else if(d.status === 'kuning') { bgClass = 'bg-yellow-400 text-gray-900 border-yellow-500'; iconClass = 'ph-warning'; }
+         else if(d.status === 'abu') { bgClass = 'bg-gray-400 text-white border-gray-500'; iconClass = 'ph-moon-stars'; }
          else { bgClass = 'bg-green-500 text-white border-green-600'; iconClass = 'ph-check-circle'; }
-         html += `<div class="${bgClass} p-3 rounded-2xl flex flex-col items-center justify-center text-center shadow-sm h-24 border">
-                    <i class="ph ${iconClass} text-2xl mb-1 opacity-80"></i>
-                    <span class="text-[11px] font-black uppercase tracking-tight leading-tight line-clamp-2">${d.nama}</span>
+         
+         html += `<div onclick="bukaModalKontrolOff('${d.email}', '${d.nama}')" class="${bgClass} p-2 rounded-2xl flex flex-col items-center justify-center text-center shadow-sm h-20 border active:scale-95 transition cursor-pointer">
+                    <i class="ph ${iconClass} text-xl mb-1 opacity-80"></i>
+                    <span class="text-[9px] font-black uppercase tracking-tight leading-tight line-clamp-2 break-words w-full px-1">${d.nama}</span>
                   </div>`;
       });
       document.getElementById('grid-kontrol').innerHTML = html;
+    }
+    
+    function bukaModalKontrolOff(email, nama) {
+       document.getElementById('off-driver-email').value = email;
+       document.getElementById('off-driver-name').innerText = nama;
+       document.getElementById('modal-kontrol-off').classList.remove('hidden');
+       document.getElementById('modal-kontrol-off').classList.add('flex');
+    }
+    
+    async function adminKirimStatusOff(status) {
+       let email = document.getElementById('off-driver-email').value;
+       let tgl = document.getElementById('filter-tipe-kontrol').value === 'custom' ? document.getElementById('date-single-kontrol').value : null;
+       document.getElementById('modal-kontrol-off').classList.add('hidden');
+       document.getElementById('loading-kontrol').classList.remove('hidden'); document.getElementById('grid-kontrol').innerHTML = '';
+       
+       const res = await apiCall('setDriverOffStatus', { email: email, status: status, tanggalStr: tgl });
+       tampilkanToast(res); loadKontrolInput();
     }
 
     // =======================================================
@@ -966,6 +1078,54 @@
         let filename = "Rekap_Orderan_" + response.periode.replace(/\//g, "-") + ".xlsx"; XLSX.writeFile(wb, filename);
         tampilkanToast("Excel berhasil diunduh!");
       } catch (e) { tampilkanToast("Gagal mengunduh Excel.", 'error'); } finally { btn.innerHTML = originText; btn.disabled = false; }
+    }
+    
+    // =======================================================
+    // FITUR STATISTIK ADMIN (CHART.JS)
+    // =======================================================
+    let statChart = null;
+    function toggleCustomStat() {
+       let tipe = document.getElementById('stat-filter-tipe').value; let div = document.getElementById('stat-filter-custom');
+       if (tipe === 'custom') { div.classList.remove('hidden'); div.classList.add('flex'); } else { div.classList.add('hidden'); div.classList.remove('flex'); }
+    }
+    
+    async function loadStatistik() {
+       let tipe = document.getElementById('stat-filter-tipe').value; let payload = { tipe: tipe };
+       if (tipe === 'custom') {
+          let start = document.getElementById('stat-start').value; let end = document.getElementById('stat-end').value;
+          if (!start || !end) return tampilkanToast("Pilih rentang tanggal!", 'error'); payload.start = start; payload.end = end;
+       }
+       
+       document.getElementById('loading-statistik').classList.remove('hidden'); document.getElementById('konten-statistik').classList.add('hidden');
+       const res = await apiCall('getStatistikAdmin', { filter: payload });
+       document.getElementById('loading-statistik').classList.add('hidden'); document.getElementById('konten-statistik').classList.remove('hidden');
+       
+       document.getElementById('stat-tot-all').innerText = res.totals.ALL; document.getElementById('stat-tot-op').innerText = res.totals.OP;
+       document.getElementById('stat-tot-of').innerText = res.totals.OF; document.getElementById('stat-tot-kh').innerText = res.totals.KH;
+       
+       const ctx = document.getElementById('myChart').getContext('2d');
+       if(statChart) statChart.destroy();
+       
+       statChart = new Chart(ctx, {
+          type: 'line',
+          data: {
+             labels: res.labels,
+             datasets: [
+                { label: 'OP', data: res.datasets.OP, borderColor: '#f0b21e', backgroundColor: '#f0b21e', tension: 0.4, borderWidth: 2, pointRadius: 0 },
+                { label: 'OF', data: res.datasets.OF, borderColor: '#f97316', backgroundColor: '#f97316', tension: 0.4, borderWidth: 2, pointRadius: 0 },
+                { label: 'KH', data: res.datasets.KH, borderColor: '#9333ea', backgroundColor: '#9333ea', tension: 0.4, borderWidth: 2, pointRadius: 0 }
+             ]
+          },
+          options: {
+             responsive: true, maintainAspectRatio: false,
+             interaction: { mode: 'index', intersect: false },
+             plugins: { legend: { display: false } },
+             scales: {
+                x: { grid: { display: false } },
+                y: { grid: { color: '#f3f4f6' }, beginAtZero: true }
+             }
+          }
+       });
     }
   </script>
 </body>
