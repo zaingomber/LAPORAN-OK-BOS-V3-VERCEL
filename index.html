@@ -15,8 +15,6 @@
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-  <!-- Library Chart.js untuk Grafik Statistik -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <style>
     .fade-in { animation: fadeIn 0.3s ease-in-out; }
@@ -83,14 +81,14 @@
       <div class="bg-white p-8 rounded-3xl shadow-2xl w-full max-w-sm mx-auto text-center">
         <i class="ph ph-shield-check text-5xl text-orange-500 mb-3"></i>
         <h2 class="text-xl font-bold mb-2 text-gray-800">Keamanan Akun</h2>
-        <p class="text-sm text-gray-500 mb-6 font-medium">Buat password baru demi keamanan.</p>
+        <p class="text-sm text-gray-500 mb-6 font-medium">Buat password baru demi keamanan. (Wajib 6 Angka)</p>
         
         <div class="space-y-4 text-left">
           <input type="hidden" id="pass-email">
           <div>
-            <label class="block text-xs font-bold text-gray-700 mb-1">Password Baru</label>
+            <label class="block text-xs font-bold text-gray-700 mb-1">Password Baru (6 Angka)</label>
             <div class="relative">
-              <input type="password" id="new-pass" placeholder="Minimal 6 karakter" class="w-full bg-gray-50 border border-gray-200 rounded-xl py-3 pl-4 pr-12 text-sm font-bold outline-none focus:border-orange-500 transition">
+              <input type="tel" pattern="[0-9]*" maxlength="6" id="new-pass" placeholder="Contoh: 123456" class="w-full bg-gray-50 border border-gray-200 rounded-xl py-3 pl-4 pr-12 text-sm font-bold outline-none focus:border-orange-500 transition">
               <button type="button" onclick="togglePasswordVisibility('new-pass', 'icon-eye-new')" class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-orange-500 focus:outline-none">
                 <i id="icon-eye-new" class="ph ph-eye text-lg"></i>
               </button>
@@ -99,7 +97,7 @@
           <div>
             <label class="block text-xs font-bold text-gray-700 mb-1">Ulangi Password</label>
             <div class="relative">
-              <input type="password" id="new-pass-confirm" placeholder="Ulangi password baru" class="w-full bg-gray-50 border border-gray-200 rounded-xl py-3 pl-4 pr-12 text-sm font-bold outline-none focus:border-orange-500 transition">
+              <input type="tel" pattern="[0-9]*" maxlength="6" id="new-pass-confirm" placeholder="Ulangi 6 angka" class="w-full bg-gray-50 border border-gray-200 rounded-xl py-3 pl-4 pr-12 text-sm font-bold outline-none focus:border-orange-500 transition">
               <button type="button" onclick="togglePasswordVisibility('new-pass-confirm', 'icon-eye-confirm')" class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-orange-500 focus:outline-none">
                 <i id="icon-eye-confirm" class="ph ph-eye text-lg"></i>
               </button>
@@ -114,28 +112,8 @@
       </div>
     </div>
 
-    <!-- MODAL KONFIRMASI UMUM (PENGGANTI CONFIRM) -->
-    <div id="modal-confirm" class="fixed inset-0 bg-black/60 z-[70] hidden flex items-center justify-center p-4 fade-in backdrop-blur-sm">
-      <div class="bg-white rounded-3xl w-full max-w-sm p-6 shadow-2xl text-center">
-        <i class="ph ph-warning-circle text-5xl text-yellow-500 mb-2"></i>
-        <h3 class="text-xl font-bold mb-2 text-gray-800">Konfirmasi</h3>
-        <p id="confirm-msg" class="text-sm text-gray-500 mb-6 font-medium"></p>
-        <div class="flex space-x-3">
-          <button onclick="tutupModalConfirm()" class="flex-1 bg-gray-200 text-gray-800 font-bold py-3 rounded-xl">Batal</button>
-          <button id="btn-confirm-ok" class="flex-1 bg-blue-600 text-white font-bold py-3 rounded-xl shadow-lg">Lanjutkan</button>
-        </div>
-      </div>
-    </div>
-
     <!-- =============== TAB DRIVER =============== -->
-    <div id="tab-driver-input" class="driver-tab hidden flex-col h-screen fade-in pb-24 relative">
-      <!-- OVERLAY LOKER JIKA OFF -->
-      <div id="overlay-off" class="hidden absolute inset-0 bg-gray-900/80 z-[35] flex-col items-center justify-center text-center p-6 backdrop-blur-sm fade-in">
-         <i class="ph ph-moon-stars text-7xl text-gray-300 mb-4"></i>
-         <h2 class="text-2xl font-black text-white mb-2">Anda Sedang OFF</h2>
-         <p class="text-gray-300 text-sm">Sistem input dikunci untuk hari ini. Status ini telah terkirim ke Admin. Silakan kembali besok.</p>
-      </div>
-
+    <div id="tab-driver-input" class="driver-tab hidden flex-col h-screen fade-in pb-24">
       <div class="bg-green-600 p-5 rounded-b-3xl shadow-sm z-10 sticky top-0 text-white flex justify-between items-start">
         <div><h2 class="text-2xl font-bold">Input Orderan</h2><p id="driver-name-header" class="text-sm opacity-90 font-medium"></p></div>
         <div class="flex space-x-2">
@@ -145,12 +123,6 @@
       </div>
 
       <div class="p-6 flex-1 overflow-y-auto space-y-5">
-        
-        <!-- TOMBOL OFF DRIVER -->
-        <button id="btn-set-off" onclick="toggleDriverOff()" class="w-full bg-gray-800 text-white py-3 rounded-xl shadow-md font-bold text-sm flex items-center justify-center active:scale-95 transition">
-          <i class="ph ph-power text-xl mr-2 text-red-400"></i> Tandai Saya OFF Hari Ini
-        </button>
-
         <div class="bg-blue-50 border border-blue-200 rounded-2xl p-4 flex items-start"><i class="ph ph-info text-blue-600 text-2xl mr-3 mt-0.5"></i><p class="text-sm text-blue-800 font-medium">Silakan cek kembali laporan manual Anda di WA sebelum menginput ke sistem.</p></div>
 
         <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex justify-between items-center">
@@ -202,7 +174,7 @@
         </div>
       </div>
       
-      <div id="loading-riwayat-driver" class="flex flex-col items-center justify-center p-10 mt-10"><i class="ph ph-spinner-gap animate-spin text-5xl text-green-600 mb-3"></i></div>
+      <div id="loading-riwayat-driver" class="flex flex-col items-center justify-center p-10 mt-10"><i class="ph-fill ph-motorcycle animate-bounce text-5xl text-green-600 mb-3"></i></div>
       <div class="p-5 flex-1 overflow-y-auto space-y-4" id="list-riwayat-driver"></div>
     </div>
 
@@ -211,28 +183,51 @@
         <h2 class="text-2xl font-bold">Setoran</h2><p class="text-sm opacity-90 font-medium">Minggu 00:00 s/d Sabtu 23:59</p>
       </div>
       
-      <div id="loading-setoran" class="flex justify-center p-10 mt-10"><i class="ph ph-spinner-gap animate-spin text-4xl text-green-600"></i></div>
+      <div id="loading-setoran" class="flex flex-col justify-center items-center p-10 mt-10"><i class="ph-fill ph-motorcycle animate-bounce text-5xl text-green-600"></i></div>
 
       <div id="konten-setoran" class="p-5 overflow-y-auto hidden space-y-4">
-        <div id="driver-status-banner" class="mb-4 text-center p-3 rounded-xl font-bold text-sm hidden"></div>
-        <div class="bg-blue-50 border border-blue-200 text-blue-800 p-3 rounded-xl flex items-center"><i class="ph ph-calendar-check text-2xl mr-3"></i><div><p class="text-xs font-bold uppercase text-blue-500">Periode Aktif</p><p id="setoran-periode" class="text-sm font-bold"></p></div></div>
-        <div class="bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
-          <div class="flex justify-between items-center mb-4 text-gray-600 text-sm font-medium border-b pb-3"><span>Omset Orderan</span><span id="lap-order">Rp 0</span></div>
-          <div class="space-y-3 mb-4">
-            <div class="flex justify-between items-center"><span class="text-gray-800 font-bold">Wajib Setor (15%)</span><span id="lap-wajib" class="font-bold text-green-600">Rp 0</span></div>
-            <div class="flex justify-between items-center text-red-600 text-sm"><span>+ Tambahan Admin</span><span id="lap-denda" class="font-bold">Rp 0</span></div>
-            <div class="flex justify-between items-center text-orange-600 text-sm"><span>+ Peny. Massal</span><span id="lap-massal" class="font-bold">Rp 0</span></div>
-            <div class="flex justify-between items-center text-blue-600 text-sm border-b pb-4"><span>- Potongan Admin</span><span id="lap-potongan" class="font-bold">Rp 0</span></div>
-            <div class="flex justify-between items-center text-purple-600 text-sm border-t pt-2 mt-2"><span>Saldo Periode Lalu (+/-)</span><span id="lap-saldo" class="font-bold">Rp 0</span></div>
-          </div>
-          <div class="mt-2 bg-green-50 p-4 rounded-2xl text-center border border-green-100">
-            <p class="text-xs text-green-800 font-bold uppercase tracking-widest mb-1">Total Tagihan Akhir</p><h1 id="lap-akhir" class="text-3xl font-black text-green-700">Rp 0</h1>
-          </div>
+        
+        <!-- CEK SEMENTARA BUTTON -->
+        <button onclick="toggleCekSementara()" class="w-full bg-gray-100 text-gray-600 p-3 rounded-xl font-bold text-sm border flex justify-center items-center active:bg-gray-200">
+           <i class="ph ph-magnifying-glass mr-2"></i> Cek Setoran Sementara
+        </button>
+
+        <div id="box-cek-sementara" class="hidden bg-white p-4 rounded-2xl border border-gray-200 shadow-sm mt-2 fade-in">
+           <p class="text-xs font-bold text-gray-500 mb-2">Pilih Tanggal</p>
+           <div class="flex items-center gap-2 mb-3">
+              <input type="date" id="date-start-temp" class="w-full bg-gray-50 text-gray-800 text-sm font-medium rounded-lg p-2 outline-none border">
+              <span>-</span>
+              <input type="date" id="date-end-temp" class="w-full bg-gray-50 text-gray-800 text-sm font-medium rounded-lg p-2 outline-none border">
+           </div>
+           <button onclick="loadSetoranDriverCustom()" class="w-full bg-blue-600 text-white font-bold py-2 rounded-xl text-sm">Hitung Sementara</button>
         </div>
-        <h3 class="font-bold text-gray-700 mt-4 px-1">Keterangan Tambahan</h3><div id="lap-rincian" class="space-y-2"></div>
+
+        <hr class="my-2 border-gray-200">
+        <h3 class="text-center font-black text-gray-800 tracking-wider">TAGIHAN RESMI</h3>
+
+        <!-- BANNER STATUS DRIVER -->
+        <div id="driver-status-banner" class="mb-4 text-center p-4 rounded-xl font-bold text-sm hidden"></div>
+        
+        <!-- BUNGKUSAN DETAIL TAGIHAN (DISembunyikan jika LUNAS) -->
+        <div id="wrapper-tagihan-driver">
+          <div class="bg-blue-50 border border-blue-200 text-blue-800 p-3 rounded-xl flex items-center"><i class="ph ph-calendar-check text-2xl mr-3"></i><div><p class="text-xs font-bold uppercase text-blue-500">Periode</p><p id="setoran-periode" class="text-sm font-bold"></p></div></div>
+          <div class="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 mt-4">
+            <div class="flex justify-between items-center mb-4 text-gray-600 text-sm font-medium border-b pb-3"><span>Omset Orderan</span><span id="lap-order">Rp 0</span></div>
+            <div class="space-y-3 mb-4">
+              <div class="flex justify-between items-center"><span class="text-gray-800 font-bold">Wajib Setor (15%)</span><span id="lap-wajib" class="font-bold text-green-600">Rp 0</span></div>
+              <div class="flex justify-between items-center text-red-600 text-sm"><span>+ Tambahan Admin</span><span id="lap-denda" class="font-bold">Rp 0</span></div>
+              <div class="flex justify-between items-center text-orange-600 text-sm"><span>+ Peny. Massal</span><span id="lap-massal" class="font-bold">Rp 0</span></div>
+              <div class="flex justify-between items-center text-blue-600 text-sm border-b pb-4"><span>- Potongan Admin</span><span id="lap-potongan" class="font-bold">Rp 0</span></div>
+              <div class="flex justify-between items-center text-purple-600 text-sm border-t pt-2 mt-2"><span>Saldo Periode Lalu (+/-)</span><span id="lap-saldo" class="font-bold">Rp 0</span></div>
+            </div>
+            <div class="mt-2 bg-green-50 p-4 rounded-2xl text-center border border-green-100">
+              <p class="text-xs text-green-800 font-bold uppercase tracking-widest mb-1">Total Tagihan Akhir</p><h1 id="lap-akhir" class="text-3xl font-black text-green-700">Rp 0</h1>
+            </div>
+          </div>
+          <h3 class="font-bold text-gray-700 mt-4 px-1">Keterangan Tambahan</h3><div id="lap-rincian" class="space-y-2"></div>
+        </div>
       </div>
     </div>
-
 
     <!-- =============== TAB ADMIN =============== -->
     <div id="tab-admin-riwayat" class="admin-tab hidden flex-col h-screen fade-in pb-24">
@@ -244,15 +239,13 @@
               <div class="bg-white/10 p-1.5 rounded-xl border border-white/20 flex items-center">
                 <select id="filter-tipe" onchange="toggleCustomDate()" class="flex-1 bg-transparent text-white border-none outline-none text-sm font-semibold appearance-none">
                   <option value="7hari" class="text-gray-800">1 Minggu Terakhir (Total)</option>
-                  <option value="custom" class="text-gray-800">Tanggal Custom (Edit Qty)</option>
+                  <option value="custom" class="text-gray-800">Tanggal Custom (1 Hari)</option>
                 </select>
                 <button onclick="loadRiwayatAdmin()" class="bg-white text-blue-800 px-4 py-2 rounded-lg text-sm font-bold">Cari</button>
               </div>
            </div>
            <div id="filter-custom" class="hidden mt-3 bg-blue-900/30 p-3 rounded-xl border items-center gap-2 fade-in">
-              <input type="date" id="date-start" class="w-full bg-white text-gray-800 text-sm font-medium rounded-lg p-2 outline-none">
-              <span class="text-blue-200">-</span>
-              <input type="date" id="date-end" class="w-full bg-white text-gray-800 text-sm font-medium rounded-lg p-2 outline-none">
+              <input type="date" id="date-single" class="w-full bg-white text-gray-800 text-sm font-medium rounded-lg p-2 outline-none">
            </div>
         </div>
         <div class="flex flex-col space-y-2 mt-1">
@@ -261,7 +254,7 @@
         </div>
       </div>
       
-      <div id="loading-riwayat" class="hidden flex-col items-center justify-center p-10 mt-10"><i class="ph ph-spinner-gap animate-spin text-5xl text-blue-600 mb-3"></i></div>
+      <div id="loading-riwayat" class="hidden flex-col items-center justify-center p-10 mt-10"><i class="ph-fill ph-motorcycle animate-bounce text-5xl text-blue-600 mb-3"></i></div>
       <div class="p-5 flex-1 overflow-y-auto space-y-4" id="list-riwayat">
         <div class="text-center text-gray-400 mt-10"><i class="ph ph-hand-pointing text-4xl mb-2"></i><p class="text-sm">Pilih Driver dan klik Cari</p></div>
       </div>
@@ -287,10 +280,11 @@
         </div>
       </div>
 
-      <div id="loading-setoran-admin" class="hidden flex justify-center p-10 mt-10"><i class="ph ph-spinner-gap animate-spin text-4xl text-teal-600"></i></div>
+      <div id="loading-setoran-admin" class="hidden flex-col items-center justify-center p-10 mt-10"><i class="ph-fill ph-motorcycle animate-bounce text-5xl text-teal-600"></i></div>
 
       <div id="konten-setoran-admin" class="p-5 overflow-y-auto hidden space-y-4">
         
+        <!-- KONTROL STATUS ADMIN -->
         <div id="admin-status-control" class="bg-white rounded-3xl p-5 shadow-sm border border-gray-100 mb-4 text-center">
           <p class="text-xs font-bold text-gray-500 mb-2 uppercase tracking-wide">Status Pembayaran & Tagihan</p>
           <div id="admin-status-badge" class="inline-block px-4 py-2 rounded-lg font-bold text-sm mb-2"></div>
@@ -314,7 +308,7 @@
             <div class="flex justify-between items-center"><span class="text-gray-800 font-bold">Wajib Setor (15%)</span><span id="admin-lap-wajib" class="font-bold text-green-600">Rp 0</span></div>
             <div class="flex justify-between items-center text-red-600 text-sm"><span>+ Tambahan Admin</span><span id="admin-lap-denda" class="font-bold">Rp 0</span></div>
             <div class="flex justify-between items-center text-orange-600 text-sm"><span>+ Peny. Massal</span><span id="admin-lap-massal" class="font-bold">Rp 0</span></div>
-            <div class="flex justify-between items-center text-blue-600 text-sm"><span>- Potongan</span><span id="admin-lap-potongan" class="font-bold">Rp 0</span></div>
+            <div class="flex justify-between items-center text-blue-600 text-sm border-b pb-4"><span>- Potongan</span><span id="admin-lap-potongan" class="font-bold">Rp 0</span></div>
             <div class="flex justify-between items-center text-purple-600 text-sm border-t pt-2 mt-2"><span>Saldo Periode Lalu (+/-)</span><span id="admin-lap-saldo" class="font-bold">Rp 0</span></div>
           </div>
           <div class="mt-2 bg-teal-50 p-4 rounded-2xl text-center border border-teal-100">
@@ -325,101 +319,15 @@
       </div>
     </div>
 
-    <!-- FITUR BARU: TAB KONTROL INPUT -->
-    <div id="tab-admin-kontrol" class="admin-tab hidden flex-col h-screen fade-in pb-24">
-      <div class="bg-gradient-to-r from-cyan-600 to-blue-700 p-5 shadow-md z-10 sticky top-0 rounded-b-[2rem] text-white">
-        <h2 class="text-2xl font-extrabold tracking-wide mb-3">Kontrol Input</h2>
-        <div class="bg-white/10 p-1.5 rounded-xl border border-white/20 flex items-center mb-2">
-            <select id="filter-tipe-kontrol" onchange="toggleCustomDateKontrol()" class="flex-1 bg-transparent text-white border-none outline-none text-sm font-semibold appearance-none px-2">
-              <option value="7hari" class="text-gray-800">Minggu s/d Sabtu</option>
-              <option value="custom" class="text-gray-800">Tanggal Custom...</option>
-            </select>
-            <button onclick="loadKontrolInput()" class="bg-white text-cyan-800 px-4 py-2 rounded-lg text-sm font-bold shadow-sm">Cek</button>
-        </div>
-        <div id="filter-custom-kontrol" class="hidden flex-col gap-2 mb-2 fade-in">
-            <input type="date" id="date-start-kontrol" class="w-full bg-white text-gray-800 text-sm font-medium rounded-lg p-2 outline-none">
-            <input type="date" id="date-end-kontrol" class="w-full bg-white text-gray-800 text-sm font-medium rounded-lg p-2 outline-none">
-        </div>
-        
-        <!-- Legend Kontrol -->
-        <div class="flex justify-center flex-wrap gap-2 text-[9px] font-bold mt-2 bg-white/20 p-2 rounded-xl">
-           <span class="flex items-center"><span class="w-2.5 h-2.5 bg-red-500 rounded-full mr-1 inline-block"></span>Belum</span>
-           <span class="flex items-center"><span class="w-2.5 h-2.5 bg-gray-500 rounded-full mr-1 inline-block"></span>OFF</span>
-           <span class="flex items-center"><span class="w-2.5 h-2.5 bg-green-500 rounded-full mr-1 inline-block"></span>Aman</span>
-           <span class="flex items-center"><span class="w-2.5 h-2.5 bg-yellow-400 rounded-full mr-1 inline-block"></span>Dobel</span>
-        </div>
-      </div>
-
-      <div id="loading-kontrol" class="hidden flex justify-center p-10 mt-10"><i class="ph ph-spinner-gap animate-spin text-4xl text-cyan-600"></i></div>
-
-      <div class="p-4 flex-1 overflow-y-auto">
-        <!-- GRID 5 KOLOM -->
-        <div id="grid-kontrol" class="grid grid-cols-5 gap-2">
-           <div class="col-span-5 text-center text-gray-400 mt-10"><i class="ph ph-users-three text-5xl mb-2"></i><p class="text-sm">Klik Cek untuk memuat data</p></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- FITUR BARU: TAB STATISTIK GRAFIK ADMIN (TEMA PUTIH) -->
-    <div id="tab-admin-statistik" class="admin-tab hidden flex-col h-screen fade-in pb-24">
-      <div class="bg-white p-5 shadow-sm z-10 sticky top-0 rounded-b-[2rem] border-b border-gray-100">
-        <h2 class="text-2xl font-extrabold tracking-wide mb-3 text-[#f0b21e]">SINKRONISASI DATA</h2>
-        <div class="space-y-2">
-           <select id="filter-range-statistik" onchange="autoFillStatistikDate()" class="w-full bg-gray-50 text-gray-800 p-2.5 rounded-xl text-sm font-bold outline-none border border-gray-200 shadow-sm">
-             <option value="mingguan">Mingguan (7 Hari Terakhir)</option>
-             <option value="bulanan">Bulanan (Bulan Ini)</option>
-             <option value="tahunan">Tahunan (Tahun Ini)</option>
-             <option value="custom">Tanggal Custom...</option>
-           </select>
-        </div>
-        <div id="filter-custom-statistik" class="hidden mt-3 bg-gray-50 p-3 rounded-xl border border-gray-200 items-center gap-2 fade-in">
-           <input type="date" id="date-start-statistik" class="w-full bg-white text-gray-800 text-sm font-medium rounded-lg p-2 border outline-none">
-           <span class="text-gray-400">-</span>
-           <input type="date" id="date-end-statistik" class="w-full bg-white text-gray-800 text-sm font-medium rounded-lg p-2 border outline-none">
-        </div>
-        <button onclick="loadStatistikAdmin()" class="w-full mt-3 bg-[#f0b21e] text-white px-4 py-3 rounded-lg text-sm font-black shadow-lg active:bg-yellow-500">Lihat Grafik</button>
-      </div>
-
-      <div class="p-4 flex-1 overflow-y-auto bg-gray-50">
-        <div id="loading-statistik" class="hidden flex justify-center p-10"><i class="ph ph-spinner-gap animate-spin text-4xl text-[#f0b21e]"></i></div>
-        
-        <div id="konten-statistik" class="hidden flex-col gap-4">
-            <!-- CANVAS UNTUK CHART.JS (LIGHT MODE) -->
-            <div class="bg-white p-4 rounded-3xl shadow-sm relative w-full h-64 border border-gray-100">
-               <div class="absolute top-4 left-4 flex items-center"><div class="w-2 h-2 rounded-full bg-green-500 mr-2 shadow-[0_0_8px_rgba(34,197,94,0.5)]"></div><span class="text-gray-700 text-xs font-bold tracking-wide">Performance</span></div>
-               <canvas id="chart-orderan" class="mt-4"></canvas>
-            </div>
-
-            <!-- KARTU RINGKASAN TOTAL (LIGHT MODE) -->
-            <div class="grid grid-cols-3 gap-3">
-               <div class="col-span-3 bg-white p-4 rounded-2xl text-center border border-gray-100 shadow-sm">
-                  <h4 class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Total Keseluruhan</h4>
-                  <p id="stat-tot-all" class="text-4xl font-black text-gray-800">0</p>
-               </div>
-               <div class="bg-white p-3 rounded-2xl text-center border border-gray-100 shadow-sm">
-                  <h4 class="text-[10px] font-bold text-[#f0b21e] uppercase tracking-wide">OP</h4>
-                  <p id="stat-tot-op" class="text-2xl font-black text-gray-800">0</p>
-               </div>
-               <div class="bg-white p-3 rounded-2xl text-center border border-gray-100 shadow-sm">
-                  <h4 class="text-[10px] font-bold text-[#f97316] uppercase tracking-wide">OF</h4>
-                  <p id="stat-tot-of" class="text-2xl font-black text-gray-800">0</p>
-               </div>
-               <div class="bg-white p-3 rounded-2xl text-center border border-gray-100 shadow-sm">
-                  <h4 class="text-[10px] font-bold text-[#a855f7] uppercase tracking-wide">KH</h4>
-                  <p id="stat-tot-kh" class="text-2xl font-black text-gray-800">0</p>
-               </div>
-            </div>
-        </div>
-      </div>
-    </div>
-
-
     <div id="tab-admin-penyesuaian" class="admin-tab hidden flex-col h-screen fade-in pb-24">
       <div class="bg-gradient-to-r from-purple-700 to-fuchsia-800 p-5 shadow-md z-10 sticky top-0 rounded-b-[2rem] text-white">
         <h2 class="text-2xl font-extrabold tracking-wide">Penyesuaian</h2><p class="text-sm opacity-90 font-medium">Input Tambahan, Potongan, Iuran</p>
       </div>
       <div class="p-6 flex-1 overflow-y-auto space-y-6">
         <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
+            <label class="block text-sm font-extrabold text-gray-700 mb-2">Tanggal Penyesuaian</label>
+            <input type="date" id="peny-tanggal" class="w-full mb-5 bg-gray-50 border-2 rounded-xl p-3 font-bold text-gray-700 outline-none">
+            
             <label class="block text-sm font-extrabold text-gray-700 mb-2">Kategori Aksi</label>
             <select id="peny-kategori" onchange="ubahKategoriPeny()" class="w-full mb-5 bg-gray-50 border-2 rounded-xl p-3 font-bold text-gray-700 outline-none">
                 <option value="Penyesuaian Massal">📢 Massal / Iuran (Semua Driver)</option>
@@ -439,36 +347,79 @@
       </div>
     </div>
 
-    <!-- FITUR EXPORT EXCEL -->
+    <!-- FITUR BARU: TAB EXPORT EXCEL -->
     <div id="tab-admin-backup" class="admin-tab hidden flex-col h-screen fade-in pb-24">
       <div class="bg-gradient-to-r from-orange-600 to-red-700 p-5 shadow-md z-10 sticky top-0 rounded-b-[2rem] text-white">
         <h2 class="text-2xl font-extrabold tracking-wide mb-1">Export Excel</h2>
         <p class="text-sm opacity-90 font-medium">Download rekap orderan semua driver</p>
       </div>
+
       <div class="p-6 flex-1 overflow-y-auto space-y-6">
         <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 text-center">
             <i class="ph ph-file-xls text-6xl text-green-600 mb-4 inline-block"></i>
             <h3 class="font-bold text-gray-800 mb-4 text-lg">Pilih Periode Backup</h3>
+            
             <select id="filter-tipe-backup" onchange="toggleCustomDateBackup()" class="w-full mb-4 bg-gray-50 border-2 rounded-xl p-3 font-bold text-gray-700 outline-none">
                 <option value="7hari">Minggu s/d Sabtu Terakhir</option>
                 <option value="custom">Periode Custom...</option>
             </select>
+            
             <div id="filter-custom-backup" class="hidden flex-col gap-3 mb-5 fade-in bg-gray-50 p-4 rounded-xl border">
-               <div><label class="block text-xs font-bold text-gray-500 mb-1 text-left">Dari Tanggal</label><input type="date" id="date-start-backup" class="w-full bg-white text-gray-800 text-sm font-medium rounded-lg p-2 border outline-none"></div>
-               <div><label class="block text-xs font-bold text-gray-500 mb-1 text-left">Sampai Tanggal</label><input type="date" id="date-end-backup" class="w-full bg-white text-gray-800 text-sm font-medium rounded-lg p-2 border outline-none"></div>
+               <div>
+                  <label class="block text-xs font-bold text-gray-500 mb-1 text-left">Dari Tanggal</label>
+                  <input type="date" id="date-start-backup" class="w-full bg-white text-gray-800 text-sm font-medium rounded-lg p-2 border outline-none">
+               </div>
+               <div>
+                  <label class="block text-xs font-bold text-gray-500 mb-1 text-left">Sampai Tanggal</label>
+                  <input type="date" id="date-end-backup" class="w-full bg-white text-gray-800 text-sm font-medium rounded-lg p-2 border outline-none">
+               </div>
             </div>
-            <button id="btn-download-excel" onclick="downloadExcelAdmin()" class="w-full mt-2 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-black text-lg py-4 rounded-xl shadow-lg active:scale-95 flex justify-center items-center"><i class="ph ph-download-simple mr-2 text-xl"></i> Unduh File Excel</button>
+
+            <button id="btn-download-excel" onclick="downloadExcelAdmin()" class="w-full mt-2 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-black text-lg py-4 rounded-xl shadow-lg active:scale-95 flex justify-center items-center">
+              <i class="ph ph-download-simple mr-2 text-xl"></i> Unduh File Excel
+            </button>
             <p class="text-[10px] text-gray-400 mt-4">*Data diurutkan berdasarkan nama secara abjad</p>
         </div>
       </div>
     </div>
 
-    <!-- FITUR KELOLA USER -->
+    <!-- FITUR BARU: TAB KONTROL INPUT -->
+    <div id="tab-admin-kontrol" class="admin-tab hidden flex-col h-screen fade-in pb-24">
+      <div class="bg-gradient-to-r from-cyan-600 to-blue-700 p-5 shadow-md z-10 sticky top-0 rounded-b-[2rem] text-white">
+        <h2 class="text-2xl font-extrabold tracking-wide mb-3">Kontrol Input</h2>
+        <div class="bg-white/10 p-1.5 rounded-xl border border-white/20 flex items-center mb-2">
+            <select id="filter-tipe-kontrol" onchange="toggleCustomDateKontrol()" class="flex-1 bg-transparent text-white border-none outline-none text-sm font-semibold appearance-none px-2">
+              <option value="7hari">Hanya Hari Ini Saja</option>
+              <option value="custom" class="text-gray-800">Cek Tanggal Custom (1 Hari)...</option>
+            </select>
+            <button onclick="loadKontrolInput()" class="bg-white text-cyan-800 px-4 py-2 rounded-lg text-sm font-bold shadow-sm">Cek</button>
+        </div>
+        <div id="filter-custom-kontrol" class="hidden flex-col gap-2 mb-2 fade-in">
+            <input type="date" id="date-single-kontrol" class="w-full bg-white text-gray-800 text-sm font-medium rounded-lg p-2 outline-none">
+        </div>
+        <div class="flex justify-center space-x-3 text-[10px] font-bold mt-2 bg-white/20 p-2 rounded-xl">
+           <span class="flex items-center"><span class="w-3 h-3 bg-red-500 rounded-full mr-1 inline-block border border-white"></span>Belum</span>
+           <span class="flex items-center"><span class="w-3 h-3 bg-green-500 rounded-full mr-1 inline-block border border-white"></span>Aman</span>
+           <span class="flex items-center"><span class="w-3 h-3 bg-yellow-400 rounded-full mr-1 inline-block border border-white"></span>Dobel</span>
+        </div>
+      </div>
+
+      <div id="loading-kontrol" class="hidden flex-col items-center justify-center p-10 mt-10"><i class="ph-fill ph-motorcycle animate-bounce text-5xl text-cyan-600"></i></div>
+
+      <div class="p-4 flex-1 overflow-y-auto">
+        <div id="grid-kontrol" class="grid grid-cols-3 gap-3">
+           <div class="col-span-3 text-center text-gray-400 mt-10"><i class="ph ph-users-three text-5xl mb-2"></i><p class="text-sm">Klik Cek untuk memuat data</p></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FITUR BARU: TAB KELOLA USER -->
     <div id="tab-admin-user" class="admin-tab hidden flex-col h-screen fade-in pb-24">
       <div class="bg-gradient-to-r from-gray-700 to-gray-900 p-5 shadow-md z-10 sticky top-0 rounded-b-[2rem] text-white">
         <h2 class="text-2xl font-extrabold tracking-wide mb-1">Kelola Driver</h2>
         <p class="text-sm opacity-90 font-medium">Tambah atau Hapus Akun Driver</p>
       </div>
+
       <div class="p-6 flex-1 overflow-y-auto space-y-6">
         <div class="bg-white p-5 rounded-3xl shadow-sm border border-gray-100">
             <h3 class="font-bold text-gray-800 mb-3 border-b pb-2"><i class="ph ph-user-plus mr-2 text-blue-600"></i>Tambah Driver Baru</h3>
@@ -479,10 +430,16 @@
             <button id="btn-add-user" onclick="tambahUserBaru()" class="w-full bg-blue-600 text-white font-bold py-3 rounded-xl active:bg-blue-700 flex justify-center items-center shadow-md">Simpan Driver</button>
             <p class="text-[10px] text-gray-400 mt-2 text-center">*Password default: 123456</p>
         </div>
+
         <div class="bg-white p-5 rounded-3xl shadow-sm border border-gray-100">
-            <h3 class="font-bold text-gray-800 mb-3 border-b pb-2 flex justify-between items-center"><span><i class="ph ph-users mr-2 text-gray-600"></i>Daftar Driver</span><button onclick="loadDaftarUser()" class="text-xs bg-gray-100 px-2 py-1 rounded text-gray-600 hover:bg-gray-200"><i class="ph ph-arrows-clockwise"></i> Refresh</button></h3>
+            <h3 class="font-bold text-gray-800 mb-3 border-b pb-2 flex justify-between items-center">
+              <span><i class="ph ph-users mr-2 text-gray-600"></i>Daftar Driver</span>
+              <button onclick="loadDaftarUser()" class="text-xs bg-gray-100 px-2 py-1 rounded text-gray-600 hover:bg-gray-200"><i class="ph ph-arrows-clockwise"></i> Refresh</button>
+            </h3>
             <div id="loading-user" class="hidden flex justify-center py-4"><i class="ph ph-spinner-gap animate-spin text-2xl text-gray-500"></i></div>
-            <div id="list-user-admin" class="space-y-2 mt-2"><div class="text-center text-gray-400 text-sm">Klik Refresh untuk memuat</div></div>
+            <div id="list-user-admin" class="space-y-2 mt-2">
+                <div class="text-center text-gray-400 text-sm">Klik Refresh untuk memuat</div>
+            </div>
         </div>
       </div>
     </div>
@@ -494,16 +451,15 @@
               <h3 class="font-bold text-gray-800 text-lg">Menu Lainnya</h3>
               <button onclick="toggleAdminMenu()" class="p-2 bg-gray-100 rounded-full text-gray-600 active:bg-gray-200"><i class="ph ph-x"></i></button>
           </div>
-          <div class="grid grid-cols-4 gap-4">
-              <button onclick="switchTabAdmin('statistik'); toggleAdminMenu()" class="flex flex-col items-center justify-center p-4 bg-gray-800 text-[#f0b21e] rounded-2xl active:scale-95 transition"><i class="ph ph-chart-line-up text-3xl mb-2"></i><span class="text-[10px] font-bold">Statistik</span></button>
-              <button onclick="switchTabAdmin('penyesuaian'); toggleAdminMenu()" class="flex flex-col items-center justify-center p-4 bg-purple-50 text-purple-700 rounded-2xl active:scale-95 transition"><i class="ph ph-sliders-horizontal text-3xl mb-2"></i><span class="text-[10px] font-bold">Aksi</span></button>
-              <button onclick="switchTabAdmin('backup'); toggleAdminMenu()" class="flex flex-col items-center justify-center p-4 bg-orange-50 text-orange-700 rounded-2xl active:scale-95 transition"><i class="ph ph-file-xls text-3xl mb-2"></i><span class="text-[10px] font-bold">Excel</span></button>
-              <button onclick="switchTabAdmin('user'); toggleAdminMenu()" class="flex flex-col items-center justify-center p-4 bg-gray-100 text-gray-800 rounded-2xl active:scale-95 transition"><i class="ph ph-users text-3xl mb-2"></i><span class="text-[10px] font-bold">Users</span></button>
+          <div class="grid grid-cols-3 gap-4">
+              <button onclick="switchTabAdmin('penyesuaian'); toggleAdminMenu()" class="flex flex-col items-center justify-center p-4 bg-purple-50 text-purple-700 rounded-2xl active:scale-95 transition"><i class="ph ph-sliders-horizontal text-3xl mb-2"></i><span class="text-[11px] font-bold">Aksi</span></button>
+              <button onclick="switchTabAdmin('backup'); toggleAdminMenu()" class="flex flex-col items-center justify-center p-4 bg-orange-50 text-orange-700 rounded-2xl active:scale-95 transition"><i class="ph ph-file-xls text-3xl mb-2"></i><span class="text-[11px] font-bold">Excel</span></button>
+              <button onclick="switchTabAdmin('user'); toggleAdminMenu()" class="flex flex-col items-center justify-center p-4 bg-gray-100 text-gray-800 rounded-2xl active:scale-95 transition"><i class="ph ph-users text-3xl mb-2"></i><span class="text-[11px] font-bold">Users</span></button>
           </div>
       </div>
     </div>
 
-    <!-- MODAL EDIT QTY ADMIN (Fix Button Update) -->
+    <!-- MODAL EDIT QTY ADMIN -->
     <div id="modal-edit" class="fixed inset-0 bg-black/60 z-[60] hidden flex items-center justify-center p-4 fade-in backdrop-blur-sm">
       <div class="bg-white rounded-3xl w-full max-w-sm p-6 shadow-2xl">
         <h3 class="text-xl font-bold mb-1">Edit Jumlah Orderan</h3><p id="edit-info" class="text-sm font-semibold text-blue-600 bg-blue-50 p-2 rounded-lg mb-5"></p>
@@ -512,22 +468,8 @@
         <input type="number" id="edit-qty" class="w-full bg-gray-100 border border-gray-200 rounded-xl p-4 text-xl font-bold text-center focus:outline-none focus:ring-2 focus:ring-blue-500 mb-6">
         <div class="flex space-x-3">
           <button onclick="document.getElementById('modal-edit').classList.add('hidden')" class="flex-1 bg-gray-200 text-gray-800 font-bold py-3 rounded-xl">Batal</button>
-          <button onclick="simpanEdit()" class="flex-1 bg-blue-600 text-white font-bold py-3 rounded-xl shadow-lg flex justify-center items-center"><i class="ph ph-check-circle mr-2 text-lg"></i> Update</button>
+          <button onclick="simpanEdit()" class="flex-1 bg-blue-600 text-white font-bold py-3 rounded-xl shadow-lg">Simpan</button>
         </div>
-      </div>
-    </div>
-    
-    <!-- MODAL FORCE KONTROL ADMIN (ON/OFF) -->
-    <div id="modal-kontrol-driver" class="fixed inset-0 bg-black/60 z-[60] hidden flex items-center justify-center p-4 fade-in backdrop-blur-sm">
-      <div class="bg-white rounded-3xl w-full max-w-sm p-6 shadow-2xl text-center">
-        <h3 class="text-xl font-black mb-1 text-gray-800" id="kontrol-nama-driver">Nama Driver</h3>
-        <p class="text-sm text-gray-500 mb-6 font-medium">Ubah akses input driver untuk hari ini.</p>
-        <input type="hidden" id="kontrol-email-driver">
-        <div class="flex space-x-3">
-          <button onclick="aksiKontrolDriver('OFF')" class="flex-1 bg-red-500 text-white font-bold py-3.5 rounded-xl shadow-lg active:bg-red-600 flex flex-col items-center justify-center"><i class="ph ph-lock-key text-2xl mb-1"></i>Kunci (OFF)</button>
-          <button onclick="aksiKontrolDriver('ON')" class="flex-1 bg-green-500 text-white font-bold py-3.5 rounded-xl shadow-lg active:bg-green-600 flex flex-col items-center justify-center"><i class="ph ph-lock-open text-2xl mb-1"></i>Buka (ON)</button>
-        </div>
-        <button onclick="document.getElementById('modal-kontrol-driver').classList.add('hidden')" class="w-full mt-4 bg-gray-100 text-gray-700 font-bold py-3 rounded-xl active:bg-gray-200">Batal</button>
       </div>
     </div>
 
@@ -550,7 +492,7 @@
   </div>
 
   <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbzDRlI9_pXdfgK8SWw9FYJxViXm3I4G2X09SjfT5BSUfOoLkx6vCcPdBB8tyhN72-Hm/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycbzxqMu1mo3qpgxLNFQVqP9h9_-n3LJXU1JAw0pt65Kot4vGYQm8tj6HWtnkMpKWyzYf/exec";
 
     // PWA Setup
     if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(err => console.log('SW failed', err)); }); }
@@ -567,6 +509,10 @@
       if (input.type === "password") { input.type = "text"; icon.classList.remove("ph-eye"); icon.classList.add("ph-eye-slash"); } 
       else { input.type = "password"; icon.classList.remove("ph-eye-slash"); icon.classList.add("ph-eye"); }
     }
+
+    // Filter Regex 6 Angka untuk Form Password
+    document.getElementById('new-pass').addEventListener('input', function() { this.value = this.value.replace(/[^0-9]/g, '').slice(0, 6); });
+    document.getElementById('new-pass-confirm').addEventListener('input', function() { this.value = this.value.replace(/[^0-9]/g, '').slice(0, 6); });
 
     async function apiCall(actionName, dataObj = {}) {
       try {
@@ -591,13 +537,11 @@
          document.getElementById('view-loading').classList.add('hidden'); document.getElementById('view-login').classList.remove('hidden'); document.getElementById('view-login').classList.add('flex');
       }
       
-      // Init Chart JS Defaults
-      Chart.defaults.font.family = "'Inter', sans-serif";
+      // Set Default tanggal Input Penyesuaian ke Hari Ini
+      var today = new Date().toISOString().split('T')[0];
+      if(document.getElementById('peny-tanggal')) document.getElementById('peny-tanggal').value = today;
     });
 
-    // SISTEM NYAWA LOGIN
-    let sisaKesempatan = 3; 
-    
     async function prosesLoginKustom() {
        let email = document.getElementById('login-email').value; let pass = document.getElementById('login-pass').value;
        if(!email || !pass) return tampilkanToast("Email & Password wajib diisi!", 'error');
@@ -612,46 +556,31 @@
               document.getElementById('view-login').classList.add('hidden'); document.getElementById('view-login').classList.remove('flex');
               inisialisasiUser(res);
            } else if(res.status === 'force_change') {
+              // Simpan data di memori untuk bypass login
+              userData = res;
               document.getElementById('pass-email').value = res.email;
               document.getElementById('view-login').classList.add('hidden'); document.getElementById('view-login').classList.remove('flex');
               document.getElementById('view-ganti-password').classList.remove('hidden'); document.getElementById('view-ganti-password').classList.add('flex');
               document.getElementById('btn-batal-pass').classList.add('hidden'); 
-           } else { 
-              // LOGIKA PASSWORD SALAH (3x Kesempatan)
-              if(res.pesan === 'Password salah!') {
-                  sisaKesempatan--;
-                  if(sisaKesempatan > 0) { tampilkanToast(`PASSWORD SALAH! Coba diingat-ingat lagi, aku kasih ${sisaKesempatan} kesempatan lagi.`, 'error'); } 
-                  else { tampilkanToast(`AKUN TERKUNCI. Silakan refresh aplikasi.`, 'error'); document.getElementById('btn-login').disabled = true; }
-              } else { tampilkanToast(res.pesan, 'error'); }
-           }
+           } else { tampilkanToast(res.pesan, 'error'); }
        } catch(e) { document.getElementById('btn-login').disabled = false; document.getElementById('loading-login').classList.add('hidden'); }
     }
 
-    // MODAL CONFIRM GENERIC
-    let pendingAction = null;
-    function tampilkanModalConfirm(pesan, callback) {
-      document.getElementById('confirm-msg').innerText = pesan;
-      pendingAction = callback;
-      document.getElementById('modal-confirm').classList.remove('hidden');
-      document.getElementById('modal-confirm').classList.add('flex');
-    }
-    function tutupModalConfirm() {
-      document.getElementById('modal-confirm').classList.add('hidden');
-      document.getElementById('modal-confirm').classList.remove('flex');
-      pendingAction = null;
-    }
-    document.getElementById('btn-confirm-ok').addEventListener('click', () => {
-      if(pendingAction) pendingAction();
-      tutupModalConfirm();
-    });
-
     async function simpanPasswordKustom() {
        let email = document.getElementById('pass-email').value; let passBaru = document.getElementById('new-pass').value; let passConf = document.getElementById('new-pass-confirm').value;
-       if(!passBaru || passBaru.length < 6) return tampilkanToast("Password minimal 6 karakter!", 'error');
+       if(!passBaru || passBaru.length !== 6) return tampilkanToast("Password wajib 6 Angka!", 'error');
        if(passBaru !== passConf) return tampilkanToast("Password tidak sama!", 'error');
+
        document.getElementById('btn-simpan-pass').innerHTML = '<i class="ph ph-spinner-gap animate-spin"></i>';
        const res = await apiCall('simpanPasswordBaru', { email: email, newPassword: passBaru });
-       tampilkanToast(res); logout();
+       tampilkanToast(res); 
+       
+       // UPDATE: OTOMATIS LOGIN BYPASS
+       localStorage.setItem('appOrderanEmail', userData.email);
+       document.getElementById('view-ganti-password').classList.add('hidden');
+       document.getElementById('view-ganti-password').classList.remove('flex');
+       document.getElementById('btn-simpan-pass').innerHTML = 'Simpan Password';
+       inisialisasiUser(userData);
     }
 
     function bukaGantiPassword() {
@@ -668,32 +597,11 @@
         document.getElementById('nav-admin').classList.remove('hidden'); document.getElementById('nav-admin').classList.add('flex');
         const drivers = await apiCall('getDaftarDriver'); populateDriverDropdowns(drivers);
         switchTabAdmin('riwayat');
-        autoFillStatistikDate(); // Persiapan rentang tanggal statistik
       } else if (res.role === 'Driver') {
         document.getElementById('driver-name-header').innerText = res.nama;
         document.getElementById('nav-driver').classList.remove('hidden'); document.getElementById('nav-driver').classList.add('flex');
-        
-        // Pengecekan Status OFF hari ini
-        const offStat = await apiCall('cekStatusOffHariIni', { email: res.email });
-        if(offStat.isOff) {
-            document.getElementById('overlay-off').classList.remove('hidden');
-            document.getElementById('overlay-off').classList.add('flex');
-        }
         switchTabDriver('input');
       }
-    }
-    
-    // --- DRIVER OFF LOGIC ---
-    function toggleDriverOff() {
-        tampilkanModalConfirm("Anda yakin ingin menandai diri OFF hari ini? Sistem input akan dikunci sampai besok.", async () => {
-          document.getElementById('btn-set-off').innerHTML = '<i class="ph ph-spinner-gap animate-spin mr-2"></i> Memproses...';
-          document.getElementById('btn-set-off').disabled = true;
-          
-          const res = await apiCall('setDriverOff', { email: userData.email });
-          tampilkanToast(res);
-          document.getElementById('overlay-off').classList.remove('hidden');
-          document.getElementById('overlay-off').classList.add('flex');
-        });
     }
     
     function populateDriverDropdowns(drivers) {
@@ -722,7 +630,7 @@
          if(t === tab) { btn.classList.add('text-green-600'); btn.classList.remove('text-gray-400'); } else { btn.classList.remove('text-green-600'); btn.classList.add('text-gray-400'); }
       });
       if(tab === 'input') { ['Operator', 'Offline', 'Khusus'].forEach(j => { stateOrder[j] = 0; document.getElementById('qty-' + j).innerText = '0'; }); }
-      else if(tab === 'orderan') { loadRiwayatDriver(); } else if(tab === 'setoran') { loadSetoranDriver(); }
+      else if(tab === 'orderan') { loadRiwayatDriver(); } else if(tab === 'setoran') { loadSetoranDriver(false); }
     }
 
     function switchTabAdmin(tab) {
@@ -749,7 +657,6 @@
 
       if(tab === 'penyesuaian') { ubahKategoriPeny(); }
       else if(tab === 'user') { loadDaftarUser(); }
-      else if(tab === 'statistik') { autoFillStatistikDate(); loadStatistikAdmin(); } // Auto load
     }
 
     function ubahQty(jenis, nilai) { let baru = stateOrder[jenis] + nilai; if (baru >= 0) { stateOrder[jenis] = baru; document.getElementById('qty-' + jenis).innerText = baru; } }
@@ -759,6 +666,7 @@
       if (list.length === 0) return tampilkanToast("Isi minimal 1 orderan!", 'error');
       let btn = document.getElementById('btn-submit'); let loading = document.getElementById('btn-loading');
       btn.disabled = true; loading.classList.remove('hidden');
+      
       const res = await apiCall('simpanOrderan', { email: userData.email, listOrderan: list });
       tampilkanToast(res); btn.disabled = false; loading.classList.add('hidden'); switchTabDriver('input'); 
     }
@@ -775,51 +683,91 @@
         if (!start || !end) return; payload.start = start; payload.end = end;
       }
       document.getElementById('loading-riwayat-driver').classList.remove('hidden'); document.getElementById('list-riwayat-driver').innerHTML = '';
+      
       const data = await apiCall('getRiwayatDriver', { email: userData.email, filter: payload });
+      
       document.getElementById('loading-riwayat-driver').classList.add('hidden'); let html = '';
       let totalSemua = data['Operator'] + data['Offline'] + data['Khusus'];
       if(totalSemua === 0) { html = '<div class="text-center text-gray-400 mt-10"><i class="ph ph-folder-open text-5xl mb-2"></i><p>Belum ada orderan.</p></div>'; } 
       else {
           const items = [{ nama: 'Operator', jumlah: data['Operator'], icon: 'ph-headset' }, { nama: 'Offline', jumlah: data['Offline'], icon: 'ph-wifi-slash' }, { nama: 'Khusus', jumlah: data['Khusus'], icon: 'ph-star' }];
-          items.forEach(item => { html += `<div class="bg-white p-5 rounded-2xl border flex justify-between items-center mb-3"><div class="flex items-center"><div class="bg-green-100 p-3 rounded-xl mr-4"><i class="ph ${item.icon} text-green-600 text-2xl font-bold"></i></div><div><p class="text-xs font-bold text-gray-400 uppercase">Total Order</p><p class="text-lg font-bold text-gray-800">${item.nama}</p></div></div><div class="bg-gray-50 border text-gray-800 font-black px-6 py-3 rounded-xl text-2xl shadow-inner">${item.jumlah}</div></div>`; });
+          items.forEach(item => {
+            html += `<div class="bg-white p-5 rounded-2xl border flex justify-between items-center mb-3">
+                <div class="flex items-center"><div class="bg-green-100 p-3 rounded-xl mr-4"><i class="ph ${item.icon} text-green-600 text-2xl font-bold"></i></div>
+                   <div><p class="text-xs font-bold text-gray-400 uppercase">Total Order</p><p class="text-lg font-bold text-gray-800">${item.nama}</p></div>
+                </div><div class="bg-gray-50 border text-gray-800 font-black px-6 py-3 rounded-xl text-2xl shadow-inner">${item.jumlah}</div></div>`;
+          });
       }
       document.getElementById('list-riwayat-driver').innerHTML = html;
     }
 
-    async function loadSetoranDriver() {
-      document.getElementById('loading-setoran').classList.remove('hidden'); document.getElementById('konten-setoran').classList.add('hidden');
-      const lap = await apiCall('getLaporanDriver', { email: userData.email });
-      document.getElementById('loading-setoran').classList.add('hidden'); document.getElementById('konten-setoran').classList.remove('hidden');
-      
-      let banner = document.getElementById('driver-status-banner'); banner.classList.remove('hidden');
-      if (lap.isLunas) { banner.className = "mb-4 text-center p-3 rounded-xl font-bold text-sm bg-green-100 text-green-800 border border-green-200"; banner.innerHTML = "<i class='ph ph-check-circle mr-1 text-lg'></i> SETORAN LUNAS: Anda bisa ON kembali"; } 
-      else { banner.className = "mb-4 text-center p-3 rounded-xl font-bold text-sm bg-pink-100 text-pink-800 border border-pink-200"; banner.innerHTML = "<i class='ph ph-warning-circle mr-1 text-lg'></i> BELUM SETOR: Anda tidak bisa ON"; }
-
-      document.getElementById('setoran-periode').innerText = lap.periodeMulai + " s/d " + lap.periodeAkhir;
-      document.getElementById('lap-order').innerText = formatRp(lap.totalOrderRp); document.getElementById('lap-wajib').innerText = formatRp(lap.setoranWajib);
-      document.getElementById('lap-denda').innerText = formatRp(lap.tambahan); document.getElementById('lap-massal').innerText = formatRp(lap.massal);
-      document.getElementById('lap-potongan').innerText = formatRp(lap.potongan); document.getElementById('lap-akhir').innerText = formatRp(lap.totalAkhir);
-      
-      let saldoEl = document.getElementById('lap-saldo');
-      if (lap.saldoSebelumnya > 0) { saldoEl.innerText = "- " + formatRp(lap.saldoSebelumnya); saldoEl.className = "font-bold text-green-600"; }
-      else if (lap.saldoSebelumnya < 0) { saldoEl.innerText = "+ " + formatRp(Math.abs(lap.saldoSebelumnya)); saldoEl.className = "font-bold text-red-600"; }
-      else { saldoEl.innerText = "Rp 0"; saldoEl.className = "font-bold text-gray-500"; }
-
-      let htmlRincian = '';
-      if(lap.rincian.length === 0) { htmlRincian = '<p class="text-sm text-gray-500 italic">Tidak ada catatan penyesuaian khusus.</p>'; } 
-      else { lap.rincian.forEach(r => { let warna = r.kat === 'Potongan' ? 'text-blue-600' : (r.kat === 'Tambahan' ? 'text-red-600' : 'text-orange-600'); htmlRincian += `<div class="bg-white p-3 rounded-xl border shadow-sm flex justify-between items-center mb-2"><div><p class="font-bold text-sm">${r.kat}</p><p class="text-xs text-gray-500">${r.ket}</p></div><div class="font-bold ${warna}">${formatRp(r.nom)}</div></div>`; }); }
-      document.getElementById('lap-rincian').innerHTML = htmlRincian;
+    // UPDATE: DRIVER SETORAN
+    function toggleCekSementara() {
+       const box = document.getElementById('box-cek-sementara');
+       if(box.classList.contains('hidden')) { box.classList.remove('hidden'); } else { box.classList.add('hidden'); }
     }
 
-    function toggleCustomDate() { let tipe = document.getElementById('filter-tipe').value; let divCustom = document.getElementById('filter-custom'); if (tipe === 'custom') { divCustom.classList.remove('hidden'); divCustom.classList.add('flex'); } else { divCustom.classList.add('hidden'); divCustom.classList.remove('flex'); } }
-    function toggleCustomDateSetoranAdmin() { let tipe = document.getElementById('filter-tipe-setoran').value; let divCustom = document.getElementById('filter-custom-setoran-admin'); if (tipe === 'custom') { divCustom.classList.remove('hidden'); divCustom.classList.add('flex'); } else { divCustom.classList.add('hidden'); divCustom.classList.remove('flex'); } }
+    async function loadSetoranDriverCustom() {
+       let start = document.getElementById('date-start-temp').value; let end = document.getElementById('date-end-temp').value;
+       if(!start || !end) return tampilkanToast("Pilih rentang tanggal!", "error");
+       await loadSetoranDriver(true, start, end);
+    }
+
+    async function loadSetoranDriver(isCustom = false, start = null, end = null) {
+      document.getElementById('loading-setoran').classList.remove('hidden'); document.getElementById('konten-setoran').classList.add('hidden');
+      
+      let payload = { email: userData.email, filter: { tipe: 'official_driver' } };
+      if(isCustom) { payload.filter = { tipe: 'custom', start: start, end: end }; }
+
+      const lap = await apiCall('getLaporanDriver', payload);
+      document.getElementById('loading-setoran').classList.add('hidden'); document.getElementById('konten-setoran').classList.remove('hidden');
+      
+      let banner = document.getElementById('driver-status-banner');
+      let wrapper = document.getElementById('wrapper-tagihan-driver');
+      
+      if (!isCustom && lap.isLunas) {
+        banner.classList.remove('hidden');
+        wrapper.classList.add('hidden'); // Sembunyikan Rincian
+        banner.className = "mb-4 text-center p-4 rounded-xl font-bold text-sm bg-green-100 text-green-800 border border-green-200 mt-4";
+        banner.innerHTML = "<i class='ph ph-check-circle mr-1 text-2xl mb-2 inline-block'></i><br>TERIMA KASIH SUDAH SETOR<br>SILAHKAN ON KEMBALI";
+      } else {
+        banner.classList.add('hidden');
+        wrapper.classList.remove('hidden'); // Tampilkan rincian
+        document.getElementById('setoran-periode').innerText = lap.periodeMulai + " s/d " + lap.periodeAkhir;
+        document.getElementById('lap-order').innerText = formatRp(lap.totalOrderRp); document.getElementById('lap-wajib').innerText = formatRp(lap.setoranWajib);
+        document.getElementById('lap-denda').innerText = formatRp(lap.tambahan); document.getElementById('lap-massal').innerText = formatRp(lap.massal);
+        document.getElementById('lap-potongan').innerText = formatRp(lap.potongan); document.getElementById('lap-akhir').innerText = formatRp(lap.totalAkhir);
+        
+        let saldoEl = document.getElementById('lap-saldo');
+        if (lap.saldoSebelumnya > 0) { saldoEl.innerText = "- " + formatRp(lap.saldoSebelumnya); saldoEl.className = "font-bold text-green-600"; }
+        else if (lap.saldoSebelumnya < 0) { saldoEl.innerText = "+ " + formatRp(Math.abs(lap.saldoSebelumnya)); saldoEl.className = "font-bold text-red-600"; }
+        else { saldoEl.innerText = "Rp 0"; saldoEl.className = "font-bold text-gray-500"; }
+
+        let htmlRincian = '';
+        if(lap.rincian.length === 0) { htmlRincian = '<p class="text-sm text-gray-500 italic">Tidak ada catatan penyesuaian khusus.</p>'; } 
+        else { lap.rincian.forEach(r => { let warna = r.kat === 'Potongan' ? 'text-blue-600' : (r.kat === 'Tambahan' ? 'text-red-600' : 'text-orange-600');
+              htmlRincian += `<div class="bg-white p-3 rounded-xl border shadow-sm flex justify-between items-center mb-2"><div><p class="font-bold text-sm">${r.kat}</p><p class="text-xs text-gray-500">${r.ket}</p></div><div class="font-bold ${warna}">${formatRp(r.nom)}</div></div>`; }); }
+        document.getElementById('lap-rincian').innerHTML = htmlRincian;
+      }
+    }
+
+    function toggleCustomDate() { let tipe = document.getElementById('filter-tipe').value; let divCustom = document.getElementById('filter-custom');
+      if (tipe === 'custom') { divCustom.classList.remove('hidden'); divCustom.classList.add('flex'); } else { divCustom.classList.add('hidden'); divCustom.classList.remove('flex'); } }
+    
+    function toggleCustomDateSetoranAdmin() { let tipe = document.getElementById('filter-tipe-setoran').value; let divCustom = document.getElementById('filter-custom-setoran-admin');
+      if (tipe === 'custom') { divCustom.classList.remove('hidden'); divCustom.classList.add('flex'); } else { divCustom.classList.add('hidden'); divCustom.classList.remove('flex'); } }
 
     async function loadRiwayatAdmin() {
       let driverEmail = document.getElementById('admin-rekap-driver').value; if (!driverEmail) return tampilkanToast("Pilih nama driver!", 'error');
       let tipe = document.getElementById('filter-tipe').value; let payload = { tipe: tipe, email: driverEmail };
-      if (tipe === 'custom') { let start = document.getElementById('date-start').value; let end = document.getElementById('date-end').value; if (!start || !end) return tampilkanToast("Pilih tanggal!", 'error'); payload.start = start; payload.end = end; }
+      if (tipe === 'custom') {
+        let start = document.getElementById('date-single').value;
+        if (!start) return tampilkanToast("Pilih tanggal!", 'error'); payload.start = start; payload.end = start; // Kirim tanggal yg sama
+      }
       document.getElementById('loading-riwayat').classList.remove('hidden'); document.getElementById('list-riwayat').innerHTML = '';
+      
       const response = await apiCall('getRiwayatOrderan', { filter: payload });
+      
       document.getElementById('loading-riwayat').classList.add('hidden'); let html = '';
       if (response.mode === 'summary') {
           let totalQty = response.data.Operator + response.data.Offline + response.data.Khusus;
@@ -833,7 +781,12 @@
       } else {
           if(response.data.length === 0) { html = '<div class="text-center text-gray-400 mt-10"><p>Belum ada orderan.</p></div>'; } 
           else {
-              response.data.forEach(d => { html += `<div class="bg-white p-4 rounded-2xl border flex flex-col mb-3"><div class="flex justify-between items-start mb-2 border-b pb-2"><div><p class="text-[10px] font-bold text-gray-400"><i class="ph ph-clock mr-1"></i>${d.tgl}</p></div><div class="bg-blue-50 text-blue-700 text-[11px] font-extrabold px-2 py-1 rounded-lg">${d.jenis}</div></div><div class="flex justify-between items-end mt-1"><div><p class="text-[11px] text-gray-500">Qty: <span class="font-black text-lg text-gray-800">${d.qty}</span></p></div><div class="flex items-center space-x-3"><p class="font-black text-blue-700">${formatRp(d.total)}</p><button onclick="document.getElementById('edit-row').value=${d.row};document.getElementById('edit-qty').value=${d.qty};document.getElementById('edit-info').innerHTML='Tanggal: ${d.tgl}<br>Jenis: ${d.jenis}';document.getElementById('modal-edit').classList.remove('hidden');" class="bg-yellow-50 text-yellow-600 p-2 rounded-lg"><i class="ph ph-pencil-simple font-bold"></i></button></div></div></div>`; });
+              response.data.forEach(d => {
+                html += `<div class="bg-white p-4 rounded-2xl border flex flex-col mb-3">
+                    <div class="flex justify-between items-start mb-2 border-b pb-2"><div><p class="text-[10px] font-bold text-gray-400"><i class="ph ph-clock mr-1"></i>${d.tgl}</p></div><div class="bg-blue-50 text-blue-700 text-[11px] font-extrabold px-2 py-1 rounded-lg">${d.jenis}</div></div>
+                    <div class="flex justify-between items-end mt-1"><div><p class="text-[11px] text-gray-500">Qty: <span class="font-black text-lg text-gray-800">${d.qty}</span></p></div>
+                    <div class="flex items-center space-x-3"><p class="font-black text-blue-700">${formatRp(d.total)}</p><button onclick="document.getElementById('edit-row').value=${d.row};document.getElementById('edit-qty').value=${d.qty};document.getElementById('edit-info').innerHTML='Tanggal: ${d.tgl}<br>Jenis: ${d.jenis}';document.getElementById('modal-edit').classList.remove('hidden');" class="bg-yellow-50 text-yellow-600 p-2 rounded-lg"><i class="ph ph-pencil-simple font-bold"></i></button></div></div></div>`;
+              });
           }
       }
       document.getElementById('list-riwayat').innerHTML = html;
@@ -843,6 +796,7 @@
       let row = document.getElementById('edit-row').value; let newQty = document.getElementById('edit-qty').value;
       if(newQty === '' || newQty < 0) return tampilkanToast("Qty tidak valid", 'error');
       document.getElementById('modal-edit').classList.add('hidden'); document.getElementById('loading-riwayat').classList.remove('hidden');
+      
       const res = await apiCall('editOrderan', { row: row, newQty: newQty });
       tampilkanToast(res); loadRiwayatAdmin();
     }
@@ -853,14 +807,22 @@
       if (tipe === 'custom') { let start = document.getElementById('date-start-setoran-admin').value; let end = document.getElementById('date-end-setoran-admin').value; if (!start || !end) return tampilkanToast("Pilih tanggal!", 'error'); payload.start = start; payload.end = end; }
       
       document.getElementById('loading-setoran-admin').classList.remove('hidden'); document.getElementById('konten-setoran-admin').classList.add('hidden');
+      
       const lap = await apiCall('getLaporanAdmin', { email: driverEmail, filter: payload });
       
       window.currentAdminLapEmail = driverEmail; window.currentAdminLapPeriode = lap.periodeRaw; window.currentAdminTagihan = lap.tagihanBerjalan;
       document.getElementById('loading-setoran-admin').classList.add('hidden'); document.getElementById('konten-setoran-admin').classList.remove('hidden');
       
       let badge = document.getElementById('admin-status-badge');
-      if (lap.isLunas) { badge.className = "inline-block px-4 py-2 rounded-lg font-bold text-sm mb-2 bg-green-100 text-green-800 border border-green-200"; badge.innerHTML = "<i class='ph ph-check-circle'></i> LUNAS (Bisa ON)"; document.getElementById('admin-input-bayar').value = lap.nominalDibayarRecord || 0; } 
-      else { badge.className = "inline-block px-4 py-2 rounded-lg font-bold text-sm mb-2 bg-red-100 text-red-800 border border-red-200"; badge.innerHTML = "<i class='ph ph-x-circle'></i> BELUM SETOR (Tidak Bisa ON)"; document.getElementById('admin-input-bayar').value = ''; }
+      if (lap.isLunas) {
+        badge.className = "inline-block px-4 py-2 rounded-lg font-bold text-sm mb-2 bg-green-100 text-green-800 border border-green-200";
+        badge.innerHTML = "<i class='ph ph-check-circle'></i> LUNAS (Bisa ON)";
+        document.getElementById('admin-input-bayar').value = lap.nominalDibayarRecord || 0;
+      } else {
+        badge.className = "inline-block px-4 py-2 rounded-lg font-bold text-sm mb-2 bg-red-100 text-red-800 border border-red-200";
+        badge.innerHTML = "<i class='ph ph-x-circle'></i> BELUM SETOR (Tidak Bisa ON)";
+        document.getElementById('admin-input-bayar').value = '';
+      }
 
       document.getElementById('admin-setoran-periode').innerText = lap.periodeMulai + " s/d " + lap.periodeAkhir;
       document.getElementById('admin-lap-order').innerText = formatRp(lap.totalOrderRp); document.getElementById('admin-lap-wajib').innerText = formatRp(lap.setoranWajib);
@@ -874,76 +836,79 @@
 
       let htmlRincian = '';
       if(lap.rincian.length === 0) { htmlRincian = '<p class="text-sm text-gray-500 italic">Tidak ada rincian tambahan/potongan.</p>'; } 
-      else { lap.rincian.forEach(r => { let warna = r.kat === 'Potongan' ? 'text-blue-600' : (r.kat === 'Tambahan' ? 'text-red-600' : 'text-orange-600'); htmlRincian += `<div class="bg-white p-3 rounded-xl border flex justify-between items-center mb-2"><div><p class="font-bold text-sm">${r.kat}</p><p class="text-xs text-gray-500">${r.ket}</p></div><div class="font-bold ${warna}">${formatRp(r.nom)}</div></div>`; }); }
+      else { lap.rincian.forEach(r => { let warna = r.kat === 'Potongan' ? 'text-blue-600' : (r.kat === 'Tambahan' ? 'text-red-600' : 'text-orange-600');
+            htmlRincian += `<div class="bg-white p-3 rounded-xl border flex justify-between items-center mb-2"><div><p class="font-bold text-sm">${r.kat}</p><p class="text-xs text-gray-500">${r.ket}</p></div><div class="font-bold ${warna}">${formatRp(r.nom)}</div></div>`; }); }
       document.getElementById('admin-lap-rincian').innerHTML = htmlRincian;
     }
 
     async function ubahStatusSetoran(statusLunas) {
-      if (!window.currentAdminLapEmail || !window.currentAdminLapPeriode) { tampilkanToast("Data periode belum siap. Lakukan Cari ulang!", "error"); return; }
+      if (!window.currentAdminLapEmail || !window.currentAdminLapPeriode) {
+        tampilkanToast("Data periode belum siap. Lakukan Cari ulang!", "error"); return;
+      }
       let nomBayar = document.getElementById('admin-input-bayar').value || 0;
       if (statusLunas && nomBayar <= 0) { tampilkanToast("Isi nominal yang dibayar driver!", "error"); return; }
+
       document.getElementById('loading-setoran-admin').classList.remove('hidden'); document.getElementById('konten-setoran-admin').classList.add('hidden');
       try {
-        const res = await apiCall('updateStatusSetoran', { email: window.currentAdminLapEmail, periode: window.currentAdminLapPeriode, status: statusLunas, tagihan: window.currentAdminTagihan, nominalBayar: nomBayar });
+        const res = await apiCall('updateStatusSetoran', { 
+            email: window.currentAdminLapEmail, 
+            periode: window.currentAdminLapPeriode, 
+            status: statusLunas,
+            tagihan: window.currentAdminTagihan,
+            nominalBayar: nomBayar
+        });
         tampilkanToast(res); loadSetoranAdmin(); 
-      } catch (e) { tampilkanToast("Gagal memperbarui status", 'error'); document.getElementById('loading-setoran-admin').classList.add('hidden'); document.getElementById('konten-setoran-admin').classList.remove('hidden'); }
+      } catch (e) {
+        tampilkanToast("Gagal memperbarui status", 'error'); document.getElementById('loading-setoran-admin').classList.add('hidden'); document.getElementById('konten-setoran-admin').classList.remove('hidden');
+      }
     }
 
-    function toggleCustomDateKontrol() { let tipe = document.getElementById('filter-tipe-kontrol').value; let div = document.getElementById('filter-custom-kontrol'); if (tipe === 'custom') { div.classList.remove('hidden'); div.classList.add('flex'); } else { div.classList.add('hidden'); div.classList.remove('flex'); } }
+    // =======================================================
+    // KONTROL INPUT ADMIN
+    // =======================================================
+    function toggleCustomDateKontrol() { 
+      let tipe = document.getElementById('filter-tipe-kontrol').value; let div = document.getElementById('filter-custom-kontrol');
+      if (tipe === 'custom') { div.classList.remove('hidden'); div.classList.add('flex'); } else { div.classList.add('hidden'); div.classList.remove('flex'); } 
+    }
 
     async function loadKontrolInput() {
       let tipe = document.getElementById('filter-tipe-kontrol').value; let payload = { tipe: tipe };
-      if (tipe === 'custom') { let start = document.getElementById('date-start-kontrol').value; let end = document.getElementById('date-end-kontrol').value; if (!start || !end) return tampilkanToast("Pilih tanggal kontrol!", 'error'); payload.start = start; payload.end = end; }
+      if (tipe === 'custom') {
+        let start = document.getElementById('date-single-kontrol').value;
+        if (!start) return tampilkanToast("Pilih tanggal kontrol!", 'error'); payload.start = start; payload.end = start; // Kirim satu tanggal
+      }
       document.getElementById('grid-kontrol').innerHTML = ''; document.getElementById('loading-kontrol').classList.remove('hidden');
       
       const data = await apiCall('getKontrolInput', payload);
-      document.getElementById('loading-kontrol').classList.add('hidden'); let html = '';
+      document.getElementById('loading-kontrol').classList.add('hidden');
+      let html = '';
       data.forEach(d => {
          let bgClass = ''; let iconClass = '';
          if(d.status === 'merah') { bgClass = 'bg-red-500 text-white border-red-600'; iconClass = 'ph-x-circle'; }
-         else if(d.status === 'abu') { bgClass = 'bg-gray-400 text-white border-gray-500'; iconClass = 'ph-moon-stars'; }
          else if(d.status === 'kuning') { bgClass = 'bg-yellow-400 text-gray-900 border-yellow-500'; iconClass = 'ph-warning'; }
          else { bgClass = 'bg-green-500 text-white border-green-600'; iconClass = 'ph-check-circle'; }
-         // Menambahkan Event Onclick untuk Buka Modal
-         html += `<div onclick="bukaModalKontrol('${d.email}', '${d.nama}')" class="${bgClass} p-2 rounded-2xl flex flex-col items-center justify-center text-center shadow-sm h-20 border active:scale-95 transition cursor-pointer">
-                    <i class="ph ${iconClass} text-xl mb-1 opacity-90"></i>
-                    <span class="text-[9px] font-black uppercase tracking-tight leading-tight line-clamp-2">${d.nama}</span>
+         html += `<div class="${bgClass} p-3 rounded-2xl flex flex-col items-center justify-center text-center shadow-sm h-24 border">
+                    <i class="ph ${iconClass} text-2xl mb-1 opacity-80"></i>
+                    <span class="text-[11px] font-black uppercase tracking-tight leading-tight line-clamp-2">${d.nama}</span>
                   </div>`;
       });
       document.getElementById('grid-kontrol').innerHTML = html;
     }
-    
-    // Fitur Kontrol OFF/ON Admin
-    function bukaModalKontrol(email, nama) {
-       document.getElementById('kontrol-nama-driver').innerText = nama;
-       document.getElementById('kontrol-email-driver').value = email;
-       document.getElementById('modal-kontrol-driver').classList.remove('hidden');
-       document.getElementById('modal-kontrol-driver').classList.add('flex');
-    }
-    
-    async function aksiKontrolDriver(aksi) {
-       document.getElementById('modal-kontrol-driver').classList.add('hidden');
-       document.getElementById('modal-kontrol-driver').classList.remove('flex');
-       document.getElementById('loading-kontrol').classList.remove('hidden');
-       
-       let emailTarget = document.getElementById('kontrol-email-driver').value;
-       let actionCmd = (aksi === 'OFF') ? 'forceSetOff' : 'forceSetOn';
-       
-       try {
-           const res = await apiCall(actionCmd, { email: emailTarget });
-           tampilkanToast(res);
-           loadKontrolInput(); // Refresh grid
-       } catch(e) {
-           tampilkanToast("Gagal melakukan aksi.", 'error');
-           document.getElementById('loading-kontrol').classList.add('hidden');
-       }
-    }
 
+    // =======================================================
+    // MANAJEMEN USER ADMIN
+    // =======================================================
     async function loadDaftarUser() {
         document.getElementById('list-user-admin').innerHTML = ''; document.getElementById('loading-user').classList.remove('hidden');
         const data = await apiCall('getDaftarUserLengkap');
-        document.getElementById('loading-user').classList.add('hidden'); let html = '';
-        data.forEach(u => { html += `<div class="bg-gray-50 border border-gray-200 p-4 rounded-2xl flex justify-between items-center mb-3"><div><p class="font-bold text-sm text-gray-800">${u.nama}</p><p class="text-xs text-gray-500 font-medium">${u.email}</p></div><button onclick="hapusUserLama('${u.email}')" class="bg-red-100 text-red-600 p-2.5 rounded-xl active:bg-red-200"><i class="ph ph-trash font-bold text-lg"></i></button></div>`; });
+        document.getElementById('loading-user').classList.add('hidden');
+        let html = '';
+        data.forEach(u => {
+            html += `<div class="bg-gray-50 border border-gray-200 p-4 rounded-2xl flex justify-between items-center mb-3">
+                       <div><p class="font-bold text-sm text-gray-800">${u.nama}</p><p class="text-xs text-gray-500 font-medium">${u.email}</p></div>
+                       <button onclick="hapusUserLama('${u.email}')" class="bg-red-100 text-red-600 p-2.5 rounded-xl active:bg-red-200"><i class="ph ph-trash font-bold text-lg"></i></button>
+                     </div>`;
+        });
         document.getElementById('list-user-admin').innerHTML = html;
     }
 
@@ -952,40 +917,49 @@
         if(!nama || !email) return tampilkanToast("Nama & Email wajib diisi!", "error");
         let btn = document.getElementById('btn-add-user'); btn.innerHTML = '<i class="ph ph-spinner-gap animate-spin mr-2"></i>Menyimpan...'; btn.disabled = true;
         const res = await apiCall('tambahUser', {nama: nama, email: email});
-        if(res.status === 'success') { tampilkanToast(res.msg); document.getElementById('user-new-nama').value = ''; document.getElementById('user-new-email').value = ''; loadDaftarUser(); } else { tampilkanToast(res.msg, 'error'); }
+        if(res.status === 'success') { tampilkanToast(res.msg); document.getElementById('user-new-nama').value = ''; document.getElementById('user-new-email').value = ''; loadDaftarUser(); } 
+        else { tampilkanToast(res.msg, 'error'); }
         btn.innerHTML = 'Simpan Driver'; btn.disabled = false;
     }
 
-    function hapusUserLama(email) {
-        tampilkanModalConfirm("Yakin ingin menghapus driver " + email + "? Data orderannya tetap aman di Excel.", async () => {
-            const res = await apiCall('hapusUser', {email: email});
-            if(res.status === 'success') { tampilkanToast(res.msg); loadDaftarUser(); } else { tampilkanToast(res.msg, 'error'); }
-        });
+    async function hapusUserLama(email) {
+        if(!confirm("Yakin ingin menghapus driver " + email + "? Data orderannya tidak akan terhapus dari Excel, namun akun tidak bisa login.")) return;
+        const res = await apiCall('hapusUser', {email: email});
+        if(res.status === 'success') { tampilkanToast(res.msg); loadDaftarUser(); } else { tampilkanToast(res.msg, 'error'); }
     }
+
 
     function ubahKategoriPeny() { let kat = document.getElementById('peny-kategori').value; let select = document.getElementById('peny-target'); if (kat === 'Penyesuaian Massal') { select.value = 'ALL'; select.disabled = true; } else { select.disabled = false; if (select.value === 'ALL' && select.options.length > 1) select.selectedIndex = 1; } }
 
     async function kirimPenyesuaian() {
-      let target = document.getElementById('peny-target').value; let kategori = document.getElementById('peny-kategori').value; let nominal = document.getElementById('peny-nominal').value; let ket = document.getElementById('peny-ket').value;
+      let target = document.getElementById('peny-target').value; let kategori = document.getElementById('peny-kategori').value; let nominal = document.getElementById('peny-nominal').value; let ket = document.getElementById('peny-ket').value; let tanggal = document.getElementById('peny-tanggal').value;
       if(!nominal || nominal <= 0) return tampilkanToast("Isi nominal!", 'error'); if(!ket || ket.trim() === '') return tampilkanToast("Isi keterangan!", 'error'); if(kategori !== 'Penyesuaian Massal' && target === 'ALL') return tampilkanToast("Pilih driver spesifik!", 'error');
       let btn = document.getElementById('btn-peny'); btn.innerHTML = '<i class="ph ph-spinner-gap animate-spin mr-2"></i> Menyimpan...'; btn.disabled = true;
-      const res = await apiCall('simpanPenyesuaian', { target: target, kategori: kategori, nominal: nominal, keterangan: ket });
+      
+      const res = await apiCall('simpanPenyesuaian', { target: target, kategori: kategori, nominal: nominal, keterangan: ket, tanggal: tanggal });
       tampilkanToast(res); btn.innerHTML = '<i class="ph ph-paper-plane-right mr-2"></i> Simpan Penyesuaian'; btn.disabled = false;
       document.getElementById('peny-nominal').value = ''; document.getElementById('peny-ket').value = '';
     }
 
-    function toggleCustomDateBackup() { let tipe = document.getElementById('filter-tipe-backup').value; let divCustom = document.getElementById('filter-custom-backup'); if (tipe === 'custom') { divCustom.classList.remove('hidden'); divCustom.classList.add('flex'); } else { divCustom.classList.add('hidden'); divCustom.classList.remove('flex'); } }
+    function toggleCustomDateBackup() { 
+      let tipe = document.getElementById('filter-tipe-backup').value; let divCustom = document.getElementById('filter-custom-backup');
+      if (tipe === 'custom') { divCustom.classList.remove('hidden'); divCustom.classList.add('flex'); } else { divCustom.classList.add('hidden'); divCustom.classList.remove('flex'); } 
+    }
 
     async function downloadExcelAdmin() {
       let tipe = document.getElementById('filter-tipe-backup').value; let payload = { tipe: tipe };
       if (tipe === 'custom') { let start = document.getElementById('date-start-backup').value; let end = document.getElementById('date-end-backup').value; if (!start || !end) return tampilkanToast("Pilih tanggal periode!", 'error'); payload.start = start; payload.end = end; }
+      
       let btn = document.getElementById('btn-download-excel'); let originText = btn.innerHTML; btn.innerHTML = '<i class="ph ph-spinner-gap animate-spin mr-2 text-xl"></i> Memproses Data...'; btn.disabled = true;
+
       try {
         const response = await apiCall('exportExcelAdmin', payload);
         let ws_data = []; ws_data.push(["REKAPITULASI ORDERAN & SETORAN DRIVER - OK BOS"]); ws_data.push(["PERIODE:", response.periode]); ws_data.push([]);
         ws_data.push(["No", "Nama Driver", "Operator (Qty)", "Offline (Qty)", "Khusus (Qty)", "Omset Kotor", "Setoran Wajib (15%)", "Tambahan (+)", "Penyesuaian Massal (+)", "Potongan (-)", "TOTAL TAGIHAN LUNAS"]);
+        
         if (response.data.length === 0) { ws_data.push(["Tidak ada data pada periode ini"]); } 
         else { response.data.forEach((d, index) => { ws_data.push([ index + 1, d.nama, d.operator, d.offline, d.khusus, d.omset, d.wajib, d.tambahan, d.massal, d.potongan, d.totalAkhir ]); }); }
+
         let wb = XLSX.utils.book_new(); let ws = XLSX.utils.aoa_to_sheet(ws_data);
         ws['!cols'] = [{wch:5}, {wch:25}, {wch:15}, {wch:15}, {wch:15}, {wch:15}, {wch:20}, {wch:15}, {wch:25}, {wch:15}, {wch:25}];
         XLSX.utils.book_append_sheet(wb, ws, "Rekap_Setoran");
@@ -993,135 +967,6 @@
         tampilkanToast("Excel berhasil diunduh!");
       } catch (e) { tampilkanToast("Gagal mengunduh Excel.", 'error'); } finally { btn.innerHTML = originText; btn.disabled = false; }
     }
-
-    // =======================================================
-    // FITUR BARU: STATISTIK GRAFIK
-    // =======================================================
-    let chartInstance = null;
-
-    function autoFillStatistikDate() {
-       let tipe = document.getElementById('filter-range-statistik').value;
-       let divCustom = document.getElementById('filter-custom-statistik');
-       let inputStart = document.getElementById('date-start-statistik');
-       let inputEnd = document.getElementById('date-end-statistik');
-       
-       let now = new Date();
-       if (tipe === 'custom') {
-          divCustom.classList.remove('hidden'); divCustom.classList.add('flex');
-          return; // Biarkan admin isi manual
-       } else {
-          divCustom.classList.add('hidden'); divCustom.classList.remove('flex');
-       }
-
-       let start = new Date();
-       let end = new Date();
-       
-       if (tipe === 'mingguan') {
-          start.setDate(now.getDate() - 6);
-       } else if (tipe === 'bulanan') {
-          start = new Date(now.getFullYear(), now.getMonth(), 1);
-       } else if (tipe === 'tahunan') {
-          start = new Date(now.getFullYear(), 0, 1);
-       }
-
-       // Format yyyy-mm-dd
-       // Harus mengatur timezone ke lokal agar format ISO tidak mundur 1 hari
-       let tzOffset = (new Date()).getTimezoneOffset() * 60000; // offset in milliseconds
-       let localISOTimeStart = (new Date(start - tzOffset)).toISOString().slice(0, -1);
-       let localISOTimeEnd = (new Date(end - tzOffset)).toISOString().slice(0, -1);
-
-       inputStart.value = localISOTimeStart.split('T')[0];
-       inputEnd.value = localISOTimeEnd.split('T')[0];
-    }
-
-    async function loadStatistikAdmin() {
-       let start = document.getElementById('date-start-statistik').value;
-       let end = document.getElementById('date-end-statistik').value;
-       
-       if(!start || !end) return tampilkanToast("Tanggal tidak valid", "error");
-
-       document.getElementById('loading-statistik').classList.remove('hidden');
-       document.getElementById('konten-statistik').classList.add('hidden');
-       document.getElementById('konten-statistik').classList.remove('flex');
-
-       const payload = { start: start, end: end };
-       const response = await apiCall('getStatistikAdmin', payload);
-
-       document.getElementById('loading-statistik').classList.add('hidden');
-       document.getElementById('konten-statistik').classList.remove('hidden');
-       document.getElementById('konten-statistik').classList.add('flex');
-
-       // Update Kartu Total
-       document.getElementById('stat-tot-all').innerText = response.totals.ALL;
-       document.getElementById('stat-tot-op').innerText = response.totals.OP;
-       document.getElementById('stat-tot-of').innerText = response.totals.OF;
-       document.getElementById('stat-tot-kh').innerText = response.totals.KH;
-
-       // Render Chart Premium Light Mode
-       renderChart(response.labels, response.datasets);
-    }
-
-    function renderChart(labels, datasets) {
-       const ctx = document.getElementById('chart-orderan').getContext('2d');
-       
-       if (chartInstance) { chartInstance.destroy(); } // Hapus grafik lama
-
-       chartInstance = new Chart(ctx, {
-           type: 'line',
-           data: {
-               labels: labels,
-               datasets: [
-                   {
-                       label: 'OP',
-                       data: datasets.OP,
-                       borderColor: '#f0b21e', // Kuning/Gold
-                       backgroundColor: 'rgba(240, 178, 30, 0)',
-                       borderWidth: 2,
-                       tension: 0.4 // Smooth Curve
-                   },
-                   {
-                       label: 'OF',
-                       data: datasets.OF,
-                       borderColor: '#f97316', // Orange
-                       backgroundColor: 'rgba(249, 115, 22, 0)',
-                       borderWidth: 2,
-                       tension: 0.4
-                   },
-                   {
-                       label: 'KH',
-                       data: datasets.KH,
-                       borderColor: '#a855f7', // Purple
-                       backgroundColor: 'rgba(168, 85, 247, 0)',
-                       borderWidth: 2,
-                       tension: 0.4
-                   }
-               ]
-           },
-           options: {
-               responsive: true,
-               maintainAspectRatio: false,
-               plugins: {
-                   legend: { 
-                     position: 'top', 
-                     align: 'end',
-                     labels: { boxWidth: 10, usePointStyle: true, color: '#4b5563', font: {size: 10, weight: 'bold'} } 
-                   }
-               },
-               scales: {
-                   y: { 
-                     beginAtZero: true, 
-                     grid: { color: '#f3f4f6' }, // Grid terang
-                     ticks: { precision: 0, color: '#6b7280' } // Text abu-abu terang
-                   },
-                   x: { 
-                     grid: { display: false },
-                     ticks: { color: '#6b7280' } // Text abu-abu terang
-                   }
-               }
-           }
-       });
-    }
-
   </script>
 </body>
 </html>
