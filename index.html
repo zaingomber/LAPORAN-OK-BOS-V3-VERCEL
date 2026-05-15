@@ -686,6 +686,9 @@
        if(!/^\d{6}$/.test(passBaru)) {
            return tampilkanToast("Password WAJIB 6 digit ANGKA!", 'error');
        }
+       if(passBaru === '123456') {
+           return tampilkanToast("Gunakan kombinasi angka selain 123456!", 'error');
+       }
        if(passBaru !== passConf) {
            return tampilkanToast("Kedua form password tidak sama!", 'error');
        }
@@ -697,32 +700,26 @@
        try {
            const res = await apiCall('simpanPasswordBaru', { email: email, newPassword: passBaru });
            
-           let pesan = typeof res === 'string' ? res : (res.msg || "Password berhasil disimpan!");
-           tampilkanToast(pesan); 
-           
-           // Update userData status agar terbaca sukses dan simpan di memori lokal
-           userData.status = 'success';
-           localStorage.setItem('appOrderanEmail', email);
-           
-           // Bersihkan form
-           document.getElementById('new-pass').value = '';
-           document.getElementById('new-pass-confirm').value = '';
-           
-           // Sembunyikan layar ganti password
-           document.getElementById('view-ganti-password').classList.add('hidden'); 
-           document.getElementById('view-ganti-password').classList.remove('flex');
-           
-           // Langsung inisialisasi / meluncur ke Dashboard
-           if (userData && userData.role) {
-               await inisialisasiUser(userData);
-           } else {
-               // Fallback super aman jika variabel userData kosong sesaat
-               location.reload();
+           // Tangkap respon error eksplisit dari backend jika ada
+           if (res && res.status === 'error') {
+               tampilkanToast(res.pesan || res.msg || "Gagal menyimpan", 'error');
+               btn.innerHTML = 'Simpan Password';
+               btn.disabled = false;
+               return;
            }
 
+           tampilkanToast("Password berhasil disimpan!"); 
+           
+           // SET LOCAL STORAGE LALU RELOAD BERSIH (HARD RESET)
+           localStorage.setItem('appOrderanEmail', email);
+           
+           // Paksa sistem memuat ulang membaca sesi baru tanpa bentrok elemen DOM
+           setTimeout(() => {
+               window.location.reload();
+           }, 1000);
+
        } catch (error) {
-           tampilkanToast("Terjadi kesalahan sistem.", 'error');
-       } finally {
+           tampilkanToast("Terjadi kesalahan koneksi.", 'error');
            btn.innerHTML = 'Simpan Password';
            btn.disabled = false;
        }
