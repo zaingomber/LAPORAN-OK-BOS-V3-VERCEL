@@ -66,7 +66,7 @@
             <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Password</label>
             <div class="relative">
               <i class="ph ph-key absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg"></i>
-              <input type="password" inputmode="numeric" id="login-pass" placeholder="••••••" class="w-full bg-gray-50 border border-gray-200 rounded-xl py-3 pl-12 pr-12 text-sm font-semibold outline-none focus:border-[#f0b21e] focus:ring-1 focus:ring-[#f0b21e] transition">
+              <input type="password" inputmode="numeric" pattern="[0-9]*" maxlength="6" id="login-pass" placeholder="••••••" class="w-full bg-gray-50 border border-gray-200 rounded-xl py-3 pl-12 pr-12 text-sm font-semibold outline-none focus:border-[#f0b21e] focus:ring-1 focus:ring-[#f0b21e] transition">
               <button type="button" onclick="togglePasswordVisibility('login-pass', 'icon-eye-login')" class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-[#f0b21e] focus:outline-none">
                 <i id="icon-eye-login" class="ph ph-eye text-lg"></i>
               </button>
@@ -636,11 +636,30 @@
       if (savedEmail) {
          try {
             const res = await apiCall('cekSesiLokal', { email: savedEmail });
-            if(res.status === 'success') { inisialisasiUser(res); } 
-            else { document.getElementById('view-loading').classList.add('hidden'); document.getElementById('view-login').classList.remove('hidden'); document.getElementById('view-login').classList.add('flex'); }
-         } catch(e) {}
+            if(res.status === 'success') { 
+                inisialisasiUser(res); 
+            } else if (res.status === 'force_change') {
+                // FIX: Tangkap dengan benar jika Driver sudah login tetapi password masih 123456
+                userData = res; 
+                document.getElementById('pass-email').value = res.email;
+                document.getElementById('view-loading').classList.add('hidden'); 
+                document.getElementById('view-ganti-password').classList.remove('hidden'); 
+                document.getElementById('view-ganti-password').classList.add('flex');
+                document.getElementById('btn-batal-pass').classList.add('hidden'); 
+            } else { 
+                document.getElementById('view-loading').classList.add('hidden'); 
+                document.getElementById('view-login').classList.remove('hidden'); 
+                document.getElementById('view-login').classList.add('flex'); 
+            }
+         } catch(e) {
+            document.getElementById('view-loading').classList.add('hidden'); 
+            document.getElementById('view-login').classList.remove('hidden'); 
+            document.getElementById('view-login').classList.add('flex');
+         }
       } else {
-         document.getElementById('view-loading').classList.add('hidden'); document.getElementById('view-login').classList.remove('hidden'); document.getElementById('view-login').classList.add('flex');
+         document.getElementById('view-loading').classList.add('hidden'); 
+         document.getElementById('view-login').classList.remove('hidden'); 
+         document.getElementById('view-login').classList.add('flex');
       }
       
       // MENGISI TANGGAL HARI INI SECARA OTOMATIS
@@ -652,7 +671,11 @@
 
     async function prosesLoginKustom() {
        if(loginAttempts <= 0) return tampilkanToast("Akun terkunci sementara.", 'error');
-       let email = document.getElementById('login-email').value; let pass = document.getElementById('login-pass').value;
+       
+       // FIX: TRIM EMAIL UNTUK MEMOTONG SPASI OTOMATIS DARI KEYBOARD HP
+       let email = document.getElementById('login-email').value.trim(); 
+       let pass = document.getElementById('login-pass').value.trim();
+       
        if(!email || !pass) return tampilkanToast("Email & Password wajib diisi!", 'error');
        
        document.getElementById('btn-login').disabled = true; document.getElementById('loading-login').classList.remove('hidden');
@@ -671,7 +694,7 @@
               document.getElementById('btn-batal-pass').classList.add('hidden'); 
            } else { 
               loginAttempts--; 
-              if(loginAttempts > 0) tampilkanToast("Password salah! Sisa " + loginAttempts + " kesempatan.", 'error');
+              if(loginAttempts > 0) tampilkanToast("Password/Email salah! Sisa " + loginAttempts + " kesempatan.", 'error');
               else { tampilkanToast("Kesempatan habis.", 'error'); document.getElementById('btn-login').disabled = true; }
            }
        } catch(e) { document.getElementById('btn-login').disabled = false; document.getElementById('loading-login').classList.add('hidden'); }
@@ -1151,7 +1174,10 @@
     }
 
     async function tambahUserBaru() {
-        let nama = document.getElementById('user-new-nama').value; let email = document.getElementById('user-new-email').value;
+        // FIX: TRIM EMAIL SAAT ADMIN MENAMBAHKAN USER BARU
+        let nama = document.getElementById('user-new-nama').value; 
+        let email = document.getElementById('user-new-email').value.trim();
+        
         if(!nama || !email) return tampilkanToast("Nama & Email wajib diisi!", "error");
         let btn = document.getElementById('btn-add-user'); btn.innerHTML = '<i class="ph ph-spinner-gap animate-spin mr-2"></i>Menyimpan...'; btn.disabled = true;
         const res = await apiCall('tambahUser', {nama: nama, email: email});
