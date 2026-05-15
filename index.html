@@ -672,9 +672,17 @@
     }
 
     async function simpanPasswordKustom() {
-       let email = document.getElementById('pass-email').value; let passBaru = document.getElementById('new-pass').value; let passConf = document.getElementById('new-pass-confirm').value;
-       if(!passBaru || passBaru.length !== 6) return tampilkanToast("Password wajib 6 Angka!", 'error');
-       if(passBaru !== passConf) return tampilkanToast("Password tidak sama!", 'error');
+       let email = document.getElementById('pass-email').value; 
+       let passBaru = document.getElementById('new-pass').value; 
+       let passConf = document.getElementById('new-pass-confirm').value;
+       
+       // VALIDASI KETAT PASSWORD: Wajib 6 digit, Wajib Angka, Tidak Boleh Huruf
+       if(!/^\d{6}$/.test(passBaru)) {
+           return tampilkanToast("Password WAJIB 6 digit ANGKA!", 'error');
+       }
+       if(passBaru !== passConf) {
+           return tampilkanToast("Kedua form password tidak sama!", 'error');
+       }
 
        document.getElementById('btn-simpan-pass').innerHTML = '<i class="ph ph-spinner-gap animate-spin"></i>';
        const res = await apiCall('simpanPasswordBaru', { email: email, newPassword: passBaru });
@@ -1177,42 +1185,77 @@
     }
     
     async function loadStatistik() {
-       let tipe = document.getElementById('stat-filter-tipe').value; let payload = { tipe: tipe };
+       let tipe = document.getElementById('stat-filter-tipe').value; 
+       let payload = { tipe: tipe };
+       
        if (tipe === 'custom') {
-          let start = document.getElementById('stat-start').value; let end = document.getElementById('stat-end').value;
-          if (!start || !end) return tampilkanToast("Pilih rentang tanggal!", 'error'); payload.start = start; payload.end = end;
+          let start = document.getElementById('stat-start').value; 
+          let end = document.getElementById('stat-end').value;
+          if (!start || !end) return tampilkanToast("Pilih rentang tanggal!", 'error'); 
+          payload.start = start; payload.end = end;
        }
        
-       document.getElementById('loading-statistik').classList.remove('hidden'); document.getElementById('konten-statistik').classList.add('hidden');
-       const res = await apiCall('getStatistikAdmin', { filter: payload });
-       document.getElementById('loading-statistik').classList.add('hidden'); document.getElementById('konten-statistik').classList.remove('hidden');
+       document.getElementById('loading-statistik').classList.remove('hidden'); 
+       document.getElementById('konten-statistik').classList.add('hidden');
        
-       document.getElementById('stat-tot-all').innerText = res.totals.ALL; document.getElementById('stat-tot-op').innerText = res.totals.OP;
-       document.getElementById('stat-tot-of').innerText = res.totals.OF; document.getElementById('stat-tot-kh').innerText = res.totals.KH;
-       
-       const ctx = document.getElementById('myChart').getContext('2d');
-       if(statChart) statChart.destroy();
-       
-       statChart = new Chart(ctx, {
-          type: 'line',
-          data: {
-             labels: res.labels,
-             datasets: [
-                { label: 'OP', data: res.datasets.OP, borderColor: '#f0b21e', backgroundColor: '#f0b21e', tension: 0.4, borderWidth: 2, pointRadius: 0 },
-                { label: 'OF', data: res.datasets.OF, borderColor: '#f97316', backgroundColor: '#f97316', tension: 0.4, borderWidth: 2, pointRadius: 0 },
-                { label: 'KH', data: res.datasets.KH, borderColor: '#9333ea', backgroundColor: '#9333ea', tension: 0.4, borderWidth: 2, pointRadius: 0 }
-             ]
-          },
-          options: {
-             responsive: true, maintainAspectRatio: false,
-             interaction: { mode: 'index', intersect: false },
-             plugins: { legend: { display: false } },
-             scales: {
-                x: { grid: { display: false } },
-                y: { grid: { color: '#f3f4f6' }, beginAtZero: true }
-             }
-          }
-       });
+       // Mengirim data ganda (safe payload) agar cocok dengan versi Code.gs lama/baru
+       let safePayload = {
+           tipe: payload.tipe,
+           start: payload.start,
+           end: payload.end,
+           filter: payload
+       };
+
+       try {
+           const res = await apiCall('getStatistikAdmin', safePayload);
+           
+           document.getElementById('loading-statistik').classList.add('hidden'); 
+           document.getElementById('konten-statistik').classList.remove('hidden');
+           
+           // Fallback logic jika Code.gs masih memuntahkan data versi lama (totalAll) vs versi baru (totals.ALL)
+           let totALL = (res.totals && res.totals.ALL !== undefined) ? res.totals.ALL : (res.totalAll || 0);
+           let totOP = (res.totals && res.totals.OP !== undefined) ? res.totals.OP : (res.totalOp || 0);
+           let totOF = (res.totals && res.totals.OF !== undefined) ? res.totals.OF : (res.totalOf || 0);
+           let totKH = (res.totals && res.totals.KH !== undefined) ? res.totals.KH : (res.totalKh || 0);
+           
+           document.getElementById('stat-tot-all').innerText = totALL;
+           document.getElementById('stat-tot-op').innerText = totOP;
+           document.getElementById('stat-tot-of').innerText = totOF;
+           document.getElementById('stat-tot-kh').innerText = totKH;
+           
+           let dataOP = (res.datasets && res.datasets.OP) ? res.datasets.OP : (res.dataOp || []);
+           let dataOF = (res.datasets && res.datasets.OF) ? res.datasets.OF : (res.dataOf || []);
+           let dataKH = (res.datasets && res.datasets.KH) ? res.datasets.KH : (res.dataKh || []);
+           let dataLabels = res.labels || [];
+           
+           const ctx = document.getElementById('myChart').getContext('2d');
+           if(statChart) statChart.destroy();
+           
+           statChart = new Chart(ctx, {
+              type: 'line',
+              data: {
+                 labels: dataLabels,
+                 datasets: [
+                    { label: 'OP', data: dataOP, borderColor: '#f0b21e', backgroundColor: '#f0b21e', tension: 0.4, borderWidth: 2, pointRadius: 0 },
+                    { label: 'OF', data: dataOF, borderColor: '#f97316', backgroundColor: '#f97316', tension: 0.4, borderWidth: 2, pointRadius: 0 },
+                    { label: 'KH', data: dataKH, borderColor: '#9333ea', backgroundColor: '#9333ea', tension: 0.4, borderWidth: 2, pointRadius: 0 }
+                 ]
+              },
+              options: {
+                 responsive: true, maintainAspectRatio: false,
+                 interaction: { mode: 'index', intersect: false },
+                 plugins: { legend: { display: false } },
+                 scales: {
+                    x: { grid: { display: false } },
+                    y: { grid: { color: '#f3f4f6' }, beginAtZero: true }
+                 }
+              }
+           });
+       } catch (error) {
+           tampilkanToast("Gagal memuat statistik", "error");
+           document.getElementById('loading-statistik').classList.add('hidden'); 
+           document.getElementById('konten-statistik').classList.remove('hidden');
+       }
     }
   </script>
 </body>
