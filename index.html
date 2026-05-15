@@ -128,17 +128,21 @@
       </div>
 
       <div class="p-6 flex-1 overflow-y-auto space-y-4">
-        <!-- TOMBOL OFF DRIVER -->
-        <button id="btn-driver-off" onclick="setDriverOffStatusUI(true)" class="w-full bg-gray-100 text-gray-600 font-bold p-3 rounded-xl mb-2 border flex items-center justify-center active:bg-gray-200 shadow-sm">
-           <i class="ph ph-power mr-2 text-lg"></i> Tandai Saya OFF Hari Ini
+        <!-- TOMBOL LIBUR DRIVER -->
+        <button id="btn-driver-off" onclick="bukaModalLibur()" class="w-full bg-gray-100 text-gray-600 font-bold p-3 rounded-xl mb-2 border flex items-center justify-center active:bg-gray-200 shadow-sm transition">
+           <i class="ph ph-power mr-2 text-lg"></i> Saya Libur Hari Ini
         </button>
 
         <!-- KONTEN FORM INPUT -->
         <div id="form-input-container" class="space-y-4 relative">
-            <div id="overlay-off" class="hidden absolute inset-0 bg-white/80 backdrop-blur-[2px] z-20 flex-col items-center justify-center rounded-2xl border border-gray-200">
-                <i class="ph-fill ph-moon-stars text-5xl text-gray-400 mb-2"></i>
-                <p class="font-bold text-gray-600 text-lg">Anda sedang OFF</p>
-                <p class="text-xs text-gray-500">Reset otomatis jam 00:00</p>
+            <!-- OVERLAY OFF DENGAN TOMBOL ON KEMBALI -->
+            <div id="overlay-off" class="hidden absolute inset-0 bg-white/95 backdrop-blur-[2px] z-20 flex-col items-center justify-center rounded-2xl border border-gray-200 p-6 text-center shadow-lg">
+                <i class="ph-fill ph-moon-stars text-6xl text-blue-500 mb-2"></i>
+                <p class="font-black text-gray-800 text-xl mb-1">ANDA SEDANG LIBUR</p>
+                <p class="text-xs font-medium text-gray-500 mb-6">Akses input dikunci. Ingin beroperasi kembali hari ini?</p>
+                <button onclick="driverOnKembali()" class="bg-green-500 text-white font-bold py-3 px-6 rounded-xl shadow-md active:bg-green-600 transition flex items-center justify-center w-full">
+                    <i class="ph ph-sun mr-2 text-xl"></i> ON Kembali
+                </button>
             </div>
 
             <div class="bg-blue-50 border border-blue-200 rounded-2xl p-4 flex items-start"><i class="ph ph-info text-blue-600 text-2xl mr-3 mt-0.5"></i><p class="text-sm text-blue-800 font-medium">Silakan cek kembali laporan manual Anda di WA sebelum menginput.</p></div>
@@ -172,6 +176,23 @@
               <span id="btn-text">Lapor Orderan</span>
               <i id="btn-loading" class="ph ph-spinner-gap animate-spin hidden ml-2 text-2xl"></i>
             </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL DRIVER LIBUR -->
+    <div id="modal-driver-libur" class="fixed inset-0 bg-black/60 z-[60] hidden flex items-center justify-center p-4 fade-in backdrop-blur-sm">
+      <div class="bg-white rounded-3xl w-full max-w-sm p-6 shadow-2xl text-center relative overflow-hidden">
+        <div class="absolute top-0 left-0 w-full h-2 bg-blue-500"></div>
+        <i class="ph-fill ph-moon-stars text-5xl text-blue-500 mb-3 mt-2"></i>
+        <h3 class="text-xl font-bold mb-2 text-gray-800">Tandai Libur</h3>
+        <p class="text-sm text-gray-500 mb-4">Silakan masukkan alasan Anda libur hari ini agar Admin mengetahuinya.</p>
+        
+        <textarea id="alasan-libur" rows="3" placeholder="Contoh: Sakit, Urusan Keluarga, Istirahat..." class="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm font-medium focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 mb-5 transition"></textarea>
+        
+        <div class="flex space-x-3">
+          <button onclick="document.getElementById('modal-driver-libur').classList.add('hidden'); document.getElementById('modal-driver-libur').classList.remove('flex');" class="flex-1 bg-gray-200 text-gray-800 font-bold py-3 rounded-xl active:bg-gray-300 transition">Batal</button>
+          <button id="btn-submit-libur" onclick="kirimLibur()" class="flex-1 bg-blue-600 text-white font-bold py-3 rounded-xl shadow-lg flex items-center justify-center active:bg-blue-700 transition">Kirim Alasan</button>
         </div>
       </div>
     </div>
@@ -273,16 +294,13 @@
       <div id="loading-statistik" class="hidden flex-col items-center justify-center p-10 mt-10"><i class="ph-fill ph-motorcycle animate-bounce text-5xl text-gray-800 mb-3"></i></div>
       
       <div id="konten-statistik" class="p-5 flex-1 overflow-y-auto space-y-4">
-         <!-- CHART CONTAINER (DIPERBAIKI AGAR TIDAK MELAR) -->
          <div class="bg-white p-4 rounded-3xl shadow-sm border border-gray-200">
             <h3 class="font-bold text-gray-800 text-sm mb-4 flex items-center"><span class="w-2 h-2 rounded-full bg-green-500 mr-2"></span> Performance</h3>
-            <!-- Wajib relative dan fixed height -->
             <div class="relative w-full h-[250px]">
                <canvas id="myChart"></canvas>
             </div>
          </div>
          
-         <!-- KOTAK TOTAL -->
          <div class="grid grid-cols-2 gap-3 mt-4">
             <div class="bg-white border p-4 rounded-2xl flex flex-col items-center justify-center shadow-sm">
                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">TOTAL</p>
@@ -400,7 +418,7 @@
            <span class="flex items-center"><span class="w-3 h-3 bg-red-500 rounded-full mr-1 inline-block border border-white"></span>Belum (<span id="c-merah">0</span>)</span>
            <span class="flex items-center"><span class="w-3 h-3 bg-green-500 rounded-full mr-1 inline-block border border-white"></span>Aman (<span id="c-hijau">0</span>)</span>
            <span class="flex items-center"><span class="w-3 h-3 bg-yellow-400 rounded-full mr-1 inline-block border border-white"></span>Dobel (<span id="c-kuning">0</span>)</span>
-           <span class="flex items-center"><span class="w-3 h-3 bg-gray-400 rounded-full mr-1 inline-block border border-white"></span>OFF (<span id="c-abu">0</span>)</span>
+           <span class="flex items-center"><span class="w-3 h-3 bg-gray-400 rounded-full mr-1 inline-block border border-white"></span>Libur (<span id="c-abu">0</span>)</span>
         </div>
       </div>
 
@@ -544,12 +562,16 @@
       <div class="bg-white rounded-3xl w-full max-w-sm p-6 shadow-2xl text-center">
         <div class="bg-gray-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4"><i class="ph ph-power text-3xl text-gray-600"></i></div>
         <h3 class="text-lg font-bold text-gray-800">Ubah Status Driver</h3>
-        <p id="off-driver-name" class="text-sm font-semibold text-blue-600 mb-5"></p>
+        <p id="off-driver-name" class="text-sm font-black text-blue-600 mb-2"></p>
+        
+        <!-- Teks Alasan Libur Driver -->
+        <div id="off-driver-reason" class="text-xs bg-gray-50 text-gray-600 p-3 rounded-lg border border-gray-200 mb-5 hidden"></div>
+        
         <input type="hidden" id="off-driver-email">
         <div class="space-y-3">
           <button onclick="adminKirimStatusOff('OFF')" class="w-full bg-gray-200 text-gray-700 font-bold py-3.5 rounded-xl border flex justify-center items-center active:bg-gray-300"><i class="ph ph-moon-stars mr-2 text-xl"></i> Paksa OFF-kan</button>
           <button onclick="adminKirimStatusOff('ON_FORCE')" class="w-full bg-green-100 text-green-700 font-bold py-3.5 rounded-xl border border-green-200 flex justify-center items-center active:bg-green-200"><i class="ph ph-sun mr-2 text-xl"></i> Paksa ON-kan</button>
-          <button onclick="document.getElementById('modal-kontrol-off').classList.add('hidden')" class="w-full text-gray-500 font-bold py-2 mt-2">Batal</button>
+          <button onclick="document.getElementById('modal-kontrol-off').classList.add('hidden'); document.getElementById('modal-kontrol-off').classList.remove('flex');" class="w-full text-gray-500 font-bold py-2 mt-2">Batal</button>
         </div>
       </div>
     </div>
@@ -572,7 +594,7 @@
   </div>
 
   <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbydDP3-gUnlhjx-e-NLeuqWjANpCpS0coL3xEqkNQl3VYtnPJLUZWcSGexoAfYU99PT/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycbwcPl7sai5OGm-FCiokcMVQZrt-HfcppQIMwmarQyBq1QgGmoUfP-v0dTO86qJsNHb5/exec";
 
     if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(err => console.log('SW failed', err)); }); }
 
@@ -683,8 +705,7 @@
         document.getElementById('nav-driver').classList.remove('hidden'); document.getElementById('nav-driver').classList.add('flex');
         switchTabDriver('input');
         
-        const isOff = await apiCall('cekStatusOffHariIni', { email: userData.email });
-        if(isOff) { document.getElementById('overlay-off').classList.remove('hidden'); document.getElementById('overlay-off').classList.add('flex'); }
+        cekStatusOffHarianDriver();
       }
     }
     
@@ -756,14 +777,58 @@
       tampilkanToast(res); btn.disabled = false; loading.classList.add('hidden'); switchTabDriver('input'); 
     }
     
-    async function setDriverOffStatusUI(isOff) {
-      if(!confirm("Yakin ingin menandai status Anda OFF hari ini? Input orderan akan dikunci.")) return;
-      document.getElementById('btn-driver-off').innerHTML = '<i class="ph ph-spinner-gap animate-spin mr-2"></i> Memproses...';
-      const res = await apiCall('setDriverOffStatus', { email: userData.email, status: isOff ? 'OFF' : 'ON_FORCE' });
-      tampilkanToast(res);
-      document.getElementById('btn-driver-off').innerHTML = '<i class="ph ph-power mr-2 text-lg"></i> Tandai Saya OFF Hari Ini';
-      if(isOff) { document.getElementById('overlay-off').classList.remove('hidden'); document.getElementById('overlay-off').classList.add('flex'); }
+    // --- FITUR LIBUR DRIVER BARU ---
+    function bukaModalLibur() {
+       document.getElementById('alasan-libur').value = '';
+       document.getElementById('modal-driver-libur').classList.remove('hidden');
+       document.getElementById('modal-driver-libur').classList.add('flex');
     }
+
+    async function kirimLibur() {
+       let alasan = document.getElementById('alasan-libur').value;
+       if(!alasan.trim()) return tampilkanToast("Alasan libur wajib diisi!", "error");
+       
+       let btn = document.getElementById('btn-submit-libur');
+       btn.innerHTML = '<i class="ph ph-spinner-gap animate-spin"></i>'; btn.disabled = true;
+       
+       const res = await apiCall('setDriverOffStatus', { email: userData.email, status: 'OFF', alasan: alasan });
+       tampilkanToast(res);
+       
+       btn.innerHTML = 'Kirim Alasan'; btn.disabled = false;
+       document.getElementById('modal-driver-libur').classList.add('hidden');
+       document.getElementById('modal-driver-libur').classList.remove('flex');
+       
+       cekStatusOffHarianDriver();
+    }
+
+    async function driverOnKembali() {
+       document.getElementById('overlay-off').innerHTML = '<i class="ph ph-spinner-gap animate-spin text-5xl text-blue-500 mb-2"></i><p class="font-bold text-gray-700">Membuka Akses...</p>';
+       const res = await apiCall('setDriverOffStatus', { email: userData.email, status: 'ON_FORCE' });
+       tampilkanToast("Status ON! Silakan input orderan kembali.");
+       
+       // Kembalikan tampilan overlay aslinya
+       document.getElementById('overlay-off').innerHTML = `
+            <i class="ph-fill ph-moon-stars text-6xl text-blue-500 mb-2"></i>
+            <p class="font-black text-gray-800 text-xl mb-1">ANDA SEDANG LIBUR</p>
+            <p class="text-xs font-medium text-gray-500 mb-6">Akses input dikunci. Ingin beroperasi kembali hari ini?</p>
+            <button onclick="driverOnKembali()" class="bg-green-500 text-white font-bold py-3 px-6 rounded-xl shadow-md active:bg-green-600 transition flex items-center justify-center w-full">
+                <i class="ph ph-sun mr-2 text-xl"></i> ON Kembali
+            </button>
+       `;
+       cekStatusOffHarianDriver();
+    }
+
+    async function cekStatusOffHarianDriver() {
+       const res = await apiCall('cekStatusOffHariIni', { email: userData.email });
+       if(res.isOff) { 
+           document.getElementById('overlay-off').classList.remove('hidden'); 
+           document.getElementById('overlay-off').classList.add('flex'); 
+       } else { 
+           document.getElementById('overlay-off').classList.add('hidden'); 
+           document.getElementById('overlay-off').classList.remove('flex'); 
+       }
+    }
+    // --- AKHIR FITUR LIBUR ---
 
     function toggleCustomDateDriver() {
       let tipe = document.getElementById('filter-tipe-driver').value; let div = document.getElementById('filter-custom-driver');
@@ -987,7 +1052,10 @@
          else if(d.status === 'abu') { bgClass = 'bg-gray-400 text-white border-gray-500'; iconClass = 'ph-moon-stars'; }
          else { bgClass = 'bg-green-500 text-white border-green-600'; iconClass = 'ph-check-circle'; }
          
-         html += `<div onclick="bukaModalKontrolOff('${d.email}', '${d.nama}')" class="${bgClass} p-2 rounded-2xl flex flex-col items-center justify-center text-center shadow-sm h-20 border active:scale-95 transition cursor-pointer">
+         // Escape quotes to prevent HTML breaking
+         let safeAlasan = d.alasan ? d.alasan.replace(/'/g, "\\'") : '';
+
+         html += `<div onclick="bukaModalKontrolOff('${d.email}', '${d.nama}', '${safeAlasan}')" class="${bgClass} p-2 rounded-2xl flex flex-col items-center justify-center text-center shadow-sm h-20 border active:scale-95 transition cursor-pointer">
                     <i class="ph ${iconClass} text-xl mb-1 opacity-80"></i>
                     <span class="text-[9px] font-black uppercase tracking-tight leading-tight line-clamp-2 break-words w-full px-1">${d.nama}</span>
                   </div>`;
@@ -995,19 +1063,29 @@
       document.getElementById('grid-kontrol').innerHTML = html;
     }
     
-    function bukaModalKontrolOff(email, nama) {
+    function bukaModalKontrolOff(email, nama, alasan) {
        document.getElementById('off-driver-email').value = email;
        document.getElementById('off-driver-name').innerText = nama;
+       
+       let reasonEl = document.getElementById('off-driver-reason');
+       if (alasan && alasan.trim() !== '' && alasan !== 'undefined') {
+           reasonEl.innerHTML = `<strong>Alasan Libur:</strong><br>"${alasan}"`;
+           reasonEl.classList.remove('hidden');
+       } else {
+           reasonEl.innerHTML = '';
+           reasonEl.classList.add('hidden');
+       }
+       
        document.getElementById('modal-kontrol-off').classList.remove('hidden');
        document.getElementById('modal-kontrol-off').classList.add('flex');
     }
     
     async function adminKirimStatusOff(status) {
        let email = document.getElementById('off-driver-email').value;
-       // Karena filter Kontrol sekarang hanya 1 tanggal, kita ambil valuenya jika mode custom
        let tgl = document.getElementById('date-single-kontrol') ? document.getElementById('date-single-kontrol').value : null;
        
        document.getElementById('modal-kontrol-off').classList.add('hidden');
+       document.getElementById('modal-kontrol-off').classList.remove('flex');
        document.getElementById('loading-kontrol').classList.remove('hidden'); 
        document.getElementById('grid-kontrol').innerHTML = '';
        
@@ -1126,7 +1204,7 @@
              ]
           },
           options: {
-             responsive: true, maintainAspectRatio: false, // INI KUNCI AGAR TIDAK MELAR
+             responsive: true, maintainAspectRatio: false,
              interaction: { mode: 'index', intersect: false },
              plugins: { legend: { display: false } },
              scales: {
