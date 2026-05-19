@@ -51,7 +51,7 @@
           <i class="ph ph-hand-waving text-3xl font-bold"></i>
         </div>
         <h3 class="text-xs font-bold text-[#f0b21e] uppercase tracking-widest mb-1">Selamat Datang di</h3>
-        <h2 class="text-2xl font-black mb-2 leading-tight text-[#f0b21e]">SISTEM LAPORAN<br>OK BOS <span class="text-gray-800">BETA</span></h2>
+        <h2 class="text-2xl font-black mb-2 leading-tight text-[#f0b21e]">SISTEM LAPORAN<br>OK BOS</h2>
         <p class="text-sm text-gray-500 mb-8 font-medium">Silakan masuk menggunakan Email & Password</p>
         
         <div class="space-y-4 text-left">
@@ -66,7 +66,7 @@
             <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Password</label>
             <div class="relative">
               <i class="ph ph-key absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg"></i>
-              <input type="password" inputmode="numeric" pattern="[0-9]*" maxlength="6" id="login-pass" placeholder="••••••" class="w-full bg-gray-50 border border-gray-200 rounded-xl py-3 pl-12 pr-12 text-sm font-semibold outline-none focus:border-[#f0b21e] focus:ring-1 focus:ring-[#f0b21e] transition">
+              <input type="password" inputmode="numeric" id="login-pass" placeholder="••••••" class="w-full bg-gray-50 border border-gray-200 rounded-xl py-3 pl-12 pr-12 text-sm font-semibold outline-none focus:border-[#f0b21e] focus:ring-1 focus:ring-[#f0b21e] transition">
               <button type="button" onclick="togglePasswordVisibility('login-pass', 'icon-eye-login')" class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-[#f0b21e] focus:outline-none">
                 <i id="icon-eye-login" class="ph ph-eye text-lg"></i>
               </button>
@@ -414,11 +414,17 @@
             <input type="date" id="date-single-kontrol" class="w-full bg-white text-gray-800 text-sm font-bold rounded-lg p-2 outline-none mr-2">
             <button onclick="loadKontrolInput()" class="bg-white text-cyan-800 px-4 py-2 rounded-lg text-sm font-bold shadow-sm">Cek</button>
         </div>
-        <div class="flex justify-center space-x-3 text-[9px] font-bold mt-2 bg-white/20 p-2 rounded-xl">
-           <span class="flex items-center"><span class="w-3 h-3 bg-red-500 rounded-full mr-1 inline-block border border-white"></span>Belum (<span id="c-merah">0</span>)</span>
-           <span class="flex items-center"><span class="w-3 h-3 bg-green-500 rounded-full mr-1 inline-block border border-white"></span>Aman (<span id="c-hijau">0</span>)</span>
-           <span class="flex items-center"><span class="w-3 h-3 bg-yellow-400 rounded-full mr-1 inline-block border border-white"></span>Dobel (<span id="c-kuning">0</span>)</span>
-           <span class="flex items-center"><span class="w-3 h-3 bg-gray-400 rounded-full mr-1 inline-block border border-white"></span>Libur (<span id="c-abu">0</span>)</span>
+        <div class="flex justify-between items-center mt-3">
+            <div class="flex justify-center space-x-3 text-[9px] font-bold bg-white/20 p-2 rounded-xl flex-1 mr-2">
+               <span class="flex items-center"><span class="w-3 h-3 bg-red-500 rounded-full mr-1 inline-block border border-white"></span>Belum (<span id="c-merah">0</span>)</span>
+               <span class="flex items-center"><span class="w-3 h-3 bg-green-500 rounded-full mr-1 inline-block border border-white"></span>Aman (<span id="c-hijau">0</span>)</span>
+               <span class="flex items-center"><span class="w-3 h-3 bg-yellow-400 rounded-full mr-1 inline-block border border-white"></span>Dobel (<span id="c-kuning">0</span>)</span>
+               <span class="flex items-center"><span class="w-3 h-3 bg-gray-400 rounded-full mr-1 inline-block border border-white"></span>Libur (<span id="c-abu">0</span>)</span>
+            </div>
+            <button onclick="bagikanWA()" class="bg-green-500 text-white p-2 rounded-xl shadow-sm hover:bg-green-600 active:scale-95 transition flex items-center flex-col justify-center min-w-[60px]">
+                <i class="ph ph-whatsapp-logo text-xl"></i>
+                <span class="text-[8px] font-bold mt-0.5">Share WA</span>
+            </button>
         </div>
       </div>
 
@@ -562,8 +568,16 @@
       <div class="bg-white rounded-3xl w-full max-w-sm p-6 shadow-2xl text-center">
         <div class="bg-gray-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4"><i class="ph ph-power text-3xl text-gray-600"></i></div>
         <h3 class="text-lg font-bold text-gray-800">Ubah Status Driver</h3>
-        <p id="off-driver-name" class="text-sm font-black text-blue-600 mb-2"></p>
+        <p id="off-driver-name" class="text-sm font-black text-blue-600 mb-4 uppercase"></p>
         
+        <!-- Detail Orderan Harian -->
+        <div id="control-driver-details" class="bg-white border border-gray-200 rounded-2xl p-4 mb-4 text-sm font-medium text-gray-600 text-left space-y-2 shadow-sm">
+           <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest border-b pb-1 mb-2 text-center">Orderan Tanggal Ini</p>
+           <div class="flex justify-between items-center"><span class="font-bold text-green-600 flex items-center"><i class="ph ph-headset mr-1 text-lg"></i> Operator:</span> <span id="ctrl-op" class="font-black text-gray-800 text-lg bg-gray-100 px-3 py-0.5 rounded-lg">0</span></div>
+           <div class="flex justify-between items-center"><span class="font-bold text-orange-500 flex items-center"><i class="ph ph-wifi-slash mr-1 text-lg"></i> Offline:</span> <span id="ctrl-of" class="font-black text-gray-800 text-lg bg-gray-100 px-3 py-0.5 rounded-lg">0</span></div>
+           <div class="flex justify-between items-center"><span class="font-bold text-purple-600 flex items-center"><i class="ph ph-star mr-1 text-lg"></i> Khusus:</span> <span id="ctrl-kh" class="font-black text-gray-800 text-lg bg-gray-100 px-3 py-0.5 rounded-lg">0</span></div>
+        </div>
+
         <!-- Teks Alasan Libur Driver -->
         <div id="off-driver-reason" class="text-xs bg-gray-50 text-gray-600 p-3 rounded-lg border border-gray-200 mb-5 hidden"></div>
         
@@ -594,7 +608,7 @@
   </div>
 
   <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbxkZzmBonFYxlpNlwLrKMuvMjF4lhZ9a0YTT1712MEmv1VJnaLyd3ujx0r3gMyBLkKZ/exec";
+    const API_URL = "/api/backend"; // Sudah aman menggunakan Serverless Vercel
 
     if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(err => console.log('SW failed', err)); }); }
 
@@ -639,7 +653,6 @@
             if(res.status === 'success') { 
                 inisialisasiUser(res); 
             } else if (res.status === 'force_change') {
-                // FIX: Tangkap dengan benar jika Driver sudah login tetapi password masih 123456
                 userData = res; 
                 document.getElementById('pass-email').value = res.email;
                 document.getElementById('view-loading').classList.add('hidden'); 
@@ -672,7 +685,6 @@
     async function prosesLoginKustom() {
        if(loginAttempts <= 0) return tampilkanToast("Akun terkunci sementara.", 'error');
        
-       // FIX: TRIM EMAIL UNTUK MEMOTONG SPASI OTOMATIS DARI KEYBOARD HP
        let email = document.getElementById('login-email').value.trim(); 
        let pass = document.getElementById('login-pass').value.trim();
        
@@ -694,7 +706,7 @@
               document.getElementById('btn-batal-pass').classList.add('hidden'); 
            } else { 
               loginAttempts--; 
-              if(loginAttempts > 0) tampilkanToast("Password/Email salah! Sisa " + loginAttempts + " kesempatan.", 'error');
+              if(loginAttempts > 0) tampilkanToast(res.pesan || "Email/Password salah!", 'error');
               else { tampilkanToast("Kesempatan habis.", 'error'); document.getElementById('btn-login').disabled = true; }
            }
        } catch(e) { document.getElementById('btn-login').disabled = false; document.getElementById('loading-login').classList.add('hidden'); }
@@ -705,46 +717,27 @@
        let passBaru = document.getElementById('new-pass').value; 
        let passConf = document.getElementById('new-pass-confirm').value;
        
-       // VALIDASI KETAT PASSWORD: Wajib 6 digit murni angka
-       if(!/^\d{6}$/.test(passBaru)) {
-           return tampilkanToast("Password WAJIB 6 digit ANGKA!", 'error');
-       }
-       if(passBaru === '123456') {
-           return tampilkanToast("Gunakan kombinasi angka selain 123456!", 'error');
-       }
-       if(passBaru !== passConf) {
-           return tampilkanToast("Kedua form password tidak sama!", 'error');
-       }
+       if(!/^\d{6}$/.test(passBaru)) { return tampilkanToast("Password WAJIB 6 digit ANGKA!", 'error'); }
+       if(passBaru === '123456') { return tampilkanToast("Gunakan kombinasi angka selain 123456!", 'error'); }
+       if(passBaru !== passConf) { return tampilkanToast("Kedua form password tidak sama!", 'error'); }
 
        let btn = document.getElementById('btn-simpan-pass');
-       btn.innerHTML = '<i class="ph ph-spinner-gap animate-spin"></i> Memproses...';
-       btn.disabled = true;
+       btn.innerHTML = '<i class="ph ph-spinner-gap animate-spin"></i> Memproses...'; btn.disabled = true;
 
        try {
            const res = await apiCall('simpanPasswordBaru', { email: email, newPassword: passBaru });
-           
-           // Tangkap respon error eksplisit dari backend jika ada
            if (res && res.status === 'error') {
                tampilkanToast(res.pesan || res.msg || "Gagal menyimpan", 'error');
-               btn.innerHTML = 'Simpan Password';
-               btn.disabled = false;
-               return;
+               btn.innerHTML = 'Simpan Password'; btn.disabled = false; return;
            }
 
            tampilkanToast("Password berhasil disimpan!"); 
-           
-           // SET LOCAL STORAGE LALU RELOAD BERSIH (HARD RESET)
            localStorage.setItem('appOrderanEmail', email);
-           
-           // Paksa sistem memuat ulang membaca sesi baru tanpa bentrok elemen DOM
-           setTimeout(() => {
-               window.location.reload();
-           }, 1000);
+           setTimeout(() => { window.location.reload(); }, 1000);
 
        } catch (error) {
            tampilkanToast("Terjadi kesalahan koneksi.", 'error');
-           btn.innerHTML = 'Simpan Password';
-           btn.disabled = false;
+           btn.innerHTML = 'Simpan Password'; btn.disabled = false;
        }
     }
 
@@ -766,7 +759,6 @@
         document.getElementById('driver-name-header').innerText = res.nama;
         document.getElementById('nav-driver').classList.remove('hidden'); document.getElementById('nav-driver').classList.add('flex');
         switchTabDriver('input');
-        
         cekStatusOffHarianDriver();
       }
     }
@@ -813,18 +805,14 @@
            else if(t === 'kontrol') btn.classList.add('text-cyan-600');
            else btn.classList.add('text-blue-600');
            btn.classList.remove('text-gray-400'); 
-         } else { 
-           btn.className = "flex-1 flex flex-col items-center justify-center text-gray-400"; 
-         }
+         } else { btn.className = "flex-1 flex flex-col items-center justify-center text-gray-400"; }
       });
 
       let btnMenu = document.getElementById('btn-tab-a-menu');
       if(!isMainMenu) { btnMenu.className = "flex-1 flex flex-col items-center justify-center text-indigo-600"; } 
       else { btnMenu.className = "flex-1 flex flex-col items-center justify-center text-gray-400"; }
 
-      if(tab === 'penyesuaian') { ubahKategoriPeny(); }
-      else if(tab === 'user') { loadDaftarUser(); }
-      else if(tab === 'statistik') { loadStatistik(); }
+      if(tab === 'penyesuaian') { ubahKategoriPeny(); } else if(tab === 'user') { loadDaftarUser(); } else if(tab === 'statistik') { loadStatistik(); }
     }
 
     function ubahQty(jenis, nilai) { let baru = stateOrder[jenis] + nilai; if (baru >= 0) { stateOrder[jenis] = baru; document.getElementById('qty-' + jenis).innerText = baru; } }
@@ -839,27 +827,21 @@
       tampilkanToast(res); btn.disabled = false; loading.classList.add('hidden'); switchTabDriver('input'); 
     }
     
-    // --- FITUR LIBUR DRIVER BARU ---
     function bukaModalLibur() {
        document.getElementById('alasan-libur').value = '';
-       document.getElementById('modal-driver-libur').classList.remove('hidden');
-       document.getElementById('modal-driver-libur').classList.add('flex');
+       document.getElementById('modal-driver-libur').classList.remove('hidden'); document.getElementById('modal-driver-libur').classList.add('flex');
     }
 
     async function kirimLibur() {
        let alasan = document.getElementById('alasan-libur').value;
        if(!alasan.trim()) return tampilkanToast("Alasan libur wajib diisi!", "error");
        
-       let btn = document.getElementById('btn-submit-libur');
-       btn.innerHTML = '<i class="ph ph-spinner-gap animate-spin"></i>'; btn.disabled = true;
-       
+       let btn = document.getElementById('btn-submit-libur'); btn.innerHTML = '<i class="ph ph-spinner-gap animate-spin"></i>'; btn.disabled = true;
        const res = await apiCall('setDriverOffStatus', { email: userData.email, status: 'OFF', alasan: alasan });
        tampilkanToast(res);
        
        btn.innerHTML = 'Kirim Alasan'; btn.disabled = false;
-       document.getElementById('modal-driver-libur').classList.add('hidden');
-       document.getElementById('modal-driver-libur').classList.remove('flex');
-       
+       document.getElementById('modal-driver-libur').classList.add('hidden'); document.getElementById('modal-driver-libur').classList.remove('flex');
        cekStatusOffHarianDriver();
     }
 
@@ -867,30 +849,15 @@
        document.getElementById('overlay-off').innerHTML = '<i class="ph ph-spinner-gap animate-spin text-5xl text-blue-500 mb-2"></i><p class="font-bold text-gray-700">Membuka Akses...</p>';
        const res = await apiCall('setDriverOffStatus', { email: userData.email, status: 'ON_FORCE' });
        tampilkanToast("Status ON! Silakan input orderan kembali.");
-       
-       // Kembalikan tampilan overlay aslinya
-       document.getElementById('overlay-off').innerHTML = `
-            <i class="ph-fill ph-moon-stars text-6xl text-blue-500 mb-2"></i>
-            <p class="font-black text-gray-800 text-xl mb-1">ANDA SEDANG LIBUR</p>
-            <p class="text-xs font-medium text-gray-500 mb-6">Akses input dikunci. Ingin beroperasi kembali hari ini?</p>
-            <button onclick="driverOnKembali()" class="bg-green-500 text-white font-bold py-3 px-6 rounded-xl shadow-md active:bg-green-600 transition flex items-center justify-center w-full">
-                <i class="ph ph-sun mr-2 text-xl"></i> ON Kembali
-            </button>
-       `;
+       document.getElementById('overlay-off').innerHTML = `<i class="ph-fill ph-moon-stars text-6xl text-blue-500 mb-2"></i><p class="font-black text-gray-800 text-xl mb-1">ANDA SEDANG LIBUR</p><p class="text-xs font-medium text-gray-500 mb-6">Akses input dikunci. Ingin beroperasi kembali hari ini?</p><button onclick="driverOnKembali()" class="bg-green-500 text-white font-bold py-3 px-6 rounded-xl shadow-md active:bg-green-600 transition flex items-center justify-center w-full"><i class="ph ph-sun mr-2 text-xl"></i> ON Kembali</button>`;
        cekStatusOffHarianDriver();
     }
 
     async function cekStatusOffHarianDriver() {
        const res = await apiCall('cekStatusOffHariIni', { email: userData.email });
-       if(res.isOff) { 
-           document.getElementById('overlay-off').classList.remove('hidden'); 
-           document.getElementById('overlay-off').classList.add('flex'); 
-       } else { 
-           document.getElementById('overlay-off').classList.add('hidden'); 
-           document.getElementById('overlay-off').classList.remove('flex'); 
-       }
+       if(res.isOff) { document.getElementById('overlay-off').classList.remove('hidden'); document.getElementById('overlay-off').classList.add('flex'); } 
+       else { document.getElementById('overlay-off').classList.add('hidden'); document.getElementById('overlay-off').classList.remove('flex'); }
     }
-    // --- AKHIR FITUR LIBUR ---
 
     function toggleCustomDateDriver() {
       let tipe = document.getElementById('filter-tipe-driver').value; let div = document.getElementById('filter-custom-driver');
@@ -904,55 +871,36 @@
         if (!start || !end) return; payload.start = start; payload.end = end;
       }
       document.getElementById('loading-riwayat-driver').classList.remove('hidden'); document.getElementById('list-riwayat-driver').innerHTML = '';
-      
       const data = await apiCall('getRiwayatDriver', { email: userData.email, filter: payload });
-      
       document.getElementById('loading-riwayat-driver').classList.add('hidden'); let html = '';
       let totalSemua = data['Operator'] + data['Offline'] + data['Khusus'];
       if(totalSemua === 0) { html = '<div class="text-center text-gray-400 mt-10"><i class="ph ph-folder-open text-5xl mb-2"></i><p>Belum ada orderan.</p></div>'; } 
       else {
           const items = [{ nama: 'Operator', jumlah: data['Operator'], icon: 'ph-headset' }, { nama: 'Offline', jumlah: data['Offline'], icon: 'ph-wifi-slash' }, { nama: 'Khusus', jumlah: data['Khusus'], icon: 'ph-star' }];
           items.forEach(item => {
-            html += `<div class="bg-white p-5 rounded-2xl border flex justify-between items-center mb-3">
-                <div class="flex items-center"><div class="bg-green-100 p-3 rounded-xl mr-4"><i class="ph ${item.icon} text-green-600 text-2xl font-bold"></i></div>
-                   <div><p class="text-xs font-bold text-gray-400 uppercase">Total Order</p><p class="text-lg font-bold text-gray-800">${item.nama}</p></div>
-                </div><div class="bg-gray-50 border text-gray-800 font-black px-6 py-3 rounded-xl text-2xl shadow-inner">${item.jumlah}</div></div>`;
+            html += `<div class="bg-white p-5 rounded-2xl border flex justify-between items-center mb-3"><div class="flex items-center"><div class="bg-green-100 p-3 rounded-xl mr-4"><i class="ph ${item.icon} text-green-600 text-2xl font-bold"></i></div><div><p class="text-xs font-bold text-gray-400 uppercase">Total Order</p><p class="text-lg font-bold text-gray-800">${item.nama}</p></div></div><div class="bg-gray-50 border text-gray-800 font-black px-6 py-3 rounded-xl text-2xl shadow-inner">${item.jumlah}</div></div>`;
           });
       }
       document.getElementById('list-riwayat-driver').innerHTML = html;
     }
 
-    function toggleCekSementara() {
-       const box = document.getElementById('box-cek-sementara');
-       if(box.classList.contains('hidden')) { box.classList.remove('hidden'); } else { box.classList.add('hidden'); }
-    }
+    function toggleCekSementara() { const box = document.getElementById('box-cek-sementara'); if(box.classList.contains('hidden')) { box.classList.remove('hidden'); } else { box.classList.add('hidden'); } }
 
-    async function loadSetoranDriverCustom() {
-       let start = document.getElementById('date-start-temp').value; let end = document.getElementById('date-end-temp').value;
-       if(!start || !end) return tampilkanToast("Pilih rentang tanggal!", "error");
-       await loadSetoranDriver(true, start, end);
-    }
+    async function loadSetoranDriverCustom() { let start = document.getElementById('date-start-temp').value; let end = document.getElementById('date-end-temp').value; if(!start || !end) return tampilkanToast("Pilih rentang tanggal!", "error"); await loadSetoranDriver(true, start, end); }
 
     async function loadSetoranDriver(isCustom = false, start = null, end = null) {
       document.getElementById('loading-setoran').classList.remove('hidden'); document.getElementById('konten-setoran').classList.add('hidden');
-      
-      let payload = { email: userData.email, filter: { tipe: 'official_driver' } };
-      if(isCustom) { payload.filter = { tipe: 'custom', start: start, end: end }; }
-
+      let payload = { email: userData.email, filter: { tipe: 'official_driver' } }; if(isCustom) { payload.filter = { tipe: 'custom', start: start, end: end }; }
       const lap = await apiCall('getLaporanDriver', payload);
       document.getElementById('loading-setoran').classList.add('hidden'); document.getElementById('konten-setoran').classList.remove('hidden');
-      
-      let banner = document.getElementById('driver-status-banner');
-      let wrapper = document.getElementById('wrapper-tagihan-driver');
+      let banner = document.getElementById('driver-status-banner'); let wrapper = document.getElementById('wrapper-tagihan-driver');
       
       if (!isCustom && lap.isLunas) {
-        banner.classList.remove('hidden');
-        wrapper.classList.add('hidden'); 
+        banner.classList.remove('hidden'); wrapper.classList.add('hidden'); 
         banner.className = "mb-4 text-center p-4 rounded-xl font-bold text-sm bg-green-100 text-green-800 border border-green-200 mt-4";
         banner.innerHTML = "<i class='ph ph-check-circle mr-1 text-2xl mb-2 inline-block'></i><br>TERIMA KASIH SUDAH SETOR<br>SILAHKAN ON KEMBALI";
       } else {
-        banner.classList.add('hidden');
-        wrapper.classList.remove('hidden'); 
+        banner.classList.add('hidden'); wrapper.classList.remove('hidden'); 
         document.getElementById('setoran-periode').innerText = lap.periodeMulai + " s/d " + lap.periodeAkhir;
         document.getElementById('lap-order').innerText = formatRp(lap.totalOrderRp); document.getElementById('lap-wajib').innerText = formatRp(lap.setoranWajib);
         document.getElementById('lap-denda').innerText = formatRp(lap.tambahan); document.getElementById('lap-massal').innerText = formatRp(lap.massal);
@@ -971,23 +919,16 @@
       }
     }
 
-    function toggleCustomDate() { let tipe = document.getElementById('filter-tipe').value; let divCustom = document.getElementById('filter-custom');
-      if (tipe === 'custom') { divCustom.classList.remove('hidden'); divCustom.classList.add('flex'); } else { divCustom.classList.add('hidden'); divCustom.classList.remove('flex'); } }
-    
-    function toggleCustomDateSetoranAdmin() { let tipe = document.getElementById('filter-tipe-setoran').value; let divCustom = document.getElementById('filter-custom-setoran-admin');
-      if (tipe === 'custom') { divCustom.classList.remove('hidden'); divCustom.classList.add('flex'); } else { divCustom.classList.add('hidden'); divCustom.classList.remove('flex'); } }
+    function toggleCustomDate() { let tipe = document.getElementById('filter-tipe').value; let divCustom = document.getElementById('filter-custom'); if (tipe === 'custom') { divCustom.classList.remove('hidden'); divCustom.classList.add('flex'); } else { divCustom.classList.add('hidden'); divCustom.classList.remove('flex'); } }
+    function toggleCustomDateSetoranAdmin() { let tipe = document.getElementById('filter-tipe-setoran').value; let divCustom = document.getElementById('filter-custom-setoran-admin'); if (tipe === 'custom') { divCustom.classList.remove('hidden'); divCustom.classList.add('flex'); } else { divCustom.classList.add('hidden'); divCustom.classList.remove('flex'); } }
 
     async function loadRiwayatAdmin() {
       let driverEmail = document.getElementById('admin-rekap-driver').value; if (!driverEmail) return tampilkanToast("Pilih nama driver!", 'error');
       let tipe = document.getElementById('filter-tipe').value; let payload = { tipe: tipe, email: driverEmail };
-      if (tipe === 'custom') {
-        let start = document.getElementById('date-single').value;
-        if (!start) return tampilkanToast("Pilih tanggal!", 'error'); payload.start = start; payload.end = start; 
-      }
+      if (tipe === 'custom') { let start = document.getElementById('date-single').value; if (!start) return tampilkanToast("Pilih tanggal!", 'error'); payload.start = start; payload.end = start; }
       document.getElementById('loading-riwayat').classList.remove('hidden'); document.getElementById('list-riwayat').innerHTML = '';
       
       const response = await apiCall('getRiwayatOrderan', { filter: payload });
-      
       document.getElementById('loading-riwayat').classList.add('hidden'); let html = '';
       if (response.mode === 'summary') {
           let totalQty = response.data.Operator + response.data.Offline + response.data.Khusus;
@@ -1002,10 +943,7 @@
           if(response.data.length === 0) { html = '<div class="text-center text-gray-400 mt-10"><p>Belum ada orderan.</p></div>'; } 
           else {
               response.data.forEach(d => {
-                html += `<div class="bg-white p-4 rounded-2xl border flex flex-col mb-3">
-                    <div class="flex justify-between items-start mb-2 border-b pb-2"><div><p class="text-[10px] font-bold text-gray-400"><i class="ph ph-clock mr-1"></i>${d.tgl}</p></div><div class="bg-blue-50 text-blue-700 text-[11px] font-extrabold px-2 py-1 rounded-lg">${d.jenis}</div></div>
-                    <div class="flex justify-between items-end mt-1"><div><p class="text-[11px] text-gray-500">Qty: <span class="font-black text-lg text-gray-800">${d.qty}</span></p></div>
-                    <div class="flex items-center space-x-3"><p class="font-black text-blue-700">${formatRp(d.total)}</p><button onclick="document.getElementById('edit-row').value=${d.row};document.getElementById('edit-qty').value=${d.qty};document.getElementById('edit-info').innerHTML='Tanggal: ${d.tgl}<br>Jenis: ${d.jenis}';document.getElementById('modal-edit').classList.remove('hidden');" class="bg-yellow-50 text-yellow-600 p-2 rounded-lg"><i class="ph ph-pencil-simple font-bold"></i></button></div></div></div>`;
+                html += `<div class="bg-white p-4 rounded-2xl border flex flex-col mb-3"><div class="flex justify-between items-start mb-2 border-b pb-2"><div><p class="text-[10px] font-bold text-gray-400"><i class="ph ph-clock mr-1"></i>${d.tgl}</p></div><div class="bg-blue-50 text-blue-700 text-[11px] font-extrabold px-2 py-1 rounded-lg">${d.jenis}</div></div><div class="flex justify-between items-end mt-1"><div><p class="text-[11px] text-gray-500">Qty: <span class="font-black text-lg text-gray-800">${d.qty}</span></p></div><div class="flex items-center space-x-3"><p class="font-black text-blue-700">${formatRp(d.total)}</p><button onclick="document.getElementById('edit-row').value=${d.row};document.getElementById('edit-qty').value=${d.qty};document.getElementById('edit-info').innerHTML='Tanggal: ${d.tgl}<br>Jenis: ${d.jenis}';document.getElementById('modal-edit').classList.remove('hidden');" class="bg-yellow-50 text-yellow-600 p-2 rounded-lg"><i class="ph ph-pencil-simple font-bold"></i></button></div></div></div>`;
               });
           }
       }
@@ -1015,12 +953,9 @@
     async function simpanEdit() {
       let row = document.getElementById('edit-row').value; let newQty = document.getElementById('edit-qty').value;
       if(newQty === '' || newQty < 0) return tampilkanToast("Qty tidak valid", 'error');
-      
       let btnSave = document.getElementById('btn-save-edit'); btnSave.innerHTML = '<i class="ph ph-spinner-gap animate-spin"></i>'; btnSave.disabled = true;
       const res = await apiCall('editOrderan', { row: row, newQty: newQty });
-      tampilkanToast(res); 
-      
-      btnSave.innerHTML = '<i class="ph ph-check-circle mr-1"></i> Update'; btnSave.disabled = false;
+      tampilkanToast(res); btnSave.innerHTML = '<i class="ph ph-check-circle mr-1"></i> Update'; btnSave.disabled = false;
       document.getElementById('modal-edit').classList.add('hidden'); loadRiwayatAdmin();
     }
 
@@ -1064,60 +999,52 @@
     }
 
     async function ubahStatusSetoran(statusLunas) {
-      if (!window.currentAdminLapEmail || !window.currentAdminLapPeriode) {
-        tampilkanToast("Data periode belum siap. Lakukan Cari ulang!", "error"); return;
-      }
+      if (!window.currentAdminLapEmail || !window.currentAdminLapPeriode) { tampilkanToast("Data periode belum siap. Lakukan Cari ulang!", "error"); return; }
       let nomBayar = document.getElementById('admin-input-bayar').value || 0;
       if (statusLunas && nomBayar <= 0) { tampilkanToast("Isi nominal yang dibayar driver!", "error"); return; }
-
       document.getElementById('loading-setoran-admin').classList.remove('hidden'); document.getElementById('konten-setoran-admin').classList.add('hidden');
       try {
-        const res = await apiCall('updateStatusSetoran', { 
-            email: window.currentAdminLapEmail, 
-            periode: window.currentAdminLapPeriode, 
-            status: statusLunas,
-            tagihan: window.currentAdminTagihan,
-            nominalBayar: nomBayar
-        });
+        const res = await apiCall('updateStatusSetoran', { email: window.currentAdminLapEmail, periode: window.currentAdminLapPeriode, status: statusLunas, tagihan: window.currentAdminTagihan, nominalBayar: nomBayar });
         tampilkanToast(res); loadSetoranAdmin(); 
-      } catch (e) {
-        tampilkanToast("Gagal memperbarui status", 'error'); document.getElementById('loading-setoran-admin').classList.add('hidden'); document.getElementById('konten-setoran-admin').classList.remove('hidden');
-      }
+      } catch (e) { tampilkanToast("Gagal memperbarui status", 'error'); document.getElementById('loading-setoran-admin').classList.add('hidden'); document.getElementById('konten-setoran-admin').classList.remove('hidden'); }
     }
 
     // =======================================================
     // KONTROL INPUT ADMIN
     // =======================================================
-    function toggleCustomDateKontrol() { 
-      let tipe = document.getElementById('filter-tipe-kontrol').value; let div = document.getElementById('filter-custom-kontrol');
-      if (tipe === 'custom') { div.classList.remove('hidden'); div.classList.add('flex'); } else { div.classList.add('hidden'); div.classList.remove('flex'); } 
-    }
+    let listBelumInput = [];
 
     async function loadKontrolInput() {
       let dateVal = document.getElementById('date-single-kontrol').value;
       if (!dateVal) return tampilkanToast("Pilih tanggal kontrol!", 'error');
       let payload = { tipe: 'custom', start: dateVal, end: dateVal };
       
-      document.getElementById('grid-kontrol').innerHTML = ''; document.getElementById('loading-kontrol').classList.remove('hidden');
+      document.getElementById('grid-kontrol').innerHTML = ''; 
+      document.getElementById('loading-kontrol').classList.remove('hidden');
       
       const res = await apiCall('getKontrolInput', payload);
       document.getElementById('loading-kontrol').classList.add('hidden');
       
-      document.getElementById('c-merah').innerText = res.totals.merah; document.getElementById('c-hijau').innerText = res.totals.hijau;
-      document.getElementById('c-kuning').innerText = res.totals.kuning; document.getElementById('c-abu').innerText = res.totals.abu;
+      document.getElementById('c-merah').innerText = res.totals.merah; 
+      document.getElementById('c-hijau').innerText = res.totals.hijau;
+      document.getElementById('c-kuning').innerText = res.totals.kuning; 
+      document.getElementById('c-abu').innerText = res.totals.abu;
       
+      listBelumInput = []; 
       let html = '';
       res.data.forEach(d => {
          let bgClass = ''; let iconClass = '';
-         if(d.status === 'merah') { bgClass = 'bg-red-500 text-white border-red-600'; iconClass = 'ph-x-circle'; }
+         if(d.status === 'merah') { 
+            bgClass = 'bg-red-500 text-white border-red-600'; iconClass = 'ph-x-circle'; 
+            listBelumInput.push(d.nama); 
+         }
          else if(d.status === 'kuning') { bgClass = 'bg-yellow-400 text-gray-900 border-yellow-500'; iconClass = 'ph-warning'; }
          else if(d.status === 'abu') { bgClass = 'bg-gray-400 text-white border-gray-500'; iconClass = 'ph-moon-stars'; }
          else { bgClass = 'bg-green-500 text-white border-green-600'; iconClass = 'ph-check-circle'; }
          
-         // Escape quotes to prevent HTML breaking
          let safeAlasan = d.alasan ? d.alasan.replace(/'/g, "\\'") : '';
 
-         html += `<div onclick="bukaModalKontrolOff('${d.email}', '${d.nama}', '${safeAlasan}')" class="${bgClass} p-2 rounded-2xl flex flex-col items-center justify-center text-center shadow-sm h-20 border active:scale-95 transition cursor-pointer">
+         html += `<div onclick="bukaModalKontrolOff('${d.email}', '${d.nama}', '${safeAlasan}', ${d.op}, ${d.of}, ${d.kh})" class="${bgClass} p-2 rounded-2xl flex flex-col items-center justify-center text-center shadow-sm h-20 border active:scale-95 transition cursor-pointer">
                     <i class="ph ${iconClass} text-xl mb-1 opacity-80"></i>
                     <span class="text-[9px] font-black uppercase tracking-tight leading-tight line-clamp-2 break-words w-full px-1">${d.nama}</span>
                   </div>`;
@@ -1125,10 +1052,14 @@
       document.getElementById('grid-kontrol').innerHTML = html;
     }
     
-    function bukaModalKontrolOff(email, nama, alasan) {
+    function bukaModalKontrolOff(email, nama, alasan, op, of, kh) {
        document.getElementById('off-driver-email').value = email;
        document.getElementById('off-driver-name').innerText = nama;
        
+       document.getElementById('ctrl-op').innerText = op;
+       document.getElementById('ctrl-of').innerText = of;
+       document.getElementById('ctrl-kh').innerText = kh;
+
        let reasonEl = document.getElementById('off-driver-reason');
        if (alasan && alasan.trim() !== '' && alasan !== 'undefined') {
            reasonEl.innerHTML = `<strong>Alasan Libur:</strong><br>"${alasan}"`;
@@ -1153,36 +1084,54 @@
        
        const res = await apiCall('setDriverOffStatus', { email: email, status: status, tanggalStr: tgl });
        tampilkanToast(res); 
-       loadKontrolInput(); // Refresh data grid
+       loadKontrolInput(); 
+    }
+
+    function bagikanWA() {
+        if (listBelumInput.length === 0) {
+            tampilkanToast("Semua driver sudah lapor atau libur!", "success");
+            return;
+        }
+        
+        let tglInput = document.getElementById('date-single-kontrol').value;
+        if (!tglInput) return;
+        
+        let dateObj = new Date(tglInput);
+        let hariArr = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+        let namaHari = hariArr[dateObj.getDay()];
+        
+        let d = ("0" + dateObj.getDate()).slice(-2);
+        let m = ("0" + (dateObj.getMonth() + 1)).slice(-2);
+        let y = dateObj.getFullYear();
+        let tglFormat = `${d}/${m}/${y}`;
+        
+        let pesan = `*Belum input laporan*\nHari: ${namaHari}\nTanggal: ${tglFormat}\n\n`;
+        listBelumInput.forEach((nama, idx) => {
+            pesan += `${idx + 1}. ${nama}\n`;
+        });
+        
+        let waUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(pesan)}`;
+        window.open(waUrl, '_blank');
     }
 
     // =======================================================
     // MANAJEMEN USER ADMIN
     // =======================================================
+
     async function loadDaftarUser() {
         document.getElementById('list-user-admin').innerHTML = ''; document.getElementById('loading-user').classList.remove('hidden');
         const data = await apiCall('getDaftarUserLengkap');
-        document.getElementById('loading-user').classList.add('hidden');
-        let html = '';
-        data.forEach(u => {
-            html += `<div class="bg-gray-50 border border-gray-200 p-4 rounded-2xl flex justify-between items-center mb-3">
-                       <div><p class="font-bold text-sm text-gray-800">${u.nama}</p><p class="text-xs text-gray-500 font-medium">${u.email}</p></div>
-                       <button onclick="hapusUserLama('${u.email}')" class="bg-red-100 text-red-600 p-2.5 rounded-xl active:bg-red-200"><i class="ph ph-trash font-bold text-lg"></i></button>
-                     </div>`;
-        });
+        document.getElementById('loading-user').classList.add('hidden'); let html = '';
+        data.forEach(u => { html += `<div class="bg-gray-50 border border-gray-200 p-4 rounded-2xl flex justify-between items-center mb-3"><div><p class="font-bold text-sm text-gray-800">${u.nama}</p><p class="text-xs text-gray-500 font-medium">${u.email}</p></div><button onclick="hapusUserLama('${u.email}')" class="bg-red-100 text-red-600 p-2.5 rounded-xl active:bg-red-200"><i class="ph ph-trash font-bold text-lg"></i></button></div>`; });
         document.getElementById('list-user-admin').innerHTML = html;
     }
 
     async function tambahUserBaru() {
-        // FIX: TRIM EMAIL SAAT ADMIN MENAMBAHKAN USER BARU
-        let nama = document.getElementById('user-new-nama').value; 
-        let email = document.getElementById('user-new-email').value.trim();
-        
+        let nama = document.getElementById('user-new-nama').value; let email = document.getElementById('user-new-email').value.trim();
         if(!nama || !email) return tampilkanToast("Nama & Email wajib diisi!", "error");
         let btn = document.getElementById('btn-add-user'); btn.innerHTML = '<i class="ph ph-spinner-gap animate-spin mr-2"></i>Menyimpan...'; btn.disabled = true;
         const res = await apiCall('tambahUser', {nama: nama, email: email});
-        if(res.status === 'success') { tampilkanToast(res.msg); document.getElementById('user-new-nama').value = ''; document.getElementById('user-new-email').value = ''; loadDaftarUser(); } 
-        else { tampilkanToast(res.msg, 'error'); }
+        if(res.status === 'success') { tampilkanToast(res.msg); document.getElementById('user-new-nama').value = ''; document.getElementById('user-new-email').value = ''; loadDaftarUser(); } else { tampilkanToast(res.msg, 'error'); }
         btn.innerHTML = 'Simpan Driver'; btn.disabled = false;
     }
 
@@ -1192,127 +1141,51 @@
         if(res.status === 'success') { tampilkanToast(res.msg); loadDaftarUser(); } else { tampilkanToast(res.msg, 'error'); }
     }
 
-
     function ubahKategoriPeny() { let kat = document.getElementById('peny-kategori').value; let select = document.getElementById('peny-target'); if (kat === 'Penyesuaian Massal') { select.value = 'ALL'; select.disabled = true; } else { select.disabled = false; if (select.value === 'ALL' && select.options.length > 1) select.selectedIndex = 1; } }
 
     async function kirimPenyesuaian() {
       let target = document.getElementById('peny-target').value; let kategori = document.getElementById('peny-kategori').value; let nominal = document.getElementById('peny-nominal').value; let ket = document.getElementById('peny-ket').value; let tanggal = document.getElementById('peny-tanggal').value;
       if(!nominal || nominal <= 0) return tampilkanToast("Isi nominal!", 'error'); if(!ket || ket.trim() === '') return tampilkanToast("Isi keterangan!", 'error'); if(kategori !== 'Penyesuaian Massal' && target === 'ALL') return tampilkanToast("Pilih driver spesifik!", 'error');
       let btn = document.getElementById('btn-peny'); btn.innerHTML = '<i class="ph ph-spinner-gap animate-spin mr-2"></i> Menyimpan...'; btn.disabled = true;
-      
       const res = await apiCall('simpanPenyesuaian', { target: target, kategori: kategori, nominal: nominal, keterangan: ket, tanggal: tanggal });
-      tampilkanToast(res); btn.innerHTML = '<i class="ph ph-paper-plane-right mr-2"></i> Simpan Penyesuaian'; btn.disabled = false;
-      document.getElementById('peny-nominal').value = ''; document.getElementById('peny-ket').value = '';
+      tampilkanToast(res); btn.innerHTML = '<i class="ph ph-paper-plane-right mr-2"></i> Simpan Penyesuaian'; btn.disabled = false; document.getElementById('peny-nominal').value = ''; document.getElementById('peny-ket').value = '';
     }
 
-    function toggleCustomDateBackup() { 
-      let tipe = document.getElementById('filter-tipe-backup').value; let divCustom = document.getElementById('filter-custom-backup');
-      if (tipe === 'custom') { divCustom.classList.remove('hidden'); divCustom.classList.add('flex'); } else { divCustom.classList.add('hidden'); divCustom.classList.remove('flex'); } 
-    }
+    function toggleCustomDateBackup() { let tipe = document.getElementById('filter-tipe-backup').value; let divCustom = document.getElementById('filter-custom-backup'); if (tipe === 'custom') { divCustom.classList.remove('hidden'); divCustom.classList.add('flex'); } else { divCustom.classList.add('hidden'); divCustom.classList.remove('flex'); } }
 
     async function downloadExcelAdmin() {
       let tipe = document.getElementById('filter-tipe-backup').value; let payload = { tipe: tipe };
       if (tipe === 'custom') { let start = document.getElementById('date-start-backup').value; let end = document.getElementById('date-end-backup').value; if (!start || !end) return tampilkanToast("Pilih tanggal periode!", 'error'); payload.start = start; payload.end = end; }
-      
       let btn = document.getElementById('btn-download-excel'); let originText = btn.innerHTML; btn.innerHTML = '<i class="ph ph-spinner-gap animate-spin mr-2 text-xl"></i> Memproses Data...'; btn.disabled = true;
-
       try {
         const response = await apiCall('exportExcelAdmin', payload);
-        let ws_data = []; ws_data.push(["REKAPITULASI ORDERAN & SETORAN DRIVER - OK BOS"]); ws_data.push(["PERIODE:", response.periode]); ws_data.push([]);
-        ws_data.push(["No", "Nama Driver", "Operator (Qty)", "Offline (Qty)", "Khusus (Qty)", "Omset Kotor", "Setoran Wajib (15%)", "Tambahan (+)", "Penyesuaian Massal (+)", "Potongan (-)", "TOTAL TAGIHAN LUNAS"]);
-        
-        if (response.data.length === 0) { ws_data.push(["Tidak ada data pada periode ini"]); } 
-        else { response.data.forEach((d, index) => { ws_data.push([ index + 1, d.nama, d.operator, d.offline, d.khusus, d.omset, d.wajib, d.tambahan, d.massal, d.potongan, d.totalAkhir ]); }); }
-
-        let wb = XLSX.utils.book_new(); let ws = XLSX.utils.aoa_to_sheet(ws_data);
-        ws['!cols'] = [{wch:5}, {wch:25}, {wch:15}, {wch:15}, {wch:15}, {wch:15}, {wch:20}, {wch:15}, {wch:25}, {wch:15}, {wch:25}];
-        XLSX.utils.book_append_sheet(wb, ws, "Rekap_Setoran");
-        let filename = "Rekap_Orderan_" + response.periode.replace(/\//g, "-") + ".xlsx"; XLSX.writeFile(wb, filename);
-        tampilkanToast("Excel berhasil diunduh!");
+        let ws_data = []; ws_data.push(["REKAPITULASI ORDERAN & SETORAN DRIVER - OK BOS"]); ws_data.push(["PERIODE:", response.periode]); ws_data.push([]); ws_data.push(["No", "Nama Driver", "Operator (Qty)", "Offline (Qty)", "Khusus (Qty)", "Omset Kotor", "Setoran Wajib (15%)", "Tambahan (+)", "Penyesuaian Massal (+)", "Potongan (-)", "TOTAL TAGIHAN LUNAS"]);
+        if (response.data.length === 0) { ws_data.push(["Tidak ada data pada periode ini"]); } else { response.data.forEach((d, index) => { ws_data.push([ index + 1, d.nama, d.operator, d.offline, d.khusus, d.omset, d.wajib, d.tambahan, d.massal, d.potongan, d.totalAkhir ]); }); }
+        let wb = XLSX.utils.book_new(); let ws = XLSX.utils.aoa_to_sheet(ws_data); ws['!cols'] = [{wch:5}, {wch:25}, {wch:15}, {wch:15}, {wch:15}, {wch:15}, {wch:20}, {wch:15}, {wch:25}, {wch:15}, {wch:25}]; XLSX.utils.book_append_sheet(wb, ws, "Rekap_Setoran"); let filename = "Rekap_Orderan_" + response.periode.replace(/\//g, "-") + ".xlsx"; XLSX.writeFile(wb, filename); tampilkanToast("Excel berhasil diunduh!");
       } catch (e) { tampilkanToast("Gagal mengunduh Excel.", 'error'); } finally { btn.innerHTML = originText; btn.disabled = false; }
     }
     
-    // =======================================================
-    // FITUR STATISTIK ADMIN (CHART.JS)
-    // =======================================================
     let statChart = null;
-    function toggleCustomStat() {
-       let tipe = document.getElementById('stat-filter-tipe').value; let div = document.getElementById('stat-filter-custom');
-       if (tipe === 'custom') { div.classList.remove('hidden'); div.classList.add('flex'); } else { div.classList.add('hidden'); div.classList.remove('flex'); }
-    }
+    function toggleCustomStat() { let tipe = document.getElementById('stat-filter-tipe').value; let div = document.getElementById('stat-filter-custom'); if (tipe === 'custom') { div.classList.remove('hidden'); div.classList.add('flex'); } else { div.classList.add('hidden'); div.classList.remove('flex'); } }
     
     async function loadStatistik() {
-       let tipe = document.getElementById('stat-filter-tipe').value; 
-       let payload = { tipe: tipe };
-       
-       if (tipe === 'custom') {
-          let start = document.getElementById('stat-start').value; 
-          let end = document.getElementById('stat-end').value;
-          if (!start || !end) return tampilkanToast("Pilih rentang tanggal!", 'error'); 
-          payload.start = start; payload.end = end;
-       }
-       
-       document.getElementById('loading-statistik').classList.remove('hidden'); 
-       document.getElementById('konten-statistik').classList.add('hidden');
-       
-       // Mengirim data ganda (safe payload) agar cocok dengan versi Code.gs lama/baru
-       let safePayload = {
-           tipe: payload.tipe,
-           start: payload.start,
-           end: payload.end,
-           filter: payload
-       };
-
+       let tipe = document.getElementById('stat-filter-tipe').value; let payload = { tipe: tipe };
+       if (tipe === 'custom') { let start = document.getElementById('stat-start').value; let end = document.getElementById('stat-end').value; if (!start || !end) return tampilkanToast("Pilih rentang tanggal!", 'error'); payload.start = start; payload.end = end; }
+       document.getElementById('loading-statistik').classList.remove('hidden'); document.getElementById('konten-statistik').classList.add('hidden');
+       let safePayload = { tipe: payload.tipe, start: payload.start, end: payload.end, filter: payload };
        try {
            const res = await apiCall('getStatistikAdmin', safePayload);
-           
-           document.getElementById('loading-statistik').classList.add('hidden'); 
-           document.getElementById('konten-statistik').classList.remove('hidden');
-           
-           // Fallback logic jika Code.gs masih memuntahkan data versi lama (totalAll) vs versi baru (totals.ALL)
-           let totALL = (res.totals && res.totals.ALL !== undefined) ? res.totals.ALL : (res.totalAll || 0);
-           let totOP = (res.totals && res.totals.OP !== undefined) ? res.totals.OP : (res.totalOp || 0);
-           let totOF = (res.totals && res.totals.OF !== undefined) ? res.totals.OF : (res.totalOf || 0);
-           let totKH = (res.totals && res.totals.KH !== undefined) ? res.totals.KH : (res.totalKh || 0);
-           
-           document.getElementById('stat-tot-all').innerText = totALL;
-           document.getElementById('stat-tot-op').innerText = totOP;
-           document.getElementById('stat-tot-of').innerText = totOF;
-           document.getElementById('stat-tot-kh').innerText = totKH;
-           
-           let dataOP = (res.datasets && res.datasets.OP) ? res.datasets.OP : (res.dataOp || []);
-           let dataOF = (res.datasets && res.datasets.OF) ? res.datasets.OF : (res.dataOf || []);
-           let dataKH = (res.datasets && res.datasets.KH) ? res.datasets.KH : (res.dataKh || []);
-           let dataLabels = res.labels || [];
-           
-           const ctx = document.getElementById('myChart').getContext('2d');
-           if(statChart) statChart.destroy();
-           
+           document.getElementById('loading-statistik').classList.add('hidden'); document.getElementById('konten-statistik').classList.remove('hidden');
+           let totALL = (res.totals && res.totals.ALL !== undefined) ? res.totals.ALL : (res.totalAll || 0); let totOP = (res.totals && res.totals.OP !== undefined) ? res.totals.OP : (res.totalOp || 0); let totOF = (res.totals && res.totals.OF !== undefined) ? res.totals.OF : (res.totalOf || 0); let totKH = (res.totals && res.totals.KH !== undefined) ? res.totals.KH : (res.totalKh || 0);
+           document.getElementById('stat-tot-all').innerText = totALL; document.getElementById('stat-tot-op').innerText = totOP; document.getElementById('stat-tot-of').innerText = totOF; document.getElementById('stat-tot-kh').innerText = totKH;
+           let dataOP = (res.datasets && res.datasets.OP) ? res.datasets.OP : (res.dataOp || []); let dataOF = (res.datasets && res.datasets.OF) ? res.datasets.OF : (res.dataOf || []); let dataKH = (res.datasets && res.datasets.KH) ? res.datasets.KH : (res.dataKh || []); let dataLabels = res.labels || [];
+           const ctx = document.getElementById('myChart').getContext('2d'); if(statChart) statChart.destroy();
            statChart = new Chart(ctx, {
               type: 'line',
-              data: {
-                 labels: dataLabels,
-                 datasets: [
-                    { label: 'OP', data: dataOP, borderColor: '#f0b21e', backgroundColor: '#f0b21e', tension: 0.4, borderWidth: 2, pointRadius: 0 },
-                    { label: 'OF', data: dataOF, borderColor: '#f97316', backgroundColor: '#f97316', tension: 0.4, borderWidth: 2, pointRadius: 0 },
-                    { label: 'KH', data: dataKH, borderColor: '#9333ea', backgroundColor: '#9333ea', tension: 0.4, borderWidth: 2, pointRadius: 0 }
-                 ]
-              },
-              options: {
-                 responsive: true, maintainAspectRatio: false,
-                 interaction: { mode: 'index', intersect: false },
-                 plugins: { legend: { display: false } },
-                 scales: {
-                    x: { grid: { display: false } },
-                    y: { grid: { color: '#f3f4f6' }, beginAtZero: true }
-                 }
-              }
+              data: { labels: dataLabels, datasets: [ { label: 'OP', data: dataOP, borderColor: '#f0b21e', backgroundColor: '#f0b21e', tension: 0.4, borderWidth: 2, pointRadius: 0 }, { label: 'OF', data: dataOF, borderColor: '#f97316', backgroundColor: '#f97316', tension: 0.4, borderWidth: 2, pointRadius: 0 }, { label: 'KH', data: dataKH, borderColor: '#9333ea', backgroundColor: '#9333ea', tension: 0.4, borderWidth: 2, pointRadius: 0 } ] },
+              options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false }, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false } }, y: { grid: { color: '#f3f4f6' }, beginAtZero: true } } }
            });
-       } catch (error) {
-           tampilkanToast("Gagal memuat statistik", "error");
-           document.getElementById('loading-statistik').classList.add('hidden'); 
-           document.getElementById('konten-statistik').classList.remove('hidden');
-       }
+       } catch (error) { tampilkanToast("Gagal memuat statistik", "error"); document.getElementById('loading-statistik').classList.add('hidden'); document.getElementById('konten-statistik').classList.remove('hidden'); }
     }
   </script>
 </body>
