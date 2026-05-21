@@ -172,6 +172,21 @@
               </div>
             </div>
 
+            <!-- FITUR BARU ASISTEN DROP DOWN -->
+            <div class="mt-4 border-t border-gray-100 pt-4">
+               <p class="text-xs text-center text-gray-500 font-bold mb-3 cursor-pointer" onclick="toggleAsisten()">
+                  Ada orderan jadi asisten? <span class="text-blue-500 underline ml-1">klik tombol dibawah</span>
+               </p>
+               <div id="div-asisten" class="hidden bg-white p-5 rounded-2xl shadow-sm border justify-between items-center transition-all">
+                 <div><h3 class="font-bold text-gray-800 text-lg">Asisten</h3></div>
+                 <div class="flex items-center space-x-4 bg-gray-50 p-1.5 rounded-xl border">
+                   <button onclick="ubahQty('Asisten', -1)" class="w-12 h-12 bg-white text-red-500 rounded-lg shadow-sm"><i class="ph ph-minus text-xl font-bold"></i></button>
+                   <span id="qty-Asisten" class="font-bold w-6 text-center text-xl">0</span>
+                   <button onclick="ubahQty('Asisten', 1)" class="w-12 h-12 bg-white text-green-600 rounded-lg shadow-sm"><i class="ph ph-plus text-xl font-bold"></i></button>
+                 </div>
+               </div>
+            </div>
+
             <button id="btn-submit" onclick="kirimOrderan()" class="w-full mt-4 bg-green-600 text-white font-bold text-lg py-4 rounded-2xl shadow-lg active:bg-green-700 flex justify-center items-center">
               <span id="btn-text">Lapor Orderan</span>
               <i id="btn-loading" class="ph ph-spinner-gap animate-spin hidden ml-2 text-2xl"></i>
@@ -269,7 +284,7 @@
 
     <!-- =============== TAB ADMIN =============== -->
     
-    <!-- FITUR BARU: STATISTIK ADMIN -->
+    <!-- STATISTIK ADMIN -->
     <div id="tab-admin-statistik" class="admin-tab hidden flex-col h-screen fade-in pb-24">
       <div class="bg-gradient-to-r from-gray-800 to-gray-900 p-5 rounded-b-[2rem] shadow-md z-20 sticky top-0 flex justify-between items-start text-white">
         <div class="w-full">
@@ -322,32 +337,95 @@
       </div>
     </div>
 
+    <!-- UPDATE BARU: REKAP ORDERAN -->
     <div id="tab-admin-riwayat" class="admin-tab hidden flex-col h-screen fade-in pb-24">
       <div class="bg-gradient-to-r from-blue-700 to-indigo-800 p-5 rounded-b-[2rem] shadow-md z-20 sticky top-0 flex justify-between items-start">
         <div class="w-full mr-2">
            <h2 class="text-2xl font-extrabold text-white tracking-wide mb-3">Rekap Orderan</h2>
-           <div class="space-y-2">
-              <select id="admin-rekap-driver" class="w-full bg-white text-gray-800 p-2.5 rounded-xl text-sm font-bold outline-none border-none shadow-sm"><option value="">-- Pilih Nama Driver --</option></select>
-              <div class="bg-white/10 p-1.5 rounded-xl border border-white/20 flex items-center">
-                <select id="filter-tipe" onchange="toggleCustomDate()" class="flex-1 bg-transparent text-white border-none outline-none text-sm font-semibold appearance-none">
-                  <option value="7hari" class="text-gray-800">1 Minggu Terakhir (Total)</option>
-                  <option value="custom" class="text-gray-800">Tanggal Custom (Edit)</option>
-                </select>
-                <button onclick="loadRiwayatAdmin()" class="bg-white text-blue-800 px-4 py-2 rounded-lg text-sm font-bold">Cari</button>
+           <div class="bg-white/10 p-2 rounded-xl border border-white/20 flex flex-col gap-2 shadow-sm">
+              <select id="filter-tipe-riwayat" onchange="toggleFilterRiwayat()" class="w-full bg-transparent text-white border-none outline-none text-sm font-semibold px-1 pb-2 border-b border-white/20">
+                <option value="harian" class="text-gray-800">1 Tanggal (Bisa Edit)</option>
+                <option value="rentang" class="text-gray-800">Rentang Tanggal (Hanya Lihat)</option>
+              </select>
+              
+              <div id="riwayat-input-harian" class="flex items-center mt-1">
+                 <input type="date" id="date-riwayat-single" class="w-full bg-white text-gray-800 text-sm font-bold rounded-lg p-2.5 outline-none">
               </div>
-           </div>
-           <div id="filter-custom" class="hidden mt-3 bg-blue-900/30 p-3 rounded-xl border items-center gap-2 fade-in">
-              <input type="date" id="date-single" class="w-full bg-white text-gray-800 text-sm font-medium rounded-lg p-2 outline-none">
+              
+              <div id="riwayat-input-rentang" class="hidden items-center gap-2 mt-1">
+                 <input type="date" id="date-riwayat-start" class="w-1/2 bg-white text-gray-800 text-sm font-bold rounded-lg p-2.5 outline-none">
+                 <span class="text-white">-</span>
+                 <input type="date" id="date-riwayat-end" class="w-1/2 bg-white text-gray-800 text-sm font-bold rounded-lg p-2.5 outline-none">
+              </div>
+              
+              <button onclick="loadRiwayatAdmin()" class="w-full bg-white text-blue-800 px-4 py-3 rounded-xl text-sm font-bold mt-1 shadow-sm active:scale-95 transition flex justify-center items-center">
+                 <i class="ph ph-magnifying-glass mr-2 text-lg"></i> Cari Data
+              </button>
            </div>
         </div>
       </div>
       
       <div id="loading-riwayat" class="hidden flex-col items-center justify-center p-10 mt-10"><i class="ph-fill ph-motorcycle animate-bounce text-5xl text-blue-600 mb-3"></i></div>
-      <div class="p-5 flex-1 overflow-y-auto space-y-4" id="list-riwayat">
-        <div class="text-center text-gray-400 mt-10"><i class="ph ph-hand-pointing text-4xl mb-2"></i><p class="text-sm">Pilih Driver dan klik Cari</p></div>
+      <div class="p-5 flex-1 overflow-y-auto space-y-3" id="list-riwayat">
+        <div class="text-center text-gray-400 mt-10"><i class="ph ph-hand-pointing text-4xl mb-2"></i><p class="text-sm">Pilih filter dan klik Cari Data</p></div>
       </div>
     </div>
 
+    <!-- MODAL DETAIL & EDIT REKAP ORDERAN -->
+    <div id="modal-rekap-detail" class="fixed inset-0 bg-black/60 z-[60] hidden items-center justify-center p-4 fade-in backdrop-blur-sm">
+      <div class="bg-white rounded-3xl w-full max-w-sm p-6 shadow-2xl relative">
+        <h3 class="text-xl font-bold mb-1">Detail Orderan</h3>
+        <p id="rekap-driver-name" class="text-sm font-black text-blue-600 uppercase mb-4 tracking-wider"></p>
+        
+        <input type="hidden" id="rekap-email">
+        <input type="hidden" id="rekap-tanggal">
+
+        <div class="space-y-3 mb-6">
+           <div class="flex justify-between items-center bg-gray-50 p-3 rounded-xl border">
+              <span class="font-bold text-gray-700 flex items-center"><i class="ph ph-headset mr-2 text-green-600 text-lg"></i>Operator</span>
+              <div class="flex items-center space-x-3">
+                <button type="button" onclick="ubahQtyRekap('op', -1)" class="btn-edit-rekap w-8 h-8 bg-white text-red-500 rounded-md shadow-sm border font-black text-lg hidden active:bg-gray-100">-</button>
+                <span id="rekap-qty-op" class="font-black text-xl w-6 text-center">0</span>
+                <button type="button" onclick="ubahQtyRekap('op', 1)" class="btn-edit-rekap w-8 h-8 bg-white text-green-600 rounded-md shadow-sm border font-black text-lg hidden active:bg-gray-100">+</button>
+              </div>
+           </div>
+           
+           <div class="flex justify-between items-center bg-gray-50 p-3 rounded-xl border">
+              <span class="font-bold text-gray-700 flex items-center"><i class="ph ph-wifi-slash mr-2 text-orange-500 text-lg"></i>Offline</span>
+              <div class="flex items-center space-x-3">
+                <button type="button" onclick="ubahQtyRekap('of', -1)" class="btn-edit-rekap w-8 h-8 bg-white text-red-500 rounded-md shadow-sm border font-black text-lg hidden active:bg-gray-100">-</button>
+                <span id="rekap-qty-of" class="font-black text-xl w-6 text-center">0</span>
+                <button type="button" onclick="ubahQtyRekap('of', 1)" class="btn-edit-rekap w-8 h-8 bg-white text-green-600 rounded-md shadow-sm border font-black text-lg hidden active:bg-gray-100">+</button>
+              </div>
+           </div>
+           
+           <div class="flex justify-between items-center bg-gray-50 p-3 rounded-xl border">
+              <span class="font-bold text-gray-700 flex items-center"><i class="ph ph-star mr-2 text-purple-600 text-lg"></i>Khusus</span>
+              <div class="flex items-center space-x-3">
+                <button type="button" onclick="ubahQtyRekap('kh', -1)" class="btn-edit-rekap w-8 h-8 bg-white text-red-500 rounded-md shadow-sm border font-black text-lg hidden active:bg-gray-100">-</button>
+                <span id="rekap-qty-kh" class="font-black text-xl w-6 text-center">0</span>
+                <button type="button" onclick="ubahQtyRekap('kh', 1)" class="btn-edit-rekap w-8 h-8 bg-white text-green-600 rounded-md shadow-sm border font-black text-lg hidden active:bg-gray-100">+</button>
+              </div>
+           </div>
+           
+           <div class="flex justify-between items-center bg-gray-50 p-3 rounded-xl border">
+              <span class="font-bold text-gray-700 flex items-center"><i class="ph ph-users mr-2 text-blue-600 text-lg"></i>Asisten</span>
+              <div class="flex items-center space-x-3">
+                <button type="button" onclick="ubahQtyRekap('as', -1)" class="btn-edit-rekap w-8 h-8 bg-white text-red-500 rounded-md shadow-sm border font-black text-lg hidden active:bg-gray-100">-</button>
+                <span id="rekap-qty-as" class="font-black text-xl w-6 text-center">0</span>
+                <button type="button" onclick="ubahQtyRekap('as', 1)" class="btn-edit-rekap w-8 h-8 bg-white text-green-600 rounded-md shadow-sm border font-black text-lg hidden active:bg-gray-100">+</button>
+              </div>
+           </div>
+        </div>
+
+        <div class="flex space-x-3">
+          <button onclick="tutupModalRekap()" class="flex-1 bg-gray-200 text-gray-800 font-bold py-3.5 rounded-xl active:bg-gray-300">Tutup</button>
+          <button id="btn-save-rekap" onclick="simpanEditRekap()" class="flex-1 bg-blue-600 text-white font-bold py-3.5 rounded-xl shadow-lg hidden flex justify-center items-center active:bg-blue-700"><i class="ph ph-check-circle mr-1 text-xl"></i> Update</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- CEK SETORAN -->
     <div id="tab-admin-setoran" class="admin-tab hidden flex-col h-screen fade-in pb-24">
       <div class="bg-gradient-to-r from-teal-600 to-emerald-700 p-5 shadow-md z-10 sticky top-0 rounded-b-[2rem] text-white">
         <h2 class="text-2xl font-extrabold tracking-wide mb-3">Cek Setoran</h2>
@@ -406,7 +484,7 @@
       </div>
     </div>
 
-    <!-- FITUR BARU: TAB KONTROL INPUT -->
+    <!-- KONTROL INPUT -->
     <div id="tab-admin-kontrol" class="admin-tab hidden flex-col h-screen fade-in pb-24">
       <div class="bg-gradient-to-r from-cyan-600 to-blue-700 p-5 shadow-md z-10 sticky top-0 rounded-b-[2rem] text-white">
         <h2 class="text-2xl font-extrabold tracking-wide mb-3">Kontrol Input</h2>
@@ -548,29 +626,14 @@
           </div>
       </div>
     </div>
-
-    <!-- MODAL EDIT QTY ADMIN -->
-    <div id="modal-edit" class="fixed inset-0 bg-black/60 z-[60] hidden flex items-center justify-center p-4 fade-in backdrop-blur-sm">
-      <div class="bg-white rounded-3xl w-full max-w-sm p-6 shadow-2xl">
-        <h3 class="text-xl font-bold mb-1">Edit Jumlah Orderan</h3><p id="edit-info" class="text-sm font-semibold text-blue-600 bg-blue-50 p-2 rounded-lg mb-5"></p>
-        <input type="hidden" id="edit-row">
-        <label class="block text-sm font-semibold text-gray-700 mb-2">Jumlah Baru (Qty)</label>
-        <input type="number" id="edit-qty" class="w-full bg-gray-100 border border-gray-200 rounded-xl p-4 text-xl font-bold text-center focus:outline-none focus:ring-2 focus:ring-blue-500 mb-6">
-        <div class="flex space-x-3">
-          <button onclick="document.getElementById('modal-edit').classList.add('hidden')" class="flex-1 bg-gray-200 text-gray-800 font-bold py-3 rounded-xl">Batal</button>
-          <button id="btn-save-edit" onclick="simpanEdit()" class="flex-1 bg-blue-600 text-white font-bold py-3 rounded-xl shadow-lg flex justify-center items-center"><i class="ph ph-check-circle mr-1"></i> Update</button>
-        </div>
-      </div>
-    </div>
     
     <!-- MODAL KONTROL OFF/ON ADMIN -->
-    <div id="modal-kontrol-off" class="fixed inset-0 bg-black/60 z-[60] hidden flex items-center justify-center p-4 fade-in backdrop-blur-sm">
+    <div id="modal-kontrol-off" class="fixed inset-0 bg-black/60 z-[60] hidden items-center justify-center p-4 fade-in backdrop-blur-sm">
       <div class="bg-white rounded-3xl w-full max-w-sm p-6 shadow-2xl text-center">
         <div class="bg-gray-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4"><i class="ph ph-power text-3xl text-gray-600"></i></div>
         <h3 class="text-lg font-bold text-gray-800">Ubah Status Driver</h3>
         <p id="off-driver-name" class="text-sm font-black text-blue-600 mb-4 uppercase"></p>
         
-        <!-- Detail Orderan Harian -->
         <div id="control-driver-details" class="bg-white border border-gray-200 rounded-2xl p-4 mb-4 text-sm font-medium text-gray-600 text-left space-y-2 shadow-sm">
            <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest border-b pb-1 mb-2 text-center">Orderan Tanggal Ini</p>
            <div class="flex justify-between items-center"><span class="font-bold text-green-600 flex items-center"><i class="ph ph-headset mr-1 text-lg"></i> Operator:</span> <span id="ctrl-op" class="font-black text-gray-800 text-lg bg-gray-100 px-3 py-0.5 rounded-lg">0</span></div>
@@ -578,7 +641,6 @@
            <div class="flex justify-between items-center"><span class="font-bold text-purple-600 flex items-center"><i class="ph ph-star mr-1 text-lg"></i> Khusus:</span> <span id="ctrl-kh" class="font-black text-gray-800 text-lg bg-gray-100 px-3 py-0.5 rounded-lg">0</span></div>
         </div>
 
-        <!-- Teks Alasan Libur Driver -->
         <div id="off-driver-reason" class="text-xs bg-gray-50 text-gray-600 p-3 rounded-lg border border-gray-200 mb-5 hidden"></div>
         
         <input type="hidden" id="off-driver-email">
@@ -632,11 +694,14 @@
     }
 
     let userData = {}; let loginAttempts = 3;
-    const harga = { 'Operator': 7000, 'Offline': 7000, 'Khusus': 30000 };
-    let stateOrder = { 'Operator': 0, 'Offline': 0, 'Khusus': 0 };
+    
+    // UPDATE HARGA: HARGA ASISTEN DISINI (5000)
+    const harga = { 'Operator': 7000, 'Offline': 7000, 'Khusus': 30000, 'Asisten': 5000 };
+    
+    // UPDATE ORDERAN TAMBAH ASISTEN
+    let stateOrder = { 'Operator': 0, 'Offline': 0, 'Khusus': 0, 'Asisten': 0 };
 
     document.addEventListener("DOMContentLoaded", async function() {
-      // Pasang pengunci validasi input khusus angka langsung saat web dibuka
       ['login-pass', 'new-pass', 'new-pass-confirm'].forEach(id => {
          let el = document.getElementById(id);
          if(el) {
@@ -675,11 +740,10 @@
          document.getElementById('view-login').classList.add('flex');
       }
       
-      // MENGISI TANGGAL HARI INI SECARA OTOMATIS
       var today = new Date().toISOString().split('T')[0];
       if(document.getElementById('peny-tanggal')) document.getElementById('peny-tanggal').value = today;
       if(document.getElementById('date-single-kontrol')) document.getElementById('date-single-kontrol').value = today;
-      if(document.getElementById('date-single')) document.getElementById('date-single').value = today;
+      if(document.getElementById('date-riwayat-single')) document.getElementById('date-riwayat-single').value = today;
     });
 
     async function prosesLoginKustom() {
@@ -766,7 +830,8 @@
     function populateDriverDropdowns(drivers) {
         let options = '<option value="">-- Pilih Nama Driver --</option>';
         drivers.forEach(d => options += `<option value="${d.email}">${d.nama}</option>`);
-        document.getElementById('admin-rekap-driver').innerHTML = options; document.getElementById('admin-setoran-driver').innerHTML = options;
+        document.getElementById('admin-setoran-driver').innerHTML = options;
+        
         let penyOptions = '<option value="ALL">📢 SEMUA DRIVER (Massal)</option>';
         drivers.forEach(d => penyOptions += `<option value="${d.email}">${d.nama}</option>`);
         document.getElementById('peny-target').innerHTML = penyOptions;
@@ -788,7 +853,10 @@
          let btn = document.getElementById('btn-tab-d-' + t);
          if(t === tab) { btn.classList.add('text-green-600'); btn.classList.remove('text-gray-400'); } else { btn.classList.remove('text-green-600'); btn.classList.add('text-gray-400'); }
       });
-      if(tab === 'input') { ['Operator', 'Offline', 'Khusus'].forEach(j => { stateOrder[j] = 0; document.getElementById('qty-' + j).innerText = '0'; }); }
+      if(tab === 'input') { 
+          ['Operator', 'Offline', 'Khusus', 'Asisten'].forEach(j => { stateOrder[j] = 0; document.getElementById('qty-' + j).innerText = '0'; }); 
+          document.getElementById('div-asisten').classList.add('hidden'); document.getElementById('div-asisten').classList.remove('flex');
+      }
       else if(tab === 'orderan') { loadRiwayatDriver(); } else if(tab === 'setoran') { loadSetoranDriver(false); }
     }
 
@@ -815,10 +883,17 @@
       if(tab === 'penyesuaian') { ubahKategoriPeny(); } else if(tab === 'user') { loadDaftarUser(); } else if(tab === 'statistik') { loadStatistik(); }
     }
 
+    // TOGGLE ASISTEN (DRIVER)
+    function toggleAsisten() {
+        const div = document.getElementById('div-asisten');
+        if (div.classList.contains('hidden')) { div.classList.remove('hidden'); div.classList.add('flex'); } 
+        else { div.classList.add('hidden'); div.classList.remove('flex'); }
+    }
+
     function ubahQty(jenis, nilai) { let baru = stateOrder[jenis] + nilai; if (baru >= 0) { stateOrder[jenis] = baru; document.getElementById('qty-' + jenis).innerText = baru; } }
 
     async function kirimOrderan() {
-      let list = []; ['Operator', 'Offline', 'Khusus'].forEach(j => { if(stateOrder[j] > 0) list.push({ jenis: j, qty: stateOrder[j], total: stateOrder[j] * harga[j] }); });
+      let list = []; ['Operator', 'Offline', 'Khusus', 'Asisten'].forEach(j => { if(stateOrder[j] > 0) list.push({ jenis: j, qty: stateOrder[j], total: stateOrder[j] * harga[j] }); });
       if (list.length === 0) return tampilkanToast("Isi minimal 1 orderan!", 'error');
       let btn = document.getElementById('btn-submit'); let loading = document.getElementById('btn-loading');
       btn.disabled = true; loading.classList.remove('hidden');
@@ -873,12 +948,21 @@
       document.getElementById('loading-riwayat-driver').classList.remove('hidden'); document.getElementById('list-riwayat-driver').innerHTML = '';
       const data = await apiCall('getRiwayatDriver', { email: userData.email, filter: payload });
       document.getElementById('loading-riwayat-driver').classList.add('hidden'); let html = '';
-      let totalSemua = data['Operator'] + data['Offline'] + data['Khusus'];
+      
+      // Hitung dengan asisten
+      let totalSemua = (data['Operator']||0) + (data['Offline']||0) + (data['Khusus']||0) + (data['Asisten']||0);
       if(totalSemua === 0) { html = '<div class="text-center text-gray-400 mt-10"><i class="ph ph-folder-open text-5xl mb-2"></i><p>Belum ada orderan.</p></div>'; } 
       else {
-          const items = [{ nama: 'Operator', jumlah: data['Operator'], icon: 'ph-headset' }, { nama: 'Offline', jumlah: data['Offline'], icon: 'ph-wifi-slash' }, { nama: 'Khusus', jumlah: data['Khusus'], icon: 'ph-star' }];
+          const items = [
+            { nama: 'Operator', jumlah: data['Operator']||0, icon: 'ph-headset' }, 
+            { nama: 'Offline', jumlah: data['Offline']||0, icon: 'ph-wifi-slash' }, 
+            { nama: 'Khusus', jumlah: data['Khusus']||0, icon: 'ph-star' },
+            { nama: 'Asisten', jumlah: data['Asisten']||0, icon: 'ph-users' }
+          ];
           items.forEach(item => {
-            html += `<div class="bg-white p-5 rounded-2xl border flex justify-between items-center mb-3"><div class="flex items-center"><div class="bg-green-100 p-3 rounded-xl mr-4"><i class="ph ${item.icon} text-green-600 text-2xl font-bold"></i></div><div><p class="text-xs font-bold text-gray-400 uppercase">Total Order</p><p class="text-lg font-bold text-gray-800">${item.nama}</p></div></div><div class="bg-gray-50 border text-gray-800 font-black px-6 py-3 rounded-xl text-2xl shadow-inner">${item.jumlah}</div></div>`;
+            if (item.jumlah > 0) {
+                html += `<div class="bg-white p-5 rounded-2xl border flex justify-between items-center mb-3"><div class="flex items-center"><div class="bg-green-100 p-3 rounded-xl mr-4"><i class="ph ${item.icon} text-green-600 text-2xl font-bold"></i></div><div><p class="text-xs font-bold text-gray-400 uppercase">Total Order</p><p class="text-lg font-bold text-gray-800">${item.nama}</p></div></div><div class="bg-gray-50 border text-gray-800 font-black px-6 py-3 rounded-xl text-2xl shadow-inner">${item.jumlah}</div></div>`;
+            }
           });
       }
       document.getElementById('list-riwayat-driver').innerHTML = html;
@@ -919,45 +1003,144 @@
       }
     }
 
-    function toggleCustomDate() { let tipe = document.getElementById('filter-tipe').value; let divCustom = document.getElementById('filter-custom'); if (tipe === 'custom') { divCustom.classList.remove('hidden'); divCustom.classList.add('flex'); } else { divCustom.classList.add('hidden'); divCustom.classList.remove('flex'); } }
-    function toggleCustomDateSetoranAdmin() { let tipe = document.getElementById('filter-tipe-setoran').value; let divCustom = document.getElementById('filter-custom-setoran-admin'); if (tipe === 'custom') { divCustom.classList.remove('hidden'); divCustom.classList.add('flex'); } else { divCustom.classList.add('hidden'); divCustom.classList.remove('flex'); } }
+    // =======================================================
+    // REKAP ORDERAN ADMIN (PERUBAHAN BARU)
+    // =======================================================
+    function toggleFilterRiwayat() { 
+      let tipe = document.getElementById('filter-tipe-riwayat').value; 
+      let divHarian = document.getElementById('riwayat-input-harian'); 
+      let divRentang = document.getElementById('riwayat-input-rentang');
+      if (tipe === 'harian') { 
+          divHarian.classList.remove('hidden'); divHarian.classList.add('flex');
+          divRentang.classList.add('hidden'); divRentang.classList.remove('flex');
+      } else { 
+          divHarian.classList.add('hidden'); divHarian.classList.remove('flex');
+          divRentang.classList.remove('hidden'); divRentang.classList.add('flex');
+      } 
+    }
 
     async function loadRiwayatAdmin() {
-      let driverEmail = document.getElementById('admin-rekap-driver').value; if (!driverEmail) return tampilkanToast("Pilih nama driver!", 'error');
-      let tipe = document.getElementById('filter-tipe').value; let payload = { tipe: tipe, email: driverEmail };
-      if (tipe === 'custom') { let start = document.getElementById('date-single').value; if (!start) return tampilkanToast("Pilih tanggal!", 'error'); payload.start = start; payload.end = start; }
-      document.getElementById('loading-riwayat').classList.remove('hidden'); document.getElementById('list-riwayat').innerHTML = '';
-      
-      const response = await apiCall('getRiwayatOrderan', { filter: payload });
-      document.getElementById('loading-riwayat').classList.add('hidden'); let html = '';
-      if (response.mode === 'summary') {
-          let totalQty = response.data.Operator + response.data.Offline + response.data.Khusus;
-          if(totalQty === 0) { html = '<div class="text-center text-gray-400 mt-10"><p>Belum ada orderan.</p></div>'; } 
-          else {
-             const items = [{ nama: 'Operator', jumlah: response.data.Operator, icon: 'ph-headset' }, { nama: 'Offline', jumlah: response.data.Offline, icon: 'ph-wifi-slash' }, { nama: 'Khusus', jumlah: response.data.Khusus, icon: 'ph-star' }];
-             html += '<div class="bg-blue-50 border border-blue-200 text-blue-800 p-3 rounded-xl mb-4 text-center font-bold text-sm">Total Akumulasi</div>';
-             items.forEach(item => { html += `<div class="bg-white p-4 rounded-2xl border flex justify-between items-center mb-3"><div class="flex items-center"><div class="bg-blue-100 p-2 rounded-xl mr-3"><i class="ph ${item.icon} text-blue-600 text-xl font-bold"></i></div><p class="font-bold">${item.nama}</p></div><div class="bg-gray-50 border font-black px-4 py-2 rounded-xl text-xl">${item.jumlah}</div></div>`; });
-             html += `<div class="mt-4 bg-blue-600 p-4 rounded-2xl text-center text-white"><p class="text-xs uppercase opacity-80 mb-1">Total Omset Kotor</p><h1 class="text-2xl font-black">${formatRp(response.data.TotalRp)}</h1></div>`;
-          }
+      let tipe = document.getElementById('filter-tipe-riwayat').value;
+      let payload = { tipe: tipe };
+      if (tipe === 'harian') {
+          let tgl = document.getElementById('date-riwayat-single').value;
+          if(!tgl) return tampilkanToast("Pilih tanggal!", "error");
+          payload.start = tgl; payload.end = tgl;
       } else {
-          if(response.data.length === 0) { html = '<div class="text-center text-gray-400 mt-10"><p>Belum ada orderan.</p></div>'; } 
-          else {
-              response.data.forEach(d => {
-                html += `<div class="bg-white p-4 rounded-2xl border flex flex-col mb-3"><div class="flex justify-between items-start mb-2 border-b pb-2"><div><p class="text-[10px] font-bold text-gray-400"><i class="ph ph-clock mr-1"></i>${d.tgl}</p></div><div class="bg-blue-50 text-blue-700 text-[11px] font-extrabold px-2 py-1 rounded-lg">${d.jenis}</div></div><div class="flex justify-between items-end mt-1"><div><p class="text-[11px] text-gray-500">Qty: <span class="font-black text-lg text-gray-800">${d.qty}</span></p></div><div class="flex items-center space-x-3"><p class="font-black text-blue-700">${formatRp(d.total)}</p><button onclick="document.getElementById('edit-row').value=${d.row};document.getElementById('edit-qty').value=${d.qty};document.getElementById('edit-info').innerHTML='Tanggal: ${d.tgl}<br>Jenis: ${d.jenis}';document.getElementById('modal-edit').classList.remove('hidden');" class="bg-yellow-50 text-yellow-600 p-2 rounded-lg"><i class="ph ph-pencil-simple font-bold"></i></button></div></div></div>`;
-              });
-          }
+          let start = document.getElementById('date-riwayat-start').value;
+          let end = document.getElementById('date-riwayat-end').value;
+          if(!start || !end) return tampilkanToast("Pilih rentang tanggal!", "error");
+          payload.start = start; payload.end = end;
+      }
+      
+      document.getElementById('loading-riwayat').classList.remove('hidden'); 
+      document.getElementById('list-riwayat').innerHTML = '';
+      
+      // Panggil backend
+      const response = await apiCall('getRiwayatOrderan', { filter: payload });
+      document.getElementById('loading-riwayat').classList.add('hidden'); 
+      
+      let html = '';
+      if(response.length === 0) {
+          html = '<div class="text-center text-gray-400 mt-10"><i class="ph ph-folder-open text-5xl mb-2"></i><p class="text-sm font-bold">Data tidak ditemukan.</p></div>';
+      } else {
+          let isEditMode = (tipe === 'harian');
+          response.forEach((d) => {
+              html += `
+              <div onclick="bukaModalRekapDetail('${d.email}', '${d.nama}', ${d.op}, ${d.of}, ${d.kh}, ${d.as}, ${isEditMode})" class="bg-white p-4 rounded-2xl border flex flex-col mb-3 shadow-sm active:scale-95 transition cursor-pointer">
+                 <div class="flex justify-between items-center">
+                    <div>
+                        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-0.5">Total Order</p>
+                        <p class="font-black text-lg text-gray-800">${d.nama}</p>
+                    </div>
+                    <div class="bg-blue-50 text-blue-700 font-black px-5 py-2 rounded-xl text-2xl border border-blue-100">
+                        ${d.totalQty}
+                    </div>
+                 </div>
+              </div>`;
+          });
       }
       document.getElementById('list-riwayat').innerHTML = html;
     }
 
-    async function simpanEdit() {
-      let row = document.getElementById('edit-row').value; let newQty = document.getElementById('edit-qty').value;
-      if(newQty === '' || newQty < 0) return tampilkanToast("Qty tidak valid", 'error');
-      let btnSave = document.getElementById('btn-save-edit'); btnSave.innerHTML = '<i class="ph ph-spinner-gap animate-spin"></i>'; btnSave.disabled = true;
-      const res = await apiCall('editOrderan', { row: row, newQty: newQty });
-      tampilkanToast(res); btnSave.innerHTML = '<i class="ph ph-check-circle mr-1"></i> Update'; btnSave.disabled = false;
-      document.getElementById('modal-edit').classList.add('hidden'); loadRiwayatAdmin();
+    let rekapOrderData = { op: 0, of: 0, kh: 0, as: 0 };
+
+    function bukaModalRekapDetail(email, nama, op, of, kh, as, isEditMode) {
+      document.getElementById('rekap-email').value = email;
+      document.getElementById('rekap-driver-name').innerText = nama;
+      
+      // Ambil tanggal dari input harian jika edit mode
+      if (isEditMode) {
+          document.getElementById('rekap-tanggal').value = document.getElementById('date-riwayat-single').value;
+      }
+      
+      rekapOrderData.op = op; rekapOrderData.of = of; rekapOrderData.kh = kh; rekapOrderData.as = as;
+      updateUIModalRekap();
+
+      // Atur tombol +/-
+      let btnEdits = document.querySelectorAll('.btn-edit-rekap');
+      btnEdits.forEach(btn => {
+          if (isEditMode) { btn.classList.remove('hidden'); btn.classList.add('inline-block'); } 
+          else { btn.classList.add('hidden'); btn.classList.remove('inline-block'); }
+      });
+
+      // Atur tombol save
+      let btnSave = document.getElementById('btn-save-rekap');
+      if (isEditMode) { btnSave.classList.remove('hidden'); btnSave.classList.add('flex'); } 
+      else { btnSave.classList.add('hidden'); btnSave.classList.remove('flex'); }
+
+      document.getElementById('modal-rekap-detail').classList.remove('hidden');
+      document.getElementById('modal-rekap-detail').classList.add('flex');
     }
+
+    function updateUIModalRekap() {
+      document.getElementById('rekap-qty-op').innerText = rekapOrderData.op;
+      document.getElementById('rekap-qty-of').innerText = rekapOrderData.of;
+      document.getElementById('rekap-qty-kh').innerText = rekapOrderData.kh;
+      document.getElementById('rekap-qty-as').innerText = rekapOrderData.as;
+    }
+
+    function ubahQtyRekap(jenis, nilai) {
+      if (rekapOrderData[jenis] + nilai >= 0) {
+          rekapOrderData[jenis] += nilai;
+          updateUIModalRekap();
+      }
+    }
+
+    function tutupModalRekap() {
+      document.getElementById('modal-rekap-detail').classList.add('hidden');
+      document.getElementById('modal-rekap-detail').classList.remove('flex');
+    }
+
+    async function simpanEditRekap() {
+      let email = document.getElementById('rekap-email').value;
+      let tanggal = document.getElementById('rekap-tanggal').value;
+      
+      let payload = {
+         email: email,
+         tanggal: tanggal,
+         op: rekapOrderData.op,
+         of: rekapOrderData.of,
+         kh: rekapOrderData.kh,
+         as: rekapOrderData.as
+      };
+      
+      let btnSave = document.getElementById('btn-save-rekap'); 
+      btnSave.innerHTML = '<i class="ph ph-spinner-gap animate-spin"></i>'; btnSave.disabled = true;
+      
+      const res = await apiCall('editOrderan', payload);
+      tampilkanToast(res); 
+      
+      btnSave.innerHTML = '<i class="ph ph-check-circle mr-1 text-xl"></i> Update'; btnSave.disabled = false;
+      tutupModalRekap(); 
+      loadRiwayatAdmin();
+    }
+
+
+    // =======================================================
+    // CEK SETORAN ADMIN
+    // =======================================================
+    function toggleCustomDateSetoranAdmin() { let tipe = document.getElementById('filter-tipe-setoran').value; let divCustom = document.getElementById('filter-custom-setoran-admin'); if (tipe === 'custom') { divCustom.classList.remove('hidden'); divCustom.classList.add('flex'); } else { divCustom.classList.add('hidden'); divCustom.classList.remove('flex'); } }
 
     async function loadSetoranAdmin() {
       let driverEmail = document.getElementById('admin-setoran-driver').value; if (!driverEmail) return tampilkanToast("Pilih nama driver!", 'error');
